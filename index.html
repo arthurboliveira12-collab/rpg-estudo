@@ -12,176 +12,124 @@
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,500;1,400&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Lora:ital,wght@0,500;1,400&display=swap');
         
         body {
-            background-color: #05080e;
-            color: #d1d5db;
+            background-color: #040711;
+            color: #e2e8f0;
             font-family: 'Cinzel', serif;
             user-select: none;
             overflow: hidden;
-            background-image: radial-gradient(circle at center, #0a101d 0%, #030509 100%);
+            background-image: radial-gradient(circle at center, #091122 0%, #02040a 100%);
         }
 
-        /* Moldura de Pedra estilo Hollow Knight */
+        /* Molduras de pedra estilo gótico com tipografia aumentada */
         .hk-border {
-            border: 3px solid #2e3e55;
-            outline: 1px solid #111827;
+            border: 3px solid #334d6e;
+            outline: 1px solid #02040a;
             outline-offset: -2px;
-            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8), 0 10px 30px rgba(0,0,0,0.7);
-            background: rgba(8, 12, 21, 0.95);
+            box-sizing: border-box;
+            background: rgba(6, 11, 22, 0.96);
         }
 
         .hk-font-serif {
             font-family: 'Lora', serif;
         }
 
-        /* Efeito de Vinheta (Sombra nas bordas da tela) */
         .vignette {
             position: absolute;
             inset: 0;
-            box-shadow: inset 0 0 100px rgba(0,0,0,0.9);
+            box-shadow: inset 0 0 120px rgba(0,0,0,0.95);
             pointer-events: none;
             z-index: 10;
         }
 
         .mask-hp {
-            width: 24px;
-            height: 28px;
-            background: #e2e8f0;
+            width: 26px;
+            height: 30px;
+            background: #f1f5f9;
             clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
             display: inline-block;
-            position: relative;
-            box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
-            transition: all 0.5s ease;
+            box-shadow: inset 0 0 6px rgba(0,0,0,0.6);
         }
 
         .mask-hp.broken {
             background: #1e293b !important;
-            border: 1px dashed #334155;
+            border: 1px dashed #475569;
             clip-path: unset;
             width: 20px;
             height: 20px;
             border-radius: 50%;
         }
-
-        /* Animação sutil de pulso para as portas ativa */
-        @keyframes pulseGlow {
-            0% { opacity: 0.3; }
-            50% { opacity: 0.6; }
-            100% { opacity: 0.3; }
-        }
     </style>
 </head>
-<body class="h-screen w-screen flex flex-col items-center justify-center p-3 relative select-none">
+<body class="h-screen w-screen flex flex-col items-center justify-center p-3 relative">
     
     <div class="vignette"></div>
 
-    <div id="start-menu" class="absolute inset-0 bg-slate-950/95 z-50 flex flex-col items-center justify-center p-6 text-center">
-        <div class="hk-border p-10 max-w-xl flex flex-col items-center rounded-sm">
-            <h1 class="text-4xl md:text-5xl font-bold tracking-widest text-slate-200 mb-1" style="text-shadow: 0 0 15px rgba(255,255,255,0.2)">HOLLOW KNIGHT</h1>
-            <h2 class="text-lg text-cyan-500 font-light mb-8 tracking-widest uppercase">O Santuário dos Polos</h2>
+    <div id="start-menu" class="absolute inset-0 bg-slate-950/98 z-50 flex flex-col items-center justify-center p-6 text-center">
+        <div class="hk-border p-12 max-w-xl flex flex-col items-center">
+            <h1 class="text-4xl md:text-5xl font-bold tracking-widest text-slate-200 mb-2">HOLLOW KNIGHT</h1>
+            <h2 class="text-md text-cyan-400 font-light mb-8 tracking-widest uppercase">O Santuário dos Polos</h2>
             
-            <div class="hk-font-serif text-sm mb-8 space-y-3 text-slate-400 italic text-center max-w-sm">
-                "Nas entranhas de Hallownest, portas seladas por forças magnéticas barram o avanço do Cavaleiro. Apenas focando sua Alma nas leis dos polos ele poderá passar..."
-            </div>
+            <p class="hk-font-serif text-base text-slate-400 italic mb-8 max-w-md">
+                "Caminhe pelas ruínas do conhecimento. Toque nos monólitos antigos para ler os mistérios do magnetismo antes de desafiar as portas seladas."
+            </p>
 
-            <button onclick="entrarSalaTeoria()" class="px-8 py-3 bg-slate-900 border-2 border-slate-700 hover:border-cyan-500 text-slate-300 hover:text-cyan-200 font-bold tracking-widest text-sm transition-all duration-300 transform hover:scale-105">
-                ENTRAR NO SANTUÁRIO
+            <button onclick="iniciarJogo()" class="px-8 py-3 bg-slate-900 border border-slate-700 hover:border-cyan-500 text-slate-200 text-sm tracking-widest transition-all transform hover:scale-105">
+                ENTRAR NAS RUÍNAS
             </button>
         </div>
     </div>
 
-    <div id="theory-room" class="absolute inset-4 md:inset-x-28 md:inset-y-12 hk-border p-6 z-40 flex flex-col justify-between hidden shadow-2xl rounded-sm">
-        <div>
-            <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
-                <h3 class="text-base font-bold text-slate-300 uppercase tracking-widest flex items-center gap-2">
-                    <i class="fa-solid fa-scroll text-cyan-600"></i> Diários Invisíveis de Hallownest
-                </h3>
-                <span class="text-[10px] tracking-wider text-cyan-500/70 uppercase">Fase de Absorção</span>
-            </div>
-
-            <div class="flex gap-4 border-b border-slate-900 pb-2 mb-4 overflow-x-auto text-xs tracking-wider">
-                <button onclick="switchTab('tab1')" id="btn-tab1" class="pb-1 text-cyan-400 border-b border-cyan-500 font-bold">I. Indivisibilidade</button>
-                <button onclick="switchTab('tab2')" id="btn-tab2" class="pb-1 text-slate-500 hover:text-slate-300">II. Correntes de Oersted</button>
-                <button onclick="switchTab('tab3')" id="btn-tab3" class="pb-1 text-slate-500 hover:text-slate-300">III. Forças de Lorentz</button>
-            </div>
-
-            <div id="content-tab1" class="theory-content hk-font-serif space-y-3 text-sm text-slate-400 max-h-[50vh] overflow-y-auto pr-2">
-                <h4 class="text-slate-200 font-sans font-bold text-base tracking-wide">O Fenômeno dos Polos Inseparáveis</h4>
-                <p>Mesmo nas ruínas mais profundas de Hallownest, as leis naturais se mantêm firmes: **não existem monopolos magnéticos**. Se você partir uma joia magnética ou um ímã ao meio, os spins eletrônicos se organizam de forma instantânea nas bordas fraturadas.</p>
-                <blockquote class="bg-slate-950/60 p-3 border-l-2 border-cyan-700/60 text-xs text-slate-400 my-2">
-                    <strong>Exemplo Prático:</strong> Se um fragmento de ímã for fragmentado em dezenas de pedaços, cada pedaço minúsculo atuará como um ímã perfeito contendo Polo Norte e Polo Sul individuais.
-                </blockquote>
-            </div>
-
-            <div id="content-tab2" class="theory-content hk-font-serif space-y-3 text-sm text-slate-400 hidden max-h-[50vh] overflow-y-auto pr-2">
-                <h4 class="text-slate-200 font-sans font-bold text-base tracking-wide">Oersted: Eletricidade gera Magnetismo</h4>
-                <p>Quando a energia da Alma (ou corrente elétrica $I$) flui por um condutor retilíneo, ela gera linhas de força circulares e fechadas ao redor de sua trajetória. A intensidade do campo magnético cai quanto maior for a distância:</p>
-                <div class="bg-slate-950/80 py-2 rounded text-center text-cyan-400 font-mono text-base my-2">$$B = \frac{\mu_0 \cdot I}{2\pi \cdot r}$$</div>
-                <p class="text-xs bg-slate-900/50 p-2 border border-slate-800 rounded">
-                    <strong>Regra da Mão Direita:</strong> Envolva o condutor metálico com seus dedos. O polegar indica o trajeto da corrente ($I$). A curvatura natural dos demais dedos entrega a órbita exata do campo magnético $\vec{B}$.
-                </p>
-            </div>
-
-            <div id="content-tab3" class="theory-content hk-font-serif space-y-3 text-sm text-slate-400 hidden max-h-[50vh] overflow-y-auto pr-2">
-                <h4 class="text-slate-200 font-sans font-bold text-base tracking-wide">Lorentz: A Deflexão das Cargas</h4>
-                <p>Campos magnéticos não realizam trabalho sobre cargas estáticas. Uma partícula precisa estar em movimento ($v$) e cruzar o campo em um ângulo diferente de zero para sofrer ação da força mecânica:</p>
-                <div class="bg-slate-950/80 py-2 rounded text-center text-cyan-400 font-mono text-base my-2">$$F_m = |q| \cdot v \cdot B \cdot \sin(\theta)$$</div>
-                <p class="text-xs text-amber-500/90 bg-amber-950/10 p-2 border border-amber-900/30 rounded">
-                    <strong>Cuidado com o Alinhamento:</strong> Se uma partícula for disparada exatamente na mesma linha geométrica do campo magnético (paralela, onde $\theta = 0^\circ$ ou $180^\circ$), a força gerada será **nula**.
-                </p>
-            </div>
-        </div>
-
-        <div class="mt-6 pt-3 border-t border-slate-900 flex justify-between items-center font-sans">
-            <p class="text-[11px] text-slate-500 italic">Desça as abas e absorva os ensinamentos antigos.</p>
-            <button onclick="fecharTeoriaEALuta()" class="px-5 py-2.5 bg-slate-900 hover:bg-cyan-950 border border-slate-700 hover:border-cyan-600 text-slate-300 hover:text-cyan-200 text-xs font-bold tracking-widest transition-all">
-                DESAFIAR AS PORTAS →
-            </button>
-        </div>
-    </div>
-
-    <div id="game-hud" class="w-full max-w-5xl justify-between items-center mb-2 px-4 hidden flex">
+    <div id="game-hud" class="w-full max-w-5xl justify-between items-center mb-3 px-4 hidden flex">
         <div class="flex flex-col">
-            <span class="text-[9px] uppercase tracking-widest text-slate-500 mb-1">MÁSCARAS DE ALMA</span>
-            <div id="hp-container" class="flex gap-1.5"></div>
+            <span class="text-[10px] tracking-widest text-slate-500 mb-1">MÁSCARAS DE ALMA</span>
+            <div id="hp-container" class="flex gap-2"></div>
         </div>
-        <div>
-            <button onclick="voltarParaTeoria()" class="px-4 py-1.5 bg-slate-900 border border-slate-700 hover:border-cyan-700 text-[10px] uppercase font-bold tracking-widest text-slate-400 hover:text-cyan-400 transition-all">
-                📜 Consultar Diário
-            </button>
+        <div class="text-center">
+            <span id="ambient-title" class="text-xs font-bold tracking-widest text-cyan-400 uppercase bg-slate-950/60 px-4 py-1.5 border border-slate-800 rounded-sm">
+                Fase 1: Ruínas do Conhecimento
+            </span>
         </div>
         <div class="text-right">
-            <span class="text-[9px] uppercase tracking-widest text-slate-500 block mb-0.5">SINTONIAS</span>
-            <span id="score-val" class="text-xl font-bold text-slate-200">0</span>
+            <span class="text-[10px] tracking-widest text-slate-500 block mb-0.5">SINTONIAS</span>
+            <span id="score-val" class="text-2xl font-bold text-slate-200">0</span>
         </div>
     </div>
 
-    <div id="question-panel" class="w-full max-w-5xl hk-border p-4 mb-2 hidden font-sans grid grid-cols-1 md:grid-cols-12 gap-4">
-        <div class="md:col-span-8 border-r border-slate-900/80 pr-4 flex flex-col justify-between">
-            <div>
-                <div id="category-badge" class="text-[10px] font-bold text-cyan-500 mb-1 uppercase tracking-widest"></div>
-                <p id="question-text" class="text-sm md:text-base text-slate-300 hk-font-serif leading-relaxed"></p>
-            </div>
-            <div id="options-text-guide" class="text-xs text-slate-400 mt-3 grid grid-cols-1 gap-1.5 hk-font-serif"></div>
+    <div id="display-panel" class="w-full max-w-5xl hk-border p-5 mb-3 hidden font-sans min-h-[160px] flex flex-col justify-center">
+        <div id="theory-display" class="w-full">
+            <p class="text-center text-slate-500 italic text-base hk-font-serif py-4">
+                ← Caminhe usando as setas do teclado (ou WASD) e encoste nos monólitos de pedra para extrair o conhecimento invisível...
+            </p>
         </div>
-        <div class="md:col-span-4 flex flex-col justify-center items-center bg-slate-950/60 p-3 rounded border border-slate-900">
-            <div class="text-[9px] font-bold text-slate-600 uppercase tracking-widest mb-1 w-full text-left">PROJEÇÃO DO ENIGMA:</div>
-            <div id="door-inspector" class="text-xs text-slate-500 italic text-center w-full flex items-center justify-center min-h-[110px]">
-                Aproxime-se de um portal de pedra para projetar suas linhas de campo...
+        
+        <div id="arena-interface" class="hidden grid grid-cols-1 md:grid-cols-12 gap-4 w-full">
+            <div class="md:col-span-8 border-r border-slate-900 pr-4 flex flex-col justify-between">
+                <div>
+                    <div id="category-badge" class="text-xs font-bold text-cyan-400 mb-1 uppercase tracking-widest"></div>
+                    <p id="question-text" class="text-base md:text-lg text-slate-200 font-medium hk-font-serif leading-relaxed"></p>
+                </div>
+                <div id="options-text-guide" class="text-sm text-slate-400 mt-4 grid grid-cols-1 gap-2 hk-font-serif"></div>
+            </div>
+            <div class="md:col-span-4 flex flex-col justify-center items-center bg-slate-950/40 p-3 border border-slate-900 rounded-sm">
+                <span class="text-[10px] font-bold text-slate-600 tracking-widest mb-1.5 w-full text-left">PROJEÇÃO GEOMÉTRICA:</span>
+                <div id="door-inspector" class="text-xs text-slate-500 italic text-center w-full flex items-center justify-center min-h-[120px]">
+                    Aproxime-se de um portal para inspecionar seu diagrama magnético...
+                </div>
             </div>
         </div>
     </div>
 
-    <div id="elderbug-dialog" class="absolute inset-x-4 top-1/3 max-w-xl mx-auto hk-border p-6 z-50 hidden">
+    <div id="elderbug-dialog" class="absolute inset-x-4 top-1/4 max-w-xl mx-auto hk-border p-6 z-50 hidden">
         <div class="flex items-start gap-4 font-sans">
-            <div class="w-11 h-11 rounded-full bg-slate-950 border border-slate-700 flex items-center justify-center text-xl flex-shrink-0 shadow-inner">👁️</div>
+            <div class="w-12 h-12 rounded-full bg-slate-950 border border-slate-700 flex items-center justify-center text-xl flex-shrink-0 shadow-inner">👁️</div>
             <div class="flex-1">
                 <span id="feedback-title" class="text-xs font-bold block uppercase tracking-widest mb-1"></span>
-                <div id="npc-feedback" class="text-xs md:text-sm text-slate-400 hk-font-serif leading-relaxed space-y-2"></div>
-                <button onclick="fecharDialogo()" class="mt-4 px-4 py-2 bg-slate-900 border border-slate-700 hover:border-cyan-600 text-xs text-slate-300 rounded-sm font-bold tracking-wider transition-all">
-                    Continuar Jornada
+                <div id="npc-feedback" class="text-sm text-slate-400 hk-font-serif leading-relaxed space-y-2"></div>
+                <button onclick="fecharDialogo()" class="mt-4 px-5 py-2 bg-slate-900 border border-slate-700 hover:border-cyan-600 text-xs text-slate-300 font-bold tracking-wider transition-all">
+                    Continuar Avanço
                 </button>
             </div>
         </div>
@@ -189,8 +137,8 @@
 
     <div id="game-over-screen" class="absolute inset-0 bg-slate-950/95 z-50 flex flex-col items-center justify-center p-6 text-center hidden">
         <div class="max-w-sm space-y-4">
-            <h2 class="text-3xl font-bold tracking-widest text-slate-400" style="text-shadow: 0 0 10px rgba(255,0,0,0.1)">O RECIPIENTE QUEBROU</h2>
-            <p id="game-over-msg" class="hk-font-serif text-slate-500 text-sm italic">Sua Alma dissipou-se na escuridão dos cruzamentos antigos...</p>
+            <h2 class="text-3xl font-bold tracking-widest text-slate-400">O RECIPIENTE QUEBROU</h2>
+            <p class="hk-font-serif text-slate-500 text-sm italic">Sua Alma dissipou-se nos cruzamentos antigos...</p>
             <button onclick="resetGame()" class="px-6 py-2 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-bold tracking-widest">
                 REFORJAR RECEPTÁCULO
             </button>
@@ -205,114 +153,123 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
+        let currentPhase = "THEORY"; // "THEORY" ou "ARENA"
         let gameActive = false;
         let score = 0;
         let keys = {};
         let player;
         let activeDialog = false;
-        
-        // Sistema de partículas de ambiente (estilo esporos flutuantes de Hollow Knight)
-        let particles = [];
-        for (let i = 0; i < 35; i++) {
-            particles.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                radius: Math.random() * 2 + 0.5,
-                speedY: -(Math.random() * 0.4 + 0.1),
-                speedX: (Math.random() * 0.4 - 0.2),
-                alpha: Math.random() * 0.5 + 0.2
-            });
-        }
+
+        // Elementos da Fase de Teoria (Monólitos interativos)
+        const tablets = [
+            { x: 150, y: 140, r: 25, title: "I. Monopolo não existe", text: "<h3 class='text-cyan-400 font-bold text-lg mb-1'>O Princípio da Inseparabilidade</h3><p class='text-slate-300 text-base leading-relaxed hk-font-serif'>Todo ímã possui dois polos inseparáveis: <strong>Norte (N)</strong> e <strong>Sul (S)</strong>. Se você cortar um ímã ao meio mil vezes, não conseguirá isolar os polos. Cada pedaço quebrado vira imediatamente um novo ímã completo.</p>" },
+            { x: 450, y: 140, r: 25, title: "II. Linhas de Força", text: "<h3 class='text-cyan-400 font-bold text-lg mb-1'>Geometria do Campo Magnético</h3><p class='text-slate-300 text-base leading-relaxed hk-font-serif'>Por convenção de estudo, as linhas invisíveis do campo magnético $\\vec{B}$ sempre <strong>SAEM do polo Norte</strong> e <strong>ENTRAM no polo Sul</strong> pelo lado externo do corpo magnético.</p>" },
+            { x: 750, y: 140, r: 25, title: "III. Leis de Atração", text: "<h3 class='text-cyan-400 font-bold text-lg mb-1'>Interação de Força</h3><p class='text-slate-300 text-base leading-relaxed hk-font-serif'>Polos magnéticos de nomes iguais se repelem mutuamente (Norte com Norte afasta). Polos de nomes opostos se atraem fortemente (Norte com Sul se colam).</p>" }
+        ];
+
+        // Portal para passar de fase
+        const transitionPortal = { x: 940, y: 110, width: 40, height: 120 };
 
         const doorLetters = ["A", "B", "C", "D", "E"];
-        // Cores suaves e místicas combinando com a identidade fria do jogo
         const doorColors = ["#cbd5e1", "#577399", "#495867", "#fe5f55", "#bdd6d2"];
         let doors = [];
 
+        // Pool filtrado apenas para Ímãs e Campo
         const poolPerguntas = [
             {
-                category: "Propriedades Magnéticas: Os Polos",
-                q: "Se quebrarmos um ímã em formato de barra perfeitamente ao meio, o que acontecerá com suas propriedades e pólos remanescentes?",
+                category: "Ímãs Permanentes",
+                q: "Se quebrarmos um ímã em formato de barra exatamente ao meio, o que acontece com seus polos?",
                 options: [
                     "Isolamos o polo Norte em um pedaço e o polo Sul no outro pedaço resultante.",
-                    "O magnetismo é completamente desfeito devido ao impacto físico da quebra.",
-                    "Obtemos dois novos ímãs completos, cada um gerando seu próprio arranjo Norte-Sul.",
-                    "Toda a força magnética migrará estritamente para o centro geométrico exato das fraturas.",
-                    "A matéria entra em colapso radioativo liberando correntes elétricas nocivas."
+                    "O magnetismo do corpo é destruído devido ao choque mecânico da quebra.",
+                    "Surgem dois novos ímãs completos, cada um contendo seu próprio par Norte e Sul.",
+                    "As linhas de força concentram-se estritamente no centro geométrico da fenda.",
+                    "As metades passam a se repelir violentamente de qualquer ângulo."
                 ],
                 correctIndex: 2,
-                explanation: "Pelo princípio da **Inseparabilidade dos Polos Magnéticos**, monopolos não existem isolados. A estrutura microscópica reorganiza os polos faltantes em cada extremidade da quebra de modo automático.",
+                explanation: "Pelo princípio da **Inseparabilidade dos Polos Magnéticos**, monopolos não existem isolados. A estrutura molecular se auto-organiza instantaneamente.",
                 svgs: [
-                    `<svg width="140" height="70" viewBox="0 0 140 70"><rect x="10" y="20" width="60" height="25" fill="#334155"/><rect x="70" y="20" width="60" height="25" fill="#1e293b"/><text x="40" y="37" fill="white" font-size="11" font-weight="bold" text-anchor="middle">N</text><text x="100" y="37" fill="white" font-size="11" font-weight="bold" text-anchor="middle">S</text></svg>`,
-                    `<svg width="140" height="70" viewBox="0 0 140 70"><rect x="10" y="20" width="120" height="25" fill="#111827" stroke="#334155"/><text x="70" y="36" fill="#475569" font-size="9" text-anchor="middle">Neutro</text></svg>`,
-                    `<svg width="140" height="70" viewBox="0 0 140 70"><rect x="5" y="15" width="30" height="20" fill="#475569"/><rect x="35" y="15" width="30" height="20" fill="#1e293b"/><rect x="75" y="15" width="30" height="20" fill="#475569"/><rect x="105" y="15" width="30" height="20" fill="#1e293b"/><text x="20" y="29" fill="white" font-size="9" text-anchor="middle">N</text><text x="50" y="29" fill="white" font-size="9" text-anchor="middle">S</text><text x="90" y="29" fill="white" font-size="9" text-anchor="middle">N</text><text x="120" y="29" fill="white" font-size="9" text-anchor="middle">S</text></svg>`,
-                    `<svg width="140" height="70" viewBox="0 0 140 70"><circle cx="70" cy="35" r="15" fill="#0284c7" opacity="0.5"/></svg>`,
-                    `<svg width="140" height="70" viewBox="0 0 140 70"><path d="M10,35 Q70,5 130,35" fill="none" stroke="#ef4444" stroke-dasharray="3"/></svg>`
+                    `<svg width="140" height="70"><rect x="10" y="20" width="60" height="25" fill="#334155"/><rect x="70" y="20" width="60" height="25" fill="#1e293b"/><text x="40" y="37" fill="white" font-weight="bold" text-anchor="middle">N</text><text x="100" y="37" fill="white" font-weight="bold" text-anchor="middle">S</text></svg>`,
+                    `<svg width="140" height="70"><rect x="10" y="20" width="120" height="25" fill="#111827" stroke="#334155"/><text x="70" y="36" fill="#475569" text-anchor="middle">Neutro</text></svg>`,
+                    `<svg width="140" height="70"><rect x="5" y="15" width="30" height="20" fill="#475569"/><rect x="35" y="15" width="30" height="20" fill="#1e293b"/><rect x="75" y="15" width="30" height="20" fill="#475569"/><rect x="105" y="15" width="30" height="20" fill="#1e293b"/><text x="20" y="29" fill="white" font-size="9" text-anchor="middle">N</text><text x="50" y="29" fill="white" font-size="9" text-anchor="middle">S</text></svg>`,
+                    `<svg width="140" height="70"><circle cx="70" cy="35" r="15" fill="#0284c7" opacity="0.5"/></svg>`,
+                    `<svg width="140" height="70"><path d="M10,35 Q70,5 130,35" fill="none" stroke="#ef4444" stroke-dasharray="3"/></svg>`
                 ]
             },
             {
-                category: "Eletromagnetismo: Descoberta de Oersted",
-                q: "Quando uma corrente elétrica contínua passa através de um longo condutor retilíneo de cobre, o que se forma ao redor dele?",
+                category: "Linhas de Campo Magnético",
+                q: "Qual alternativa descreve corretamente a convenção geométrica das linhas de indução fora de um ímã convencional?",
                 options: [
-                    "Um campo eletrostático perfeitamente estático e paralelo à fiação condutora.",
-                    "Um campo magnético ordenado em linhas circulares e concêntricas ao redor do eixo do fio.",
-                    "Uma barreira isolante que impede o magnetismo de cruzar os limites do metal.",
-                    "A dissipação integral da corrente sob formato de ondas gravitacionais de baixa frequência.",
-                    "Um vácuo magnético que repele agulhas de bússolas posicionadas próximas."
+                    "Elas emergem radialmente e em linha reta em direção ao infinito, sem fechar ciclos.",
+                    "Elas nascem externamente no polo Sul e convergem de volta ao polo Norte.",
+                    "Elas saem do polo Norte e entram verticalmente/curvadas no polo Sul.",
+                    "Elas cruzam perpendicularmente o ímã sem nunca contornar as laterais externas.",
+                    "Elas flutuam de maneira desordenada e randômica mudando a cada ciclo térmico."
                 ],
-                correctIndex: 1,
-                explanation: "Hans Christian Oersted comprovou empiricamente que cargas elétricas em movimento (corrente elétrica) geram **campos magnéticos** cujas linhas de força circundam ortogonalmente o condutor.",
+                correctIndex: 2,
+                explanation: "Na região externa do corpo magnético, as linhas de indução partem convencionalmente do polo Norte em direção ao polo Sul.",
                 svgs: [
-                    `<svg width="140" height="70" viewBox="0 0 140 70"><line x1="10" y1="35" x2="130" y2="35" stroke="#475569" stroke-width="4"/></svg>`,
-                    `<svg width="140" height="70" viewBox="0 0 140 70"><line x1="70" y1="5" x2="70" y2="65" stroke="#94a3b8" stroke-width="3"/><ellipse cx="70" cy="35" rx="25" ry="10" fill="none" stroke="#22d3ee" stroke-width="1.5"/></svg>`,
-                    `<svg width="140" height="70" viewBox="0 0 140 70"><rect x="20" y="25" width="100" height="20" fill="none" stroke="#f43f5e"/></svg>`,
-                    `<svg width="140" height="70" viewBox="0 0 140 70"><circle cx="70" cy="35" r="10" fill="#f59e0b"/></svg>`,
-                    `<svg width="140" height="70" viewBox="0 0 140 70"><path d="M 20,50 L 120,20" stroke="#cbd5e1"/></svg>`
+                    `<svg width="140" height="70"><line x1="10" y1="35" x2="130" y2="35" stroke="#475569" stroke-width="2"/></svg>`,
+                    `<svg width="140" height="70"><path d="M130,35 C100,5 40,5 10,35" fill="none" stroke="#ef4444" stroke-width="1.5"/></svg>`,
+                    `<svg width="140" height="70"><rect x="40" y="25" width="60" height="20" fill="#334155"/><path d="M45,35 C30,10 110,10 95,35" fill="none" stroke="#22d3ee" stroke-width="1.5"/><text x="25" y="45" fill="#22d3ee" font-size="14">➔</text></svg>`,
+                    `<svg width="140" height="70"><line x1="70" y1="5" x2="70" y2="65" stroke="#94a3b8" stroke-dasharray="3"/></svg>`,
+                    `<svg width="140" height="70"><circle cx="70" cy="35" r="12" fill="none" stroke="#cbd5e1"/></svg>`
                 ]
             }
         ];
 
         let perguntaAtual;
 
-        function switchTab(tabId) {
-            document.querySelectorAll('.theory-content').forEach(el => el.classList.add('hidden'));
-            document.getElementById('content-' + tabId).classList.remove('hidden');
-            document.querySelectorAll('#theory-room button').forEach(btn => {
-                if(btn.id.startsWith('btn-tab')) {
-                    btn.className = "pb-1 text-slate-500 hover:text-slate-300 font-normal";
-                }
-            });
-            document.getElementById('btn-' + tabId).className = "pb-1 text-cyan-400 border-b border-cyan-500 font-bold";
-            setTimeout(() => { renderMathInElement(document.getElementById('content-' + tabId)); }, 10);
+        // Partículas ambientais de Hallownest
+        let particles = [];
+        for (let i = 0; i < 30; i++) {
+            particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 2 + 0.5, speedY: -(Math.random() * 0.3 + 0.1), speedX: (Math.random() * 0.4 - 0.2), alpha: Math.random() * 0.5 + 0.2 });
         }
 
-        function entrarSalaTeoria() {
+        function iniciarJogo() {
             document.getElementById("start-menu").classList.add("hidden");
-            document.getElementById("theory-room").classList.remove("hidden");
-            setTimeout(() => { renderMathInElement(document.getElementById("theory-room")); }, 10);
-        }
-
-        function voltarParaTeoria() {
-            gameActive = false;
-            document.getElementById("game-hud").classList.add("hidden");
-            document.getElementById("question-panel").classList.add("hidden");
-            document.getElementById("canvas-wrap").classList.add("hidden");
-            document.getElementById("theory-room").classList.remove("hidden");
-        }
-
-        function fecharTeoriaEALuta() {
-            document.getElementById("theory-room").classList.add("hidden");
             document.getElementById("game-hud").classList.remove("hidden");
-            document.getElementById("question-panel").classList.remove("hidden");
+            document.getElementById("display-panel").classList.remove("hidden");
             document.getElementById("canvas-wrap").classList.remove("hidden");
             
-            if(!player) {
-                player = new Knight(canvas.width / 2, canvas.height - 40);
-            }
+            player = new Knight(80, canvas.height - 50);
             atualizarHpHUD();
-            initLevel();
+            currentPhase = "THEORY";
             gameActive = true;
             gameLoop();
+        }
+
+        function transicionarParaArena() {
+            currentPhase = "ARENA";
+            document.getElementById("ambient-title").innerText = "Fase 2: Arena de Enigmas";
+            document.getElementById("ambient-title").className = "text-xs font-bold tracking-widest text-rose-400 uppercase bg-slate-950/60 px-4 py-1.5 border border-slate-800 rounded-sm";
+            
+            document.getElementById("theory-display").classList.add("hidden");
+            document.getElementById("arena-interface").classList.remove("hidden");
+
+            player.x = canvas.width / 2;
+            player.y = canvas.height - 50;
+            initLevel();
+        }
+
+        function initLevel() {
+            perguntaAtual = poolPerguntas[Math.floor(Math.random() * poolPerguntas.length)];
+            document.getElementById("category-badge").innerText = `✦ Enigma: ${perguntaAtual.category} ✦`;
+            document.getElementById("question-text").innerText = perguntaAtual.q;
+            
+            let optionsGuide = "";
+            perguntaAtual.options.forEach((opt, index) => {
+                optionsGuide += `<div><span class="text-cyan-500 font-bold">[Porta ${doorLetters[index]}]</span> ${opt}</div>`;
+            });
+            document.getElementById("options-text-guide").innerHTML = optionsGuide;
+            setTimeout(() => { renderMathInElement(document.getElementById("question-panel")); }, 10);
+
+            doors = [];
+            let w = 140; let h = 42;
+            let spacing = (canvas.width - (w * 5)) / 6;
+            for(let i=0; i<5; i++) {
+                doors.push({ x: spacing + i * (w + spacing), y: 15, width: w, height: h, letter: doorLetters[i], color: doorColors[i] });
+            }
         }
 
         class Knight {
@@ -322,36 +279,20 @@
             }
             draw() {
                 ctx.save();
-                // Sombra projetada no chão do Knight
                 ctx.fillStyle = "rgba(0,0,0,0.4)";
                 ctx.beginPath(); ctx.ellipse(this.x, this.y + 12, 14, 5, 0, 0, Math.PI*2); ctx.fill();
 
-                // Corpo/Manto pálido (Estilo Místico Artístico)
                 ctx.fillStyle = "#e2e8f0"; ctx.strokeStyle = "#1e293b"; ctx.lineWidth = 2.5;
                 ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2); ctx.fill(); ctx.stroke();
                 
-                // Chifres icônicos do Receptáculo
+                // Chifres
                 ctx.fillStyle = "#e2e8f0";
-                ctx.beginPath();
-                ctx.moveTo(this.x - 7, this.y - 10);
-                ctx.quadraticCurveTo(this.x - 10, this.y - 22, this.x - 6, this.y - 24);
-                ctx.quadraticCurveTo(this.x - 3, this.y - 18, this.x - 2, this.y - 10);
-                ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(this.x - 7, this.y - 10); ctx.quadraticCurveTo(this.x - 10, this.y - 22, this.x - 6, this.y - 24); ctx.quadraticCurveTo(this.x - 3, this.y - 18, this.x - 2, this.y - 10); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(this.x + 7, this.y - 10); ctx.quadraticCurveTo(this.x + 10, this.y - 22, this.x + 6, this.y - 24); ctx.quadraticCurveTo(this.x + 3, this.y - 18, this.x + 2, this.y - 10); ctx.fill(); ctx.stroke();
 
-                ctx.beginPath();
-                ctx.moveTo(this.x + 7, this.y - 10);
-                ctx.quadraticCurveTo(this.x + 10, this.y - 22, this.x + 6, this.y - 24);
-                ctx.quadraticCurveTo(this.x + 3, this.y - 18, this.x + 2, this.y - 10);
-                ctx.fill(); ctx.stroke();
-
-                // Olhos Pretos Vazios (Cava profunda de Alma)
                 ctx.fillStyle = "#090d16";
-                ctx.beginPath();
-                ctx.ellipse(this.x - 4, this.y - 1, 2.5, 4.5, 0.1, 0, Math.PI*2);
-                ctx.ellipse(this.x + 4, this.y - 1, 2.5, 4.5, -0.1, 0, Math.PI*2);
-                ctx.fill();
+                ctx.beginPath(); ctx.ellipse(this.x - 4, this.y - 1, 2.5, 4.5, 0.1, 0, Math.PI*2); ctx.ellipse(this.x + 4, this.y - 1, 2.5, 4.5, -0.1, 0, Math.PI*2); ctx.fill();
 
-                // Efeito do Ferrão (Ataque)
                 if (this.attackCooldown > 10) {
                     ctx.strokeStyle = "rgba(226, 232, 240, 0.8)"; ctx.lineWidth = 3;
                     ctx.beginPath(); ctx.arc(this.x, this.y - 20, 22, 0, Math.PI, true); ctx.stroke();
@@ -369,84 +310,53 @@
 
                 if (this.x < this.radius) this.x = this.radius;
                 if (this.x > canvas.width - this.radius) this.x = canvas.width - this.radius;
-                if (this.y < 85) this.y = 85;
+                if (this.y < 50) this.y = 50;
                 if (this.y > canvas.height - this.radius) this.y = canvas.height - this.radius;
 
-                let proximaAMalgumaPorta = false;
-                doors.forEach((d, idx) => {
-                    let centerX = d.x + d.width / 2;
-                    let dist = Math.abs(this.x - centerX);
-                    if (this.y < d.y + d.height + 40 && dist < d.width / 2) {
-                        proximaAMalgumaPorta = true;
-                        document.getElementById("door-inspector").innerHTML = `
-                            <div class="flex flex-col items-center">
-                                <span class="text-slate-400 font-bold mb-1 text-[11px]">Geometria da Porta ${d.letter}:</span>
-                                ${perguntaAtual.svgs[idx]}
-                            </div>
-                        `;
+                if (currentPhase === "THEORY") {
+                    let tocandoAlgumMonolito = false;
+                    tablets.forEach(tab => {
+                        let dx = this.x - tab.x;
+                        let dy = this.y - tab.y;
+                        let distance = Math.sqrt(dx*dx + dy*dy);
+                        if (distance < this.radius + tab.r) {
+                            tocandoAlgumMonolito = true;
+                            document.getElementById("theory-display").innerHTML = tab.text;
+                            setTimeout(() => { renderMathInElement(document.getElementById("theory-display")); }, 5);
+                        }
+                    });
+                    if (!tocandoAlgumMonolito) {
+                        document.getElementById("theory-display").innerHTML = `<p class="text-center text-slate-500 italic text-base hk-font-serif py-4">← Encoste nos monólitos redondos de pedra para ler a teoria com letras aumentadas... Vá para o portal da DIREITA para ir para o teste.</p>`;
                     }
-                });
-                if (!proximaAMalgumaPorta) {
-                    document.getElementById("door-inspector").innerHTML = "Aproxime-se de um portal de pedra para projetar suas linhas de campo...";
+
+                    // Checa colisão com portal de transição para a Arena
+                    if (this.x > transitionPortal.x) {
+                        transicionarParaArena();
+                    }
+                } else {
+                    let proximaAMalgumaPorta = false;
+                    doors.forEach((d, idx) => {
+                        let centerX = d.x + d.width / 2;
+                        let dist = Math.abs(this.x - centerX);
+                        if (this.y < d.y + d.height + 40 && dist < d.width / 2) {
+                            proximaAMalgumaPorta = true;
+                            document.getElementById("door-inspector").innerHTML = `
+                                <div class="flex flex-col items-center">
+                                    <span class="text-slate-400 font-bold mb-1 text-[11px]">Geometria da Porta ${d.letter}:</span>
+                                    ${perguntaAtual.svgs[idx]}
+                                </div>
+                            `;
+                        }
+                    });
+                    if (!proximaAMalgumaPorta) {
+                        document.getElementById("door-inspector").innerHTML = "Aproxime-se de um portal de pedra para projetar suas linhas de campo...";
+                    }
                 }
             }
         }
 
-        function initLevel() {
-            perguntaAtual = poolPerguntas[Math.floor(Math.random() * poolPerguntas.length)];
-            document.getElementById("category-badge").innerText = `✦ Enigma: ${perguntaAtual.category} ✦`;
-            document.getElementById("question-text").innerText = perguntaAtual.q;
-            
-            let optionsGuide = "";
-            perguntaAtual.options.forEach((opt, index) => {
-                optionsGuide += `<div><span class="text-cyan-600 font-bold">[Porta ${doorLetters[index]}]</span> ${opt}</div>`;
-            });
-            document.getElementById("options-text-guide").innerHTML = optionsGuide;
-            setTimeout(() => { renderMathInElement(document.getElementById("question-panel")); }, 10);
-
-            doors = [];
-            let w = 140; let h = 42;
-            let spacing = (canvas.width - (w * 5)) / 6;
-            for(let i=0; i<5; i++) {
-                doors.push({
-                    x: spacing + i * (w + spacing), y: 15, width: w, height: h, letter: doorLetters[i], color: doorColors[i]
-                });
-            }
-        }
-
-        function drawDoors() {
-            doors.forEach(d => {
-                ctx.save();
-                // Preenchimento de pedra escura profunda
-                ctx.fillStyle = "#0c1322"; ctx.strokeStyle = "#2d3d54"; ctx.lineWidth = 2.5;
-                ctx.fillRect(d.x, d.y, d.width, d.height); ctx.strokeRect(d.x, d.y, d.width, d.height);
-                
-                // Detalhe entalhado clássico nas bordas internas das portas góticas
-                ctx.strokeStyle = "rgba(255,255,255,0.06)"; ctx.lineWidth = 1;
-                ctx.strokeRect(d.x + 3, d.y + 3, d.width - 6, d.height - 6);
-
-                // Texto pálido centralizado
-                ctx.fillStyle = "#94a3b8"; ctx.font = "600 12px Cinzel"; ctx.textAlign = "center";
-                ctx.fillText(`PORTAL ${d.letter}`, d.x + d.width/2, d.y + 26);
-                ctx.restore();
-            });
-        }
-
-        function updateAndDrawParticles() {
-            particles.forEach(p => {
-                p.y += p.speedY; p.x += p.speedX;
-                if (p.y < 0) { p.y = canvas.height; p.x = Math.random() * canvas.width; }
-                if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
-
-                ctx.save();
-                ctx.fillStyle = `rgba(147, 197, 253, ${p.alpha})`; // Brilho azul etéreo
-                ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI*2); ctx.fill();
-                ctx.restore();
-            });
-        }
-
         function handlePlayerAttack() {
-            if (player.attackCooldown > 0 || activeDialog || !gameActive) return;
+            if (player.attackCooldown > 0 || activeDialog || !gameActive || currentPhase !== "ARENA") return;
             player.attackCooldown = 20;
 
             doors.forEach((d, idx) => {
@@ -470,16 +380,16 @@
                 document.getElementById("score-val").innerText = score;
                 title.innerText = "✦ SINTONIA CONVERTIDA ✦";
                 title.className = "text-xs font-bold block uppercase tracking-widest mb-1 text-cyan-400";
-                desc.innerHTML = `<p>${perguntaAtual.explanation}</p>`;
+                desc.innerHTML = `<p class='text-base'>${perguntaAtual.explanation}</p>`;
             } else {
                 player.hp--;
                 atualizarHpHUD();
                 title.innerText = "✦ CONEXÃO CORROMPIDA ✦";
                 title.className = "text-xs font-bold block uppercase tracking-widest mb-1 text-red-400";
                 desc.innerHTML = `
-                    <p>O impacto contra o selo da <strong>Porta ${doorLetters[indexEscolhido]}</strong> avariou sua armadura.</p>
-                    <p class="mt-2 font-bold text-slate-300">Resolução do Enigma:</p>
-                    <p>${perguntaAtual.explanation}</p>
+                    <p class='text-base'>A <strong>Porta ${doorLetters[indexEscolhido]}</strong> está incorreta e feriu seu receptáculo.</p>
+                    <p class="mt-3 font-bold text-slate-300 text-sm">Resolução do Enigma:</p>
+                    <p class='text-base'>${perguntaAtual.explanation}</p>
                 `;
                 if (player.hp <= 0) {
                     setTimeout(() => {
@@ -488,7 +398,7 @@
                     }, 1800);
                 }
             }
-            setTimeout(() => { renderMathInElement(desc); }, 10);
+            setTimeout(() => { renderMathInElement(desc); }, 5);
         }
 
         function fecharDialogo() {
@@ -496,7 +406,7 @@
             activeDialog = false;
             if (player.hp > 0) {
                 initLevel();
-                player.x = canvas.width / 2; player.y = canvas.height - 40;
+                player.x = canvas.width / 2; player.y = canvas.height - 50;
             }
         }
 
@@ -504,19 +414,24 @@
             let container = document.getElementById("hp-container");
             container.innerHTML = "";
             for(let i=0; i<3; i++) {
-                if(i < player.hp) {
-                    container.innerHTML += `<span class="mask-hp"></span>`;
-                } else {
-                    container.innerHTML += `<span class="mask-hp broken"></span>`;
-                }
+                if(i < player.hp) container.innerHTML += `<span class="mask-hp"></span>`;
+                else container.innerHTML += `<span class="mask-hp broken"></span>`;
             }
         }
 
         function resetGame() {
             document.getElementById("game-over-screen").classList.add("hidden");
+            document.getElementById("arena-interface").classList.add("hidden");
+            document.getElementById("theory-display").classList.remove("hidden");
+            
             player.hp = 3; score = 0;
             document.getElementById("score-val").innerText = score;
-            entrarSalaTeoria();
+            document.getElementById("ambient-title").innerText = "Fase 1: Ruínas do Conhecimento";
+            document.getElementById("ambient-title").className = "text-xs font-bold tracking-widest text-cyan-400 uppercase bg-slate-950/60 px-4 py-1.5 border border-slate-800 rounded-sm";
+            
+            currentPhase = "THEORY";
+            player.x = 80; player.y = canvas.height - 50;
+            atualizarHpHUD();
         }
 
         window.addEventListener('keydown', e => { 
@@ -524,16 +439,54 @@
             if(e.key === " " || e.key === "Spacebar") handlePlayerAttack();
         });
         window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
-        canvas.addEventListener('mousedown', () => { handlePlayerAttack(); });
 
         function gameLoop() {
             if (!gameActive) return;
-            // Limpa o Canvas simulando profundidade
             ctx.fillStyle = "#050912";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            updateAndDrawParticles();
-            drawDoors();
+            // Desenha partículas decorativas de fundo
+            particles.forEach(p => {
+                p.y += p.speedY; p.x += p.speedX;
+                if (p.y < 0) { p.y = canvas.height; p.x = Math.random() * canvas.width; }
+                ctx.fillStyle = `rgba(147, 197, 253, ${p.alpha})`;
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI*2); ctx.fill();
+            });
+
+            if (currentPhase === "THEORY") {
+                // Desenha os Monólitos de pedra texturizados na fase de estudo
+                tablets.forEach(tab => {
+                    ctx.save();
+                    ctx.fillStyle = "#0c1322"; ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 2;
+                    ctx.beginPath(); ctx.arc(tab.x, tab.y, tab.r, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                    ctx.fillStyle = "rgba(56, 189, 248, 0.1)"; ctx.fill();
+                    
+                    ctx.fillStyle = "#94a3b8"; ctx.font = "bold 11px Cinzel"; ctx.textAlign = "center";
+                    ctx.fillText("MOLDURA", tab.x, tab.y - 5);
+                    ctx.fillText(tab.title.split('.')[0], tab.x, tab.y + 10);
+                    ctx.restore();
+                });
+
+                // Desenha o Portal de Saída (Direita)
+                ctx.save();
+                ctx.fillStyle = "rgba(6, 182, 212, 0.15)"; ctx.strokeStyle = "#22d3ee"; ctx.lineWidth = 3;
+                ctx.fillRect(transitionPortal.x, transitionPortal.y, transitionPortal.width, transitionPortal.height);
+                ctx.strokeRect(transitionPortal.x, transitionPortal.y, transitionPortal.width, transitionPortal.height);
+                ctx.fillStyle = "#22d3ee"; ctx.font = "bold 10px Cinzel"; ctx.textAlign = "center";
+                ctx.fillText("DESAFIO", transitionPortal.x + 20, transitionPortal.y + 60);
+                ctx.restore();
+            } else {
+                // Desenha os Portais de Questões na Arena
+                doors.forEach(d => {
+                    ctx.save();
+                    ctx.fillStyle = "#0c1322"; ctx.strokeStyle = "#2d3d54"; ctx.lineWidth = 2.5;
+                    ctx.fillRect(d.x, d.y, d.width, d.height); ctx.strokeRect(d.x, d.y, d.width, d.height);
+                    ctx.fillStyle = "#94a3b8"; ctx.font = "600 12px Cinzel"; ctx.textAlign = "center";
+                    ctx.fillText(`PORTAL ${d.letter}`, d.x + d.width/2, d.y + 26);
+                    ctx.restore();
+                });
+            }
+
             player.update();
             player.draw();
             requestAnimationFrame(gameLoop);
