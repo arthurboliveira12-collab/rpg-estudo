@@ -72,11 +72,11 @@
             <h2 class="text-md text-cyan-400 font-light mb-8 tracking-widest uppercase">O Santuário dos Polos</h2>
             
             <p class="hk-font-serif text-base text-slate-400 italic mb-8 max-w-md">
-                "Não leia apenas. Experimente. Golpeie os ímãs ancestrais com seu Ferrão para manipular as forças invisíveis antes de desafiar as portas."
+                "O conhecimento não reside no repouso, mas no movimento do Ferrão. Estude as quatro anomalias magnéticas do laboratório antes de selar o seu destino nos portais."
             </p>
 
             <button onclick="iniciarJogo()" class="px-8 py-3 bg-slate-900 border border-slate-700 hover:border-cyan-500 text-slate-200 text-sm tracking-widest transition-all transform hover:scale-105">
-                ENTRAR NO LABORATÓRIO
+                ENTRAR NO LABORATÓRIO EXPLORATÓRIO
             </button>
         </div>
     </div>
@@ -100,7 +100,7 @@
     <div id="display-panel" class="w-full max-w-5xl hk-border p-5 mb-3 hidden font-sans min-h-[180px] flex flex-col justify-center">
         <div id="theory-display" class="w-full text-center">
             <p class="text-slate-200 text-lg font-medium hk-font-serif">
-                ⚔️ <span class="text-cyan-400 font-bold">Laboratório Prático:</span> Aproxime-se dos blocos no chão e aperte <span class="bg-slate-800 px-2 py-0.5 rounded text-sm text-cyan-300">ESPAÇO</span> para golpeá-los e ver a física acontecer! Entre no portal azul à direita quando terminar.
+                ⚔️ <span class="text-cyan-400 font-bold">Laboratório Expandido:</span> Caminhe até os quatro experimentos e use o <span class="bg-slate-800 px-2 py-0.5 rounded text-sm text-cyan-300">ESPAÇO</span> para golpeá-los e ler o comportamento físico. Cruze a barreira à direita quando estiver pronto!
             </p>
         </div>
         
@@ -159,10 +159,12 @@
         let player;
         let activeDialog = false;
 
-        // Elementos interativos do laboratório
+        // 4 OBJETOS DO LABORATÓRIO AMPLIADO
         const labObjects = [
-            { x: 220, y: 140, w: 120, h: 40, type: "BREAKABLE_MAGNET", broken: false, label: "Ímã Inteiro (Golpeie!)" },
-            { x: 580, y: 140, w: 120, h: 40, type: "POLARITY_SWITCH", mode: "REPELLING", label: "Polos Iguais (Golpeie!)" }
+            { x: 80, y: 150, w: 110, h: 40, type: "BREAKABLE_MAGNET", broken: false, label: "1. Ímã Quebrável" },
+            { x: 290, y: 150, w: 110, h: 40, type: "POLARITY_SWITCH", mode: "REPELLING", label: "2. Polos Ajustáveis" },
+            { x: 500, y: 150, w: 110, h: 40, type: "ELECTROMAGNET", active: false, label: "3. Bobina Elétrica" },
+            { x: 710, y: 150, w: 110, h: 40, type: "COMPASS", angle: 0, label: "4. Bússola Vetorial" }
         ];
 
         const transitionPortal = { x: 940, y: 110, width: 40, height: 120 };
@@ -171,7 +173,6 @@
         const doorColors = ["#cbd5e1", "#577399", "#495867", "#fe5f55", "#bdd6d2"];
         let doors = [];
 
-        // Pool com dados estendidos de estilo visual de fundo
         const poolPerguntas = [
             {
                 category: "Cidade das Lágrimas",
@@ -247,9 +248,8 @@
         let perguntaAtual;
         let ultimaPerguntaIndex = -1;
         let activeTheme = "LAB";
-
-        // Sistema de partículas
         let particles = [];
+
         function gerarParticulas(tipo) {
             particles = [];
             let count = tipo === "RAIN" ? 55 : 25;
@@ -272,7 +272,7 @@
             document.getElementById("display-panel").classList.remove("hidden");
             document.getElementById("canvas-wrap").classList.remove("hidden");
             
-            player = new Knight(80, canvas.height - 50);
+            player = new Knight(40, canvas.height - 50);
             atualizarHpHUD();
             currentPhase = "THEORY";
             activeTheme = "LAB";
@@ -324,89 +324,57 @@
             }
         }
 
-        // DESENHO ARQUITETÔNICO DOS BIOMAS NO CANVAS
         function desenharCenarioFundo() {
             ctx.save();
             if (activeTheme === "LAB") {
-                // Fundo estilo laboratório gótico técnico
-                ctx.strokeStyle = "rgba(51, 77, 110, 0.15)"; ctx.lineWidth = 1;
+                ctx.strokeStyle = "rgba(51, 77, 110, 0.12)"; ctx.lineWidth = 1;
                 for (let i = 0; i < canvas.width; i += 40) {
                     ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
                 }
-                // Pilares decorativos laterais
                 ctx.fillStyle = "#0c1322";
-                ctx.fillRect(0, 0, 30, canvas.height); ctx.fillRect(canvas.width - 30, 0, 30, canvas.height);
+                ctx.fillRect(0, 0, 20, canvas.height); ctx.fillRect(canvas.width - 20, 0, 20, canvas.height);
             } 
             else if (activeTheme === "CITY") {
-                // Cidade das Lágrimas: Torres e Janelas ao fundo
                 ctx.fillStyle = "rgba(12, 23, 42, 0.4)";
                 ctx.fillRect(100, 80, 80, 260); ctx.fillRect(250, 40, 110, 300);
                 ctx.fillRect(650, 60, 90, 280); ctx.fillRect(800, 100, 120, 240);
-                
-                // Arcos góticos/Janelas iluminadas fracamente
                 ctx.fillStyle = "rgba(56, 189, 248, 0.06)";
                 ctx.beginPath(); ctx.arc(305, 100, 20, Math.PI, 0); ctx.fillRect(285, 100, 40, 55); ctx.fill();
-                ctx.beginPath(); ctx.arc(695, 120, 15, Math.PI, 0); ctx.fillRect(680, 120, 30, 45); ctx.fill();
             } 
             else if (activeTheme === "DEEPNEST") {
-                // Deepnest: Pilares orgânicos e Teias estruturadas
                 ctx.fillStyle = "rgba(10, 12, 16, 0.8)";
-                ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(140, 0); ctx.lineTo(80, 120); ctx.lineTo(0, 80); ctx.fill();
-                ctx.beginPath(); ctx.moveTo(400,0); ctx.lineTo(480, 0); ctx.lineTo(440, 160); ctx.fill();
-                
-                // Teias de aranha vetoriais
+                ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(140, 0); ctx.lineTo(80, 120); fill();
                 ctx.strokeStyle = "rgba(148, 163, 184, 0.15)"; ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.moveTo(0,0); ctx.lineTo(200, 100); ctx.moveTo(0,0); ctx.lineTo(100, 200);
-                ctx.moveTo(50, 25); ctx.quadraticCurveTo(45, 45, 25, 50);
-                ctx.moveTo(100, 50); ctx.quadraticCurveTo(90, 90, 50, 100);
-                ctx.stroke();
-
-                // Olhos vermelhos brilhantes piscando no fundo obscuro
+                ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(200, 100); ctx.stroke();
                 if (Math.random() > 0.05) {
                     ctx.fillStyle = "#ef4444";
                     ctx.beginPath(); ctx.arc(120, 250, 2, 0, Math.PI * 2); ctx.arc(128, 250, 2, 0, Math.PI * 2); ctx.fill();
-                    ctx.beginPath(); ctx.arc(750, 280, 2.5, 0, Math.PI * 2); ctx.arc(759, 280, 2.5, 0, Math.PI * 2); ctx.fill();
                 }
             } 
             else if (activeTheme === "CRYSTAL") {
-                // Picos de Cristal: Estalactites e cristais pontiagudos brilhantes
                 ctx.fillStyle = "rgba(40, 15, 50, 0.6)";
-                // Cristais superiores
                 ctx.beginPath(); ctx.moveTo(200, 0); ctx.lineTo(230, 70); ctx.lineTo(260, 0); ctx.fill();
-                ctx.beginPath(); ctx.moveTo(700, 0); ctx.lineTo(740, 90); ctx.lineTo(780, 0); ctx.fill();
-                // Cristais inferiores
                 ctx.beginPath(); ctx.moveTo(110, 340); ctx.lineTo(135, 260); ctx.lineTo(160, 340); ctx.fill();
-                ctx.beginPath(); ctx.moveTo(820, 340); ctx.lineTo(850, 250); ctx.lineTo(880, 340); ctx.fill();
-
-                // Brilho interno dos cristais principais
-                let grad = ctx.createLinearGradient(110, 340, 135, 260);
-                grad.addColorStop(0, "transparent"); grad.addColorStop(1, "rgba(236, 72, 153, 0.4)");
-                ctx.fillStyle = grad; ctx.beginPath(); ctx.moveTo(110, 340); ctx.lineTo(135, 260); ctx.lineTo(160, 340); ctx.fill();
             }
             ctx.restore();
         }
 
         class Knight {
             constructor(x, y) {
-                this.x = x; this.y = y; this.radius = 12; this.speed = 4.5;
+                this.x = x; this.y = y; this.radius = 12; this.speed = 4.8;
                 this.hp = 3; this.attackCooldown = 0;
             }
             draw() {
                 ctx.save();
                 ctx.fillStyle = "rgba(0,0,0,0.5)";
                 ctx.beginPath(); ctx.ellipse(this.x, this.y + 12, 14, 5, 0, 0, Math.PI*2); ctx.fill();
-
                 ctx.fillStyle = "#e2e8f0"; ctx.strokeStyle = "#1e293b"; ctx.lineWidth = 2.5;
                 ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2); ctx.fill(); ctx.stroke();
-                
                 ctx.fillStyle = "#e2e8f0";
                 ctx.beginPath(); ctx.moveTo(this.x - 7, this.y - 10); ctx.quadraticCurveTo(this.x - 10, this.y - 22, this.x - 6, this.y - 24); ctx.quadraticCurveTo(this.x - 3, this.y - 18, this.x - 2, this.y - 10); ctx.fill(); ctx.stroke();
                 ctx.beginPath(); ctx.moveTo(this.x + 7, this.y - 10); ctx.quadraticCurveTo(this.x + 10, this.y - 22, this.x + 6, this.y - 24); ctx.quadraticCurveTo(this.x + 3, this.y - 18, this.x + 2, this.y - 10); ctx.fill(); ctx.stroke();
-
                 ctx.fillStyle = "#090d16";
                 ctx.beginPath(); ctx.ellipse(this.x - 4, this.y - 1, 2.5, 4.5, 0.1, 0, Math.PI*2); ctx.ellipse(this.x + 4, this.y - 1, 2.5, 4.5, -0.1, 0, Math.PI*2); ctx.fill();
-
                 if (this.attackCooldown > 10) {
                     ctx.strokeStyle = "rgba(226, 232, 240, 0.9)"; ctx.lineWidth = 3;
                     ctx.beginPath(); ctx.arc(this.x, this.y - 18, 24, 0, Math.PI, true); ctx.stroke();
@@ -433,22 +401,34 @@
                         let centerObjX = obj.x + obj.w/2;
                         let centerObjY = obj.y + obj.h/2;
                         let dist = Math.sqrt((this.x - centerObjX)**2 + (this.y - centerObjY)**2);
-                        if (dist < 70) {
+                        if (dist < 75) {
                             pertoDeAlgo = true;
                             if (obj.type === "BREAKABLE_MAGNET") {
                                 document.getElementById("theory-display").innerHTML = obj.broken ? 
-                                    `<span class='text-amber-400 font-bold'>Fenômeno Notado:</span> Inseparabilidade! Ao quebrar, o bloco gerou instantaneamente dois novos polos internos. Não existem monopolos isolados.` :
-                                    `<span class='text-cyan-400 font-bold'>Experimento I:</span> Golpeie o Ímã Inteiro para dividi-lo e observar a formação espontânea de novos polos magnéticos.`;
+                                    `<span class='text-amber-400 font-bold'>Anomalia 1 (Inseparabilidade):</span> Ao partir a barra, novos polos surgem autonomamente nas pontas fraturadas. Não existem monopolos isolados na natureza.` :
+                                    `<span class='text-cyan-400 font-bold'>Estação 1: Ímã Maciço.</span> Golpeie o bloco com seu Ferrão para testar o princípio da indivisibilidade magnética.`;
                             } else if (obj.type === "POLARITY_SWITCH") {
                                 document.getElementById("theory-display").innerHTML = obj.mode === "REPELLING" ?
-                                    `<span class='text-rose-400 font-bold'>Fenômeno Notado:</span> Repulsão! Polos idênticos ($N \\leftrightarrow N$) geram forças que afastam as linhas geométricas.` :
-                                    `<span class='text-emerald-400 font-bold'>Fenômeno Notado:</span> Atração! Polos invertidos ($N \\rightarrow S$) criam linhas de ligação contínuas.`;
+                                    `<span class='text-rose-400 font-bold'>Anomalia 2 (Interação Vetorial):</span> Polos homônimos ($N \\leftrightarrow N$) repelem-se mutuamente. O campo se deforma para evitar o contato.` :
+                                    `<span class='text-emerald-400 font-bold'>Anomalia 2 (Interação Vetorial):</span> Polos opostos ($N \\rightarrow S$) atraem-se, criando linhas contínuas de fluxo de força.`;
+                            } else if (obj.type === "ELECTROMAGNET") {
+                                document.getElementById("theory-display").innerHTML = obj.active ?
+                                    `<span class='text-orange-400 font-bold'>Anomalia 3 (Oersted):</span> Corrente elétrica ligada! Cargas elétricas em movimento através do condutor geram um campo magnético $\\vec{B}$ concêntrico.` :
+                                    `<span class='text-slate-400 font-bold'>Estação 3: Bobina Desativada.</span> Golpeie o circuito para injetar eletricidade e verificar a relação indutiva direta entre carga e magnetismo.`;
+                            } else if (obj.type === "COMPASS") {
+                                document.getElementById("theory-display").innerHTML = `<span class='text-purple-400 font-bold'>Anomalia 4 (Linhas de Campo):</span> O ponteiro da bússola alinha-se tangente às linhas invisíveis de força magnética do ambiente, saindo do norte geométrico.`;
                             }
                         }
                     });
                     if (!pertoDeAlgo) {
-                        document.getElementById("theory-display").innerHTML = `<p class="text-slate-200 text-lg font-medium hk-font-serif">⚔️ <span class="text-cyan-400 font-bold">Laboratório Ativo:</span> Golpeie os blocos centrais com seu Ferrão (<span class="bg-slate-800 px-2 py-0.5 rounded text-sm text-cyan-300">ESPAÇO</span>) para manipular o magnetismo antes de avançar para o portal da direita!</p>`;
+                        document.getElementById("theory-display").innerHTML = `<p class="text-slate-200 text-lg font-medium hk-font-serif">⚔️ <span class="text-cyan-400 font-bold">Laboratório de Testes Ativo:</span> Golpeie as estações centrais com seu Ferrão (<span class="bg-slate-800 px-2 py-0.5 rounded text-sm text-cyan-300">ESPAÇO</span>) para manipular variáveis eletromagnéticas.</p>`;
                     }
+
+                    // Atualiza o ângulo da bússola dinamicamente baseado na distância do jogador
+                    let bússola = labObjects[3];
+                    let dx = this.x - (bússola.x + bússola.w/2);
+                    let dy = this.y - (bússola.y + bússola.h/2);
+                    bússola.angle = Math.atan2(dy, dx);
 
                     if (this.x > transitionPortal.x) {
                         transicionarParaArena();
@@ -487,6 +467,7 @@
                     if (dist < 65) {
                         if (obj.type === "BREAKABLE_MAGNET") obj.broken = !obj.broken;
                         if (obj.type === "POLARITY_SWITCH") obj.mode = obj.mode === "REPELLING" ? "ATTRACTING" : "REPELLING";
+                        if (obj.type === "ELECTROMAGNET") obj.active = !obj.active;
                     }
                 });
             } else {
@@ -519,7 +500,7 @@
                 title.innerText = "✦ CONEXÃO CORROMPIDA ✦";
                 title.className = "text-xs font-bold block uppercase tracking-widest mb-1 text-red-400";
                 desc.innerHTML = `
-                    <p class='text-base'>O impacto contra o selo da <strong>Porta ${doorLetters[indexEscolhido]}</strong> quebrou sua sintonia.</p>
+                    <p class='text-base'>O impacto quebrou sua sintonia com a estrutura.</p>
                     <p class="mt-3 font-bold text-slate-300 text-sm">Resolução Científica:</p>
                     <p class='text-base'>${perguntaAtual.explanation}</p>
                 `;
@@ -561,13 +542,12 @@
             ultimaPerguntaIndex = -1;
             document.getElementById("score-val").innerText = score;
             document.getElementById("ambient-title").innerText = "Fase 1: Laboratório de Magnetismo Ativo";
-            document.getElementById("ambient-title").className = "text-xs font-bold tracking-widest text-cyan-400 uppercase bg-slate-950/60 px-4 py-1.5 border border-slate-800 rounded-sm";
             document.body.style.backgroundImage = "radial-gradient(circle at center, #091122 0%, #02040a 100%)";
             
             currentPhase = "THEORY";
             activeTheme = "LAB";
             gerarParticulas("LAB");
-            player.x = 80; player.y = canvas.height - 50;
+            player.x = 40; player.y = canvas.height - 50;
             atualizarHpHUD();
         }
 
@@ -582,10 +562,8 @@
             ctx.fillStyle = "#04060d";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // Desenha a arquitetura temática de fundo antes das partículas e do jogador
             desenharCenarioFundo();
 
-            // Desenha partículas ambientais móveis
             particles.forEach(p => {
                 p.y += p.speedY; p.x += p.speedX;
                 if (p.y < 0 || p.y > canvas.height) { p.y = p.speedY > 0 ? 0 : canvas.height; p.x = Math.random() * canvas.width; }
@@ -596,64 +574,74 @@
             });
 
             if (currentPhase === "THEORY") {
-                // RENDERIZAÇÃO DOS ÍMÃS PRÁTICOS NO MUNDO DE TEORIA
+                // RENDERIZAR AS 4 ESTAÇÕES DO LABORATÓRIO
                 labObjects.forEach(obj => {
                     ctx.save();
+                    
                     if (obj.type === "BREAKABLE_MAGNET") {
                         if (!obj.broken) {
-                            ctx.fillStyle = "#334155"; ctx.fillRect(obj.x, obj.y, obj.w/2, obj.h);
-                            ctx.fillStyle = "#1e293b"; ctx.fillRect(obj.x + obj.w/2, obj.y, obj.w/2, obj.h);
-                            ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 2; ctx.strokeRect(obj.x, obj.y, obj.w, obj.h);
-                            ctx.fillStyle = "#fff"; ctx.font = "bold 12px sans-serif"; ctx.textAlign = "center";
-                            ctx.fillText("N", obj.x + obj.w/4, obj.y + obj.h/2 + 5);
-                            ctx.fillText("S", obj.x + 3 * obj.w/4, obj.y + obj.h/2 + 5);
-                        } else {
-                            ctx.fillStyle = "#334155"; ctx.fillRect(obj.x - 15, obj.y, obj.w/4, obj.h);
-                            ctx.fillStyle = "#1e293b"; ctx.fillRect(obj.x - 15 + obj.w/4, obj.y, obj.w/4, obj.h);
-                            ctx.fillStyle = "#334155"; ctx.fillRect(obj.x + obj.w/2 + 15, obj.y, obj.w/4, obj.h);
-                            ctx.fillStyle = "#1e293b"; ctx.fillRect(obj.x + obj.w/2 + 15 + obj.w/4, obj.y, obj.w/4, obj.h);
-                            ctx.strokeStyle = "#fbbf24"; ctx.lineWidth = 1.5;
-                            ctx.strokeRect(obj.x - 15, obj.y, obj.w/2, obj.h);
-                            ctx.strokeRect(obj.x + obj.w/2 + 15, obj.y, obj.w/2, obj.h);
-                            ctx.fillStyle = "#fff"; ctx.font = "9px sans-serif"; ctx.textAlign = "center";
-                            ctx.fillText("N", obj.x - 5, obj.y + obj.h/2 + 4); ctx.fillText("S", obj.x + 10, obj.y + obj.h/2 + 4);
-                            ctx.fillText("N", obj.x + obj.w/2 + 25, obj.y + obj.h/2 + 4); ctx.fillText("S", obj.x + obj.w/2 + 40, obj.y + obj.h/2 + 4);
-                        }
-                    } else if (obj.type === "POLARITY_SWITCH") {
-                        if (obj.mode === "REPELLING") {
-                            ctx.fillStyle = "#334155"; ctx.fillRect(obj.x, obj.y, obj.w/3, obj.h);
-                            ctx.fillStyle = "#334155"; ctx.fillRect(obj.x + 2*obj.w/3, obj.y, obj.w/3, obj.h);
-                            ctx.strokeStyle = "#f43f5e"; ctx.lineWidth = 2;
-                            ctx.strokeRect(obj.x, obj.y, obj.w/3, obj.h); ctx.strokeRect(obj.x + 2*obj.w/3, obj.y, obj.w/3, obj.h);
+                            ctx.fillStyle = "#1e293b"; ctx.fillRect(obj.x, obj.y, obj.w/2, obj.h);
+                            ctx.fillStyle = "#334155"; ctx.fillRect(obj.x + obj.w/2, obj.y, obj.w/2, obj.h);
+                            ctx.strokeStyle = "#0ea5e9"; ctx.lineWidth = 2; ctx.strokeRect(obj.x, obj.y, obj.w, obj.h);
                             ctx.fillStyle = "#fff"; ctx.font = "bold 11px sans-serif"; ctx.textAlign = "center";
-                            ctx.fillText("N", obj.x + obj.w/6, obj.y + obj.h/2 + 4); ctx.fillText("N", obj.x + 5*obj.w/6, obj.y + obj.h/2 + 4);
+                            ctx.fillText("N", obj.x + obj.w/4, obj.y + obj.h/2 + 4); ctx.fillText("S", obj.x + 3*obj.w/4, obj.y + obj.h/2 + 4);
                         } else {
-                            ctx.fillStyle = "#334155"; ctx.fillRect(obj.x, obj.y, obj.w/3, obj.h);
-                            ctx.fillStyle = "#1e293b"; ctx.fillRect(obj.x + 2*obj.w/3, obj.y, obj.w/3, obj.h);
-                            ctx.strokeStyle = "#10b981"; ctx.lineWidth = 2;
-                            ctx.strokeRect(obj.x, obj.y, obj.w/3, obj.h); ctx.strokeRect(obj.x + 2*obj.w/3, obj.y, obj.w/3, obj.h);
-                            ctx.fillStyle = "#fff"; ctx.font = "bold 11px sans-serif"; ctx.textAlign = "center";
-                            ctx.fillText("N", obj.x + obj.w/6, obj.y + obj.h/2 + 4); ctx.fillText("S", obj.x + 5*obj.w/6, obj.y + obj.h/2 + 4);
+                            ctx.fillStyle = "#1e293b"; ctx.fillRect(obj.x, obj.y, obj.w/4 - 2, obj.h);
+                            ctx.fillStyle = "#334155"; ctx.fillRect(obj.x + obj.w/4, obj.y, obj.w/4 - 2, obj.h);
+                            ctx.fillStyle = "#1e293b"; ctx.fillRect(obj.x + obj.w/2 + 2, obj.y, obj.w/4 - 2, obj.h);
+                            ctx.fillStyle = "#334155"; ctx.fillRect(obj.x + 3*obj.w/4 + 2, obj.y, obj.w/4 - 2, obj.h);
+                            ctx.strokeStyle = "#f59e0b"; ctx.lineWidth = 1.5;
+                            ctx.strokeRect(obj.x, obj.y, obj.w/2 - 2, obj.h); ctx.strokeRect(obj.x + obj.w/2 + 2, obj.y, obj.w/2 - 2, obj.h);
                         }
+                    } 
+                    else if (obj.type === "POLARITY_SWITCH") {
+                        ctx.fillStyle = "#1e293b"; ctx.fillRect(obj.x, obj.y, obj.w/3, obj.h);
+                        ctx.fillStyle = (obj.mode === "REPELLING") ? "#1e293b" : "#334155"; 
+                        ctx.fillRect(obj.x + 2*obj.w/3, obj.y, obj.w/3, obj.h);
+                        ctx.strokeStyle = (obj.mode === "REPELLING") ? "#f43f5e" : "#10b981"; ctx.lineWidth = 2;
+                        ctx.strokeRect(obj.x, obj.y, obj.w/3, obj.h); ctx.strokeRect(obj.x + 2*obj.w/3, obj.y, obj.w/3, obj.h);
+                        ctx.fillStyle = "#fff"; ctx.font = "bold 11px sans-serif"; ctx.textAlign = "center";
+                        ctx.fillText("N", obj.x + obj.w/6, obj.y + obj.h/2 + 4);
+                        ctx.fillText((obj.mode === "REPELLING") ? "N" : "S", obj.x + 5*obj.w/6, obj.y + obj.h/2 + 4);
+                    } 
+                    else if (obj.type === "ELECTROMAGNET") {
+                        // Desenho do núcleo de ferro enrolado por bobina
+                        ctx.fillStyle = "#475569"; ctx.fillRect(obj.x + 10, obj.y + 12, obj.w - 20, 16);
+                        ctx.strokeStyle = obj.active ? "#fb923c" : "#1e293b"; ctx.lineWidth = 3;
+                        for(let idx = 20; idx < obj.w - 20; idx += 14) {
+                            ctx.beginPath(); ctx.moveTo(obj.x + idx, obj.y + 5); ctx.lineTo(obj.x + idx + 6, obj.y + 35); ctx.stroke();
+                        }
+                        ctx.fillStyle = obj.active ? "#f97316" : "#64748b"; ctx.font = "bold 8px sans-serif";
+                        ctx.fillText(obj.active ? "LIGADO [B]" : "DESLIGADO", obj.x + obj.w/2, obj.y + obj.h + 12);
+                    } 
+                    else if (obj.type === "COMPASS") {
+                        // Desenho de uma bússola circular responsiva
+                        let cx = obj.x + obj.w/2; let cy = obj.y + obj.h/2;
+                        ctx.strokeStyle = "#a855f7"; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, 18, 0, Math.PI*2); ctx.stroke();
+                        ctx.save();
+                        ctx.translate(cx, cy); ctx.rotate(obj.angle);
+                        ctx.fillStyle = "#ef4444"; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(12, -3); ctx.lineTo(12, 3); ctx.fill(); // Ponteiro N
+                        ctx.fillStyle = "#64748b"; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(-12, -3); ctx.lineTo(-12, 3); ctx.fill(); // Ponteiro S
+                        ctx.restore();
                     }
-                    ctx.fillStyle = "#64748b"; ctx.font = "10px Cinzel"; ctx.textAlign = "center";
-                    ctx.fillText(obj.label, obj.x + obj.w/2, obj.y - 10);
+
+                    ctx.fillStyle = "#64748b"; ctx.font = "9px Cinzel"; ctx.textAlign = "center";
+                    ctx.fillText(obj.label, obj.x + obj.w/2, obj.y - 12);
                     ctx.restore();
                 });
 
-                // Portal para a Arena
+                // Portal de saída da teoria
                 ctx.save();
                 ctx.fillStyle = "rgba(6, 182, 212, 0.15)"; ctx.strokeStyle = "#22d3ee"; ctx.lineWidth = 3;
                 ctx.fillRect(transitionPortal.x, transitionPortal.y, transitionPortal.width, transitionPortal.height);
                 ctx.strokeRect(transitionPortal.x, transitionPortal.y, transitionPortal.width, transitionPortal.height);
-                ctx.fillStyle = "#22d3ee"; ctx.font = "bold 10px Cinzel"; ctx.textAlign = "center";
-                ctx.fillText("PROVA", transitionPortal.x + 20, transitionPortal.y + 60);
+                ctx.fillStyle = "#22d3ee"; ctx.font = "bold 9px Cinzel"; ctx.textAlign = "center";
+                ctx.fillText("ARENA", transitionPortal.x + 20, transitionPortal.y + 65);
                 ctx.restore();
             } else {
-                // Portais de resposta na Arena
                 doors.forEach(d => {
                     ctx.save();
-                    ctx.fillStyle = "rgba(12, 19, 34, 0.85)"; ctx.strokeStyle = "#334d6e"; ctx.lineWidth = 2.5;
+                    ctx.fillStyle = "rgba(12, 19, 34, 0.88)"; ctx.strokeStyle = "#334d6e"; ctx.lineWidth = 2.5;
                     ctx.fillRect(d.x, d.y, d.width, d.height); ctx.strokeRect(d.x, d.y, d.width, d.height);
                     ctx.fillStyle = "#e2e8f0"; ctx.font = "600 12px Cinzel"; ctx.textAlign = "center";
                     ctx.fillText(`PORTAL ${d.letter}`, d.x + d.width/2, d.y + 26);
