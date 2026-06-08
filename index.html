@@ -87,4 +87,406 @@
         <div class="md:col-span-7 border-r border-slate-800/80 pr-3 flex flex-col justify-between">
             <div>
                 <div id="category-badge" class="text-xs font-bold text-cyan-400 mb-1.5 uppercase tracking-widest flex items-center gap-1.5"></div>
-                <p id="question-text" class="text-sm md:text-base text-slate-200 font-medium
+                <p id="question-text" class="text-sm md:text-base text-slate-200 font-medium leading-relaxed"></p>
+            </div>
+            <div id="options-text-guide" class="text-[11px] text-slate-400 mt-2 grid grid-cols-1 gap-1"></div>
+        </div>
+        <div class="md:col-span-5 flex flex-col justify-center items-center bg-slate-950/80 p-4 rounded border border-slate-800/60 min-h-[140px]">
+            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 w-full text-left">Diagrama de Inspeção:</div>
+            <div id="door-inspector" class="text-xs text-slate-400 italic text-center w-full flex items-center justify-center">
+                Aproxime-se de uma porta (A, B, C, D ou E) para projetar e analisar o seu comportamento físico...
+            </div>
+        </div>
+    </div>
+
+    <div id="elderbug-dialog" class="absolute inset-x-4 top-28 max-w-2xl mx-auto bg-slate-950 border-2 border-cyan-800 p-6 rounded-lg z-40 hidden font-sans shadow-2xl">
+        <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-full bg-slate-900 border-2 border-cyan-500 flex items-center justify-center text-2xl flex-shrink-0 shadow-lg">👴</div>
+            <div class="flex-1">
+                <span id="feedback-title" class="text-xs font-bold block uppercase tracking-widest mb-1"></span>
+                <div id="npc-feedback" class="text-xs md:text-sm text-slate-200 leading-relaxed space-y-2"></div>
+                <button onclick="fecharDialogo()" class="mt-4 px-5 py-2 bg-cyan-950 border border-cyan-600 text-xs text-cyan-200 rounded font-bold tracking-wider hover:bg-cyan-900 transition-all">
+                    Compreendi e Quero Prosseguir
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="grimorio-modal" class="absolute inset-4 md:inset-x-20 md:inset-y-12 bg-slate-950/98 border-2 border-slate-800 rounded-xl p-6 z-50 flex flex-col justify-between hidden font-sans shadow-2xl">
+        <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
+            <h3 class="text-lg font-bold text-cyan-400 uppercase tracking-widest flex items-center gap-2">
+                <i class="fa-solid fa-book-open"></i> Grimório de Apoio: Eletromagnetismo
+            </h3>
+            <button onclick="fecharGrimorio()" class="text-slate-400 hover:text-white text-xl">&times;</button>
+        </div>
+        
+        <div class="flex-1 overflow-y-auto space-y-6 pr-2 text-sm text-slate-300 leading-relaxed">
+            <section class="border-b border-slate-900 pb-4">
+                <h4 class="text-cyan-300 font-bold text-base mb-1">1. Ímãs e Inseparabilidade</h4>
+                <p class="mb-2">Todo ímã possui obrigatoriamente um polo <strong>Norte (N)</strong> e um polo <strong>Sul (S)</strong>. Vetorialmente, as linhas de indução magnética ($\vec{B}$) emergem do polo Norte e convergem para o polo Sul externamente.</p>
+                <p class="text-xs bg-slate-900 p-2 rounded border border-slate-800"><strong class="text-cyan-500">Impossibilidade do monopolo:</strong> Cortar um ímã gera novos dipolos completos. Nunca se isola um polo único.</p>
+            </section>
+
+            <section class="border-b border-slate-900 pb-4">
+                <h4 class="text-cyan-300 font-bold text-base mb-1">2. Experiência de Oersted</h4>
+                <p class="mb-2">Cargas elétricas em movimento (corrente $I$) geram campo magnético circunvizinho. Para um fio retilíneo:</p>
+                <div class="bg-slate-900/60 p-2 rounded text-center my-2 font-mono text-cyan-400">$$B = \frac{\mu_0 \cdot I}{2\pi \cdot r}$$</div>
+                <p class="text-xs">A <strong>Regra da Mão Direita</strong> orienta o sentido: polegar na corrente ($I$), dedos envolvem o condutor no sentido de $\vec{B}$.</p>
+            </section>
+
+            <section class="border-b border-slate-900 pb-4">
+                <h4 class="text-cyan-300 font-bold text-base mb-1">3. Força de Lorentz</h4>
+                <p class="mb-2">A força exercida sobre uma carga elétrica móvel em um campo magnético é calculada por:</p>
+                <div class="bg-slate-900/60 p-2 rounded text-center my-2 font-mono text-cyan-400">$$F_m = |q| \cdot v \cdot B \cdot \sin(\theta)$$</div>
+                <p class="text-xs">Se a partícula se move **paralelamente** às linhas do campo ($\theta = 0^\circ$ ou $180^\circ$), $\sin(\theta) = 0$, logo a força magnética será **totalmente nula**.</p>
+            </section>
+        </div>
+
+        <div class="mt-4 pt-3 border-t border-slate-800 text-center">
+            <button onclick="fecharGrimorio()" class="px-6 py-2 bg-cyan-950/40 hover:bg-cyan-900 border border-cyan-500 text-cyan-200 font-bold rounded text-xs tracking-widest transition-all">
+                VOLTAR AO DESAFIO
+            </button>
+        </div>
+    </div>
+
+    <div id="game-over-screen" class="absolute inset-0 bg-black/99 z-50 flex flex-col items-center justify-center p-6 text-center hidden">
+        <h2 class="text-4xl md:text-5xl font-bold tracking-widest mb-4 text-red-700">O RECIPIENTE QUEBROU</h2>
+        <p id="game-over-msg" class="text-slate-400 max-w-md font-sans text-sm mb-8 leading-relaxed"></p>
+        <button onclick="resetGame()" class="px-8 py-3.5 bg-slate-950 hover:bg-red-950 border border-red-700/60 text-red-200 font-bold rounded transition-all tracking-widest">
+            REFORJAR ALMA (TENTAR NOVAMENTE)
+        </button>
+    </div>
+
+    <div class="canvas-container rounded overflow-hidden hidden" id="canvas-wrap">
+        <canvas id="gameCanvas" width="1000" height="400"></canvas>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let gameActive = false;
+        let score = 0;
+        let keys = {};
+        let player;
+        let particles = [];
+        let activeDialog = false;
+
+        const doorLetters = ["A", "B", "C", "D", "E"];
+        const doorColors = ["#ef4444", "#3b82f6", "#10b981", "#f59e0b", "#8b5cf6"];
+        let doors = [];
+
+        // BANCO DE QUESTÕES INTELIGENTE (Contém os SVGs dos diagramas explicativos)
+        const poolPerguntas = [
+            {
+                category: "Polos & Dipolos Magnéticos",
+                q: "Se cortarmos um ímã em formato de barra exatamente ao meio, o que acontece de acordo com as leis fundamentais do magnetismo?",
+                options: [
+                    "Uma metade transforma-se em polo Norte puro e a outra em Sul puro.",
+                    "Ambas as metades perdem instantaneamente todo o seu magnetismo.",
+                    "Surgem dois novos ímãs completos, cada um possuindo o seu próprio polo Norte e Sul.",
+                    "O campo concentra-se inteiramente na ponta da metade esquerda.",
+                    "Os polos destroem-se e libertam radiação elétrica pura."
+                ],
+                correctIndex: 2,
+                explanation: "O **Princípio da Inseparabilidade dos Polos** impossibilita monopolos. Cortar o material reorganiza os spins microscópicos de forma que ambas as extremidades quebradas gerem polos opostos complementares imediatamente.",
+                svgs: [
+                    `<svg width="180" height="90" viewBox="0 0 180 90"><rect x="10" y="30" width="70" height="30" fill="#ef4444"/><rect x="80" y="30" width="70" height="30" fill="#3b82f6"/><text x="45" y="50" fill="white" font-weight="bold" text-anchor="middle">N</text><text x="115" y="50" fill="white" font-weight="bold" text-anchor="middle">S</text><path d="M 160,45 L 175,45" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/></svg>`,
+                    `<svg width="180" height="90" viewBox="0 0 180 90"><rect x="10" y="30" width="140" height="30" fill="#64748b" opacity="0.3"/><text x="80" y="50" fill="#94a3b8" font-size="10" text-anchor="middle">Desmagnetizado</text></svg>`,
+                    `<svg width="180" height="90" viewBox="0 0 180 90"><rect x="10" y="15" width="40" height="25" fill="#ef4444"/><rect x="50" y="15" width="40" height="25" fill="#3b82f6"/><rect x="100" y="15" width="40" height="25" fill="#ef4444"/><rect x="140" y="15" width="40" height="25" fill="#3b82f6"/><text x="30" y="32" fill="white" font-size="10" text-anchor="middle">N</text><text x="70" y="32" fill="white" font-size="10" text-anchor="middle">S</text><text x="120" y="32" fill="white" font-size="10" text-anchor="middle">N</text><text x="140" y="32" fill="white" font-size="10" text-anchor="middle">S</text><text x="90" y="65" fill="#22d3ee" font-size="10" text-anchor="middle">✔ Dois Ímãs Completos</text></svg>`,
+                    `<svg width="180" height="90" viewBox="0 0 180 90"><rect x="10" y="30" width="140" height="30" fill="#ef4444"/><text x="80" y="50" fill="white" text-anchor="middle">N Total</text></svg>`,
+                    `<svg width="180" height="90" viewBox="0 0 180 90"><circle cx="90" cy="45" r="20" fill="none" stroke="#f43f5e" stroke-dasharray="4"/></svg>`
+                ]
+            },
+            {
+                category: "Fontes de Campo: Experiência de Oersted",
+                q: "Uma corrente elétrica contínua $I$ percorre um fio condutor longo e retilíneo. O que ocorre ao redor deste condutor?",
+                options: [
+                    "Gera-se um campo elétrico uniforme totalmente paralelo ao fio.",
+                    "Surge um campo magnético $\\vec{B}$ composto por linhas de força concêntricas e circulares.",
+                    "Nenhum campo invisível é detectado a menos que o metal seja ferro purificado.",
+                    "A corrente implode devido ao acúmulo de forças de repulsão eletrostáticas.",
+                    "O fio começa a rotacionar espontaneamente sobre seu próprio eixo central."
+                ],
+                correctIndex: 1,
+                explanation: "Pela **Lei de Biot-Savart / Oersted**, cargas elétricas em movimento uniforme dão origem a um campo magnético cujas linhas envolvem circularmente o condutor de forma ortogonal.",
+                svgs: [
+                    `<svg width="180" height="90" viewBox="0 0 180 90"><line x1="10" y1="45" x2="170" y2="45" stroke="#ef4444" stroke-width="3"/><line x1="10" y1="25" x2="170" y2="25" stroke="#f43f5e" stroke-dasharray="3"/></svg>`,
+                    `<svg width="180" height="90" viewBox="0 0 180 90"><line x1="90" y1="5" x2="90" y2="85" stroke="#f59e0b" stroke-width="4"/><ellipse cx="90" cy="45" rx="35" ry="15" fill="none" stroke="#22d3ee" stroke-width="2"/><text x="140" y="48" fill="#22d3ee" font-size="11">B</text><text x="90" y="80" fill="#f59e0b" font-size="9" text-anchor="middle">Corrente (I)</text></svg>`,
+                    `<svg width="180" height="90" viewBox="0 0 180 90"><line x1="10" y1="45" x2="170" y2="45" stroke="#cbd5e1" stroke-width="2"/></svg>`,
+                    `<svg width="180" height="90" viewBox="0 0 180 90"><circle cx="90" cy="45" r="15" fill="#ef4444"/></svg>`,
+                    `<svg width="180" height="90" viewBox="0 0 180 90"><path d="M 40,45 Q 90,15 140,45" fill="none" stroke="#ef4444"/></svg>`
+                ]
+            },
+            {
+                category: "Força Magnética (Força de Lorentz)",
+                q: "Uma partícula com carga positiva $q > 0$ é lançada paralelamente às linhas de um campo magnético uniforme $\\vec{B}$. Qual o valor da força magnética $F_m$ sobre ela?",
+                options: [
+                    "A força é máxima e calculada por $F_m = q \\cdot v \\cdot B$.",
+                    "A força é nula ($F_m = 0$), mantendo o movimento retilíneo uniforme.",
+                    "A força desvia a partícula em uma órbita senoidal helicoidal.",
+                    "A força inverte o sinal da carga elétrica transformando-a em elétron.",
+                    "A força acelera a partícula instantaneamente até a velocidade da luz."
+                ],
+                correctIndex: 1,
+                explanation: "A magnitude da força magnética obedece à equação $F_m = |q| \cdot v \cdot B \cdot \\sin(\\theta)$. Como o lançamento é paralelo, o ângulo $\\theta = 0^\\circ$ ou $180^\\circ$. Sendo $\\sin(0^\\circ)=0$, a força resultante é nula.",
+                svgs: [
+                    `<svg width="180" height="90" viewBox="0 0 180 90"><line x1="20" y1="45" x2="140" y2="45" stroke="#22d3ee" stroke-width="2"/><circle cx="50" cy="45" r="5" fill="#ef4444"/><line x1="50" y1="45" x2="90" y2="20" stroke="#f43f5e" stroke-width="2"/></svg>`,
+                    `<svg width="180" height="90" viewBox="0 0 180 90"><line x1="10" y1="30" x2="170" y2="30" stroke="#38bdf8" stroke-width="2"/><line x1="10" y1="50" x2="170" y2="50" stroke="#38bdf8" stroke-width="2"/><circle cx="40" cy="40" r="6" fill="#ef4444"/><line x1="40" y1="40" x2="100" y2="40" stroke="#10b981" stroke-width="3"/><text x="130" y="20" fill="#38bdf8" font-size="10">Linhas B</text><text x="90" y="65" fill="#10b981" font-size="10" text-anchor="middle">v || B → F_m = 0</text></svg>`,
+                    `<svg width="180" height="90" viewBox="0 0 180 90"><path d="M 10,45 Q 45,15 90,45 T 170,45" fill="none" stroke="#ef4444"/></svg>`,
+                    `<svg width="180" height="90" viewBox="0 0 180 90"><text x="90" y="50" fill="#ef4444" text-anchor="middle">+ → -</text></svg>`,
+                    `<svg width="180" height="90" viewBox="0 0 180 90"><circle cx="90" cy="45" r="25" fill="#f59e0b"/></svg>`
+                ]
+            }
+        ];
+
+        let perguntaAtual;
+
+        class GameParticle {
+            constructor(x, y, color, vx, vy, life) {
+                this.x = x; this.y = y; this.vx = vx; this.vy = vy;
+                this.color = color; this.maxLife = life; this.life = life;
+            }
+            update() { this.x += this.vx; this.y += this.vy; this.life--; }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.life / this.maxLife;
+                ctx.fillStyle = this.color;
+                ctx.beginPath(); ctx.arc(this.x, this.y, 2, 0, Math.PI*2); ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        class Knight {
+            constructor(x, y) {
+                this.x = x; this.y = y; this.radius = 14; this.speed = 5;
+                this.hp = 3; this.attackCooldown = 0;
+            }
+            draw() {
+                ctx.save();
+                // Corpo do Cavaleiro (Estilo Minimalista Metroidvania)
+                ctx.fillStyle = "#f8fafc";
+                ctx.strokeStyle = "#0f172a";
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
+                ctx.fill(); ctx.stroke();
+
+                // Olhos Vazios do Void
+                ctx.fillStyle = "#020617";
+                ctx.beginPath();
+                ctx.ellipse(this.x - 5, this.y - 2, 3, 5, 0, 0, Math.PI*2);
+                ctx.ellipse(this.x + 5, this.y - 2, 3, 5, 0, 0, Math.PI*2);
+                ctx.fill();
+
+                // Efeito visual de ataque (Nail)
+                if (this.attackCooldown > 10) {
+                    ctx.strokeStyle = "rgba(34, 211, 238, 0.7)";
+                    ctx.lineWidth = 4;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y - 20, 25, 0, Math.PI, true);
+                    ctx.stroke();
+                }
+                ctx.restore();
+            }
+            update() {
+                if (activeDialog) return;
+                if (this.attackCooldown > 0) this.attackCooldown--;
+
+                if (keys['w'] || keys['arrowup']) this.y -= this.speed;
+                if (keys['s'] || keys['arrowdown']) this.y += this.speed;
+                if (keys['a'] || keys['arrowleft']) this.x -= this.speed;
+                if (keys['d'] || keys['arrowright']) this.x += this.speed;
+
+                // Limites físicos do mapa
+                if (this.x < this.radius) this.x = this.radius;
+                if (this.x > canvas.width - this.radius) this.x = canvas.width - this.radius;
+                if (this.y < 80) this.y = 80; // Não ultrapassar as portas sem atacar
+                if (this.y > canvas.height - this.radius) this.y = canvas.height - this.radius;
+
+                // Sistema de Inspeção de Proximidade
+                let proximaAMalgumaPorta = false;
+                doors.forEach((d, idx) => {
+                    let centerX = d.x + d.width / 2;
+                    let dist = Math.abs(this.x - centerX);
+                    if (this.y < d.y + d.height + 40 && dist < d.width / 2) {
+                        proximaAMalgumaPorta = true;
+                        document.getElementById("door-inspector").innerHTML = `
+                            <div class="flex flex-col items-center">
+                                <span class="text-cyan-400 font-bold mb-1">Previsão da Opção [${d.letter}]:</span>
+                                ${perguntaAtual.svgs[idx]}
+                                <p class="text-[11px] text-slate-300 px-2 mt-1">Ataque esta porta se acreditar que este comportamento físico está correto.</p>
+                            </div>
+                        `;
+                    }
+                });
+                if (!proximaAMalgumaPorta) {
+                    document.getElementById("door-inspector").innerHTML = "Aproxime-se de uma porta (A, B, C, D ou E) para projetar e analisar o seu comportamento físico...";
+                }
+            }
+        }
+
+        function initLevel() {
+            perguntaAtual = poolPerguntas[Math.floor(Math.random() * poolPerguntas.length)];
+            document.getElementById("category-badge").innerText = `⚡ Tópico: ${perguntaAtual.category}`;
+            document.getElementById("question-text").innerText = perguntaAtual.q;
+            
+            // Renderizar guia textual compacto das alternativas
+            let optionsGuide = "";
+            perguntaAtual.options.forEach((opt, index) => {
+                optionsGuide += `<div><strong>[${doorLetters[index]}]</strong> ${opt}</div>`;
+            });
+            document.getElementById("options-text-guide").innerHTML = optionsGuide;
+
+            // Ajustar renderização do KaTeX
+            setTimeout(() => { renderMathInElement(document.getElementById("question-panel")); }, 30);
+
+            // Gerar Portas Uniformes
+            doors = [];
+            let w = 150; let h = 45;
+            let spacing = (canvas.width - (w * 5)) / 6;
+            for(let i=0; i<5; i++) {
+                doors.push({
+                    x: spacing + i * (w + spacing),
+                    y: 15,
+                    width: w,
+                    height: h,
+                    letter: doorLetters[i],
+                    color: doorColors[i]
+                });
+            }
+        }
+
+        function drawDoors() {
+            doors.forEach(d => {
+                ctx.save();
+                ctx.fillStyle = "#0f172a";
+                ctx.strokeStyle = d.color;
+                ctx.lineWidth = 3;
+                ctx.fillRect(d.x, d.y, d.width, d.height);
+                ctx.strokeRect(d.x, d.y, d.width, d.height);
+
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "bold 16px Cinzel";
+                ctx.textAlign = "center";
+                ctx.fillText(`PORTA ${d.letter}`, d.x + d.width/2, d.y + 28);
+                ctx.restore();
+            });
+        }
+
+        function handlePlayerAttack() {
+            if (player.attackCooldown > 0 || activeDialog) return;
+            player.attackCooldown = 20;
+
+            doors.forEach((d, idx) => {
+                let centerX = d.x + d.width / 2;
+                let dist = Math.abs(player.x - centerX);
+                if (player.y < d.y + d.height + 50 && dist < d.width / 2) {
+                    processarResposta(idx);
+                }
+            });
+        }
+
+        function processarResposta(indexEscolhido) {
+            activeDialog = true;
+            let dialogBox = document.getElementById("elderbug-dialog");
+            let title = document.getElementById("feedback-title");
+            let desc = document.getElementById("npc-feedback");
+            dialogBox.classList.remove("hidden");
+
+            if (indexEscolhido === perguntaAtual.correctIndex) {
+                score++;
+                document.getElementById("score-val").innerText = score;
+                title.innerText = "⚡ SINTONIA CONVERTIDA (CORRETO!)";
+                title.className = "text-xs font-bold block uppercase tracking-widest mb-1 text-emerald-400";
+                desc.innerHTML = `<p>${perguntaAtual.explanation}</p><p class="text-emerald-400 font-medium">Sua lâmina ressoou em harmonia com a física clássica!</p>`;
+            } else {
+                player.hp--;
+                atualizarHpHUD();
+                title.innerText = "❌ ADVERTÊNCIA DA JORNADA (INCORRETO)";
+                title.className = "text-xs font-bold block uppercase tracking-widest mb-1 text-rose-400";
+                desc.innerHTML = `
+                    <p>Você escolheu a <strong>Porta ${doorLetters[indexEscolhido]}</strong>.</p>
+                    <p class="text-rose-300">Análise do Erro: A alternativa escolhida descreve um fenômeno geometricamente ou matematicamente impossível.</p>
+                    <p class="mt-2 font-bold text-slate-100">Explicação Correta:</p>
+                    <p>${perguntaAtual.explanation}</p>
+                `;
+                if (player.hp <= 0) {
+                    setTimeout(() => {
+                        dialogBox.classList.add("hidden");
+                        document.getElementById("game-over-screen").classList.remove("hidden");
+                        document.getElementById("game-over-msg").innerText = "O Cavaleiro falhou em decifrar os segredos eletromagnéticos e desvaneceu-se no Abismo.";
+                    }, 1500);
+                }
+            }
+            setTimeout(() => { renderMathInElement(desc); }, 20);
+        }
+
+        function fecharDialogo() {
+            document.getElementById("elderbug-dialog").classList.add("hidden");
+            activeDialog = false;
+            if (player.hp > 0) {
+                initLevel();
+                player.x = canvas.width / 2;
+                player.y = canvas.height - 40;
+            }
+        }
+
+        function atualizarHpHUD() {
+            let container = document.getElementById("hp-container");
+            container.innerHTML = "";
+            for(let i=0; i<3; i++) {
+                if(i < player.hp) container.innerHTML += `<i class="fa-solid fa-heart text-cyan-400"></i>`;
+                else container.innerHTML += `<i class="fa-regular fa-heart text-slate-700"></i>`;
+            }
+        }
+
+        function startGame() {
+            document.getElementById("start-menu").classList.add("hidden");
+            document.getElementById("game-hud").classList.remove("hidden");
+            document.getElementById("question-panel").classList.remove("hidden");
+            document.getElementById("canvas-wrap").classList.remove("hidden");
+            
+            player = new Knight(canvas.width / 2, canvas.height - 40);
+            score = 0;
+            document.getElementById("score-val").innerText = score;
+            atualizarHpHUD();
+            initLevel();
+            gameActive = true;
+            gameLoop();
+        }
+
+        function resetGame() {
+            document.getElementById("game-over-screen").classList.add("hidden");
+            startGame();
+        }
+
+        function abrirGrimorio() { document.getElementById("grimorio-modal").classList.remove("hidden"); }
+        function fecharGrimorio() { document.getElementById("grimorio-modal").classList.add("hidden"); }
+
+        window.addEventListener('keydown', e => { 
+            keys[e.key.toLowerCase()] = true; 
+            if(e.key === " " || e.key === "Spacebar") handlePlayerAttack();
+        });
+        window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
+        canvas.addEventListener('mousedown', () => { handlePlayerAttack(); });
+
+        function gameLoop() {
+            if (!gameActive) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Renderizar Linhas de Fundo Decorativas (Fronteiras do Santuário)
+            ctx.strokeStyle = "#1e293b"; ctx.lineWidth = 1;
+            for(let i=0; i<canvas.width; i+=40) {
+                ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
+            }
+
+            drawDoors();
+            player.update();
+            player.draw();
+
+            requestAnimationFrame(gameLoop);
+        }
+    </script>
+</body>
+</html>
