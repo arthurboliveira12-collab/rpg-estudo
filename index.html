@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hollow Knight: As Portas do Magnetismo</title>
+    <title>Hollow Knight: O Santuário dos Polos</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -17,72 +17,79 @@
         }
         canvas {
             display: block;
-            background: radial-gradient(circle at center, #0b132b 0%, #030712 100%);
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
+            background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
+            box-shadow: 0 0 35px rgba(0, 0, 0, 0.9);
         }
-        .hk-ui { font-family: 'Cinzel', serif; text-shadow: 0 0 4px rgba(0,0,0,0.8); }
+        .hk-ui { font-family: 'Cinzel', serif; text-shadow: 0 0 6px rgba(0,0,0,0.9); }
         .text-narrative { font-family: 'Special Elite', cursive; }
     </style>
 </head>
 <body class="h-screen w-screen flex flex-col items-center justify-center p-2 relative">
 
-    <!-- TELA INICIAL / MENU -->
-    <div id="start-menu" class="absolute inset-0 bg-gray-950/95 z-50 flex flex-col items-center justify-center p-6 text-center">
+    <div id="start-menu" class="absolute inset-0 bg-gray-950/98 z-50 flex flex-col items-center justify-center p-6 text-center">
         <h1 class="text-4xl md:text-6xl font-bold tracking-wider text-slate-100 mb-2">HOLLOW KNIGHT</h1>
-        <h2 class="text-xl md:text-2xl text-blue-400 font-light mb-8 tracking-widest">As Portas do Magnetismo</h2>
+        <h2 class="text-xl md:text-2xl text-cyan-400 font-light mb-8 tracking-widest">O Santuário dos Polos</h2>
         
-        <div class="max-w-md bg-slate-900/80 p-6 rounded-lg border border-slate-700 text-left font-sans text-sm mb-8 space-y-3 text-gray-300">
-            <p class="font-bold text-center text-blue-300 uppercase tracking-wider">Como Jogar:</p>
-            <p>⌨️ <strong class="text-white">W, A, S, D / Setas:</strong> Move o Cavaleiro pela sala.</p>
-            <p>🚪 <strong class="text-white">As 5 Portas:</strong> Cada porta leva a uma Cidade de Hollownest e representa uma alternativa (A, B, C, D ou E).</p>
-            <p>🎯 <strong class="text-white">Objetivo:</strong> Lê a pergunta de física e guia o Knight até à porta com a resposta correta.</p>
-            <hr class="border-slate-700 my-2">
-            <p class="text-xs text-amber-400 font-semibold">⚠️ Tens 3 vidas. Errar a porta revela a explicação científica, mas quebra uma das tuas máscaras!</p>
+        <div class="max-w-md bg-slate-900/90 p-6 rounded-lg border border-slate-700 text-left font-sans text-sm mb-8 space-y-3 text-gray-300">
+            <p class="font-bold text-center text-cyan-300 uppercase tracking-wider">Mecânicas Avançadas:</p>
+            <p>⌨️ <strong>W, A, S, D / Setas:</strong> Move o Cavaleiro pela sala.</p>
+            <p>⚔️ <strong>Clique do Rato:</strong> Ataca com o Prego (Nail) para afastar perigos.</p>
+            <p>🚪 <strong>Aproxima-te das Portas:</strong> Caminha até perto de uma das 5 cidades para ler a alternativa no painel inferior.</p>
+            <p>👻 <strong class="text-red-400">Ameaça da Sombra:</strong> Se errares a resposta, a tua Sombra será invocada. Deves derrotá-la com o teu Prego para limpar o caminho!</p>
         </div>
 
-        <button onclick="startGame()" class="px-8 py-4 bg-blue-900/50 hover:bg-blue-800 border-2 border-blue-400 text-blue-200 font-bold rounded-lg text-xl tracking-widest transition-all transform hover:scale-105">
-            INICIAR DESAFIO
+        <button onclick="startGame()" class="px-8 py-4 bg-cyan-950/60 hover:bg-cyan-900 border-2 border-cyan-500 text-cyan-200 font-bold rounded-lg text-xl tracking-widest transition-all transform hover:scale-105">
+            ADENTRAR SANTUÁRIO
         </button>
     </div>
 
-    <!-- HUD SUPERIOR -->
-    <div id="game-hud" class="w-full max-w-4xl flex justify-between items-center mb-2 px-2 hk-ui hidden">
+    <div id="game-hud" class="w-full max-w-5xl flex justify-between items-center mb-2 px-2 hk-ui hidden">
         <div class="flex flex-col">
-            <span class="text-[10px] uppercase tracking-wider text-gray-500">Máscaras</span>
+            <span class="text-[10px] uppercase tracking-wider text-gray-500">Máscaras de Sintonia</span>
             <div id="hp-container" class="flex gap-1.5 text-xl text-slate-100"></div>
         </div>
-        <div class="text-center">
-            <span class="text-[10px] uppercase tracking-wider text-gray-500 block">Acertos Consecutivos</span>
-            <span id="score-val" class="text-xl font-bold text-emerald-400">0</span>
+        <div id="status-badge" class="text-xs bg-slate-900 px-4 py-1.5 rounded border border-slate-700 text-cyan-400 font-bold tracking-wider">
+            SALA LIMPA
+        </div>
+        <div class="text-right">
+            <span class="text-[10px] uppercase tracking-wider text-gray-500 block">Enigmas Superados</span>
+            <span id="score-val" class="text-xl font-bold text-cyan-400">0</span>
         </div>
     </div>
 
-    <!-- QUADRO DE PERGUNTAS E FEEDBACK DO NPC -->
-    <div id="question-panel" class="w-full max-w-4xl bg-slate-900/95 border border-slate-700 p-4 rounded-lg mb-2 hidden font-sans">
-        <div class="text-xs font-bold text-blue-400 mb-1 uppercase tracking-wider"><i class="fa-solid fa-scroll mr-1"></i> Enigma de Magnetismo atual:</div>
-        <p id="question-text" class="text-sm text-slate-100 font-semibold mb-3"></p>
-        
-        <!-- Caixa de Feedback de Erro / Diálogo do Elderbug -->
-        <div id="npc-box" class="bg-slate-950 p-2.5 rounded border border-blue-900/60 flex items-start gap-3 hidden">
-            <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 flex-shrink-0 text-xs font-bold">NPC</div>
+    <div id="question-panel" class="w-full max-w-5xl bg-slate-900/95 border-2 border-slate-700 p-5 rounded-lg mb-2 hidden font-sans grid grid-cols-1 md:grid-cols-12 gap-4">
+        <div class="md:col-span-7 border-r border-slate-800 pr-2">
+            <div class="text-xs font-bold text-cyan-400 mb-1 uppercase tracking-wider"><i class="fa-solid fa-layer-group mr-1"></i> Desafio Magnético:</div>
+            <p id="question-text" class="text-sm md:text-base text-slate-100 font-semibold leading-relaxed"></p>
+        </div>
+        <div class="md:col-span-5 flex flex-col justify-center bg-slate-950/60 p-3 rounded border border-slate-800">
+            <div class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Inspecção da Porta Próxima:</div>
+            <div id="door-inspector" class="text-xs text-gray-400 italic">Aproxima-te de uma das portas superiores para ler a sua proposta...</div>
+        </div>
+    </div>
+
+    <div id="elderbug-dialog" class="absolute inset-x-4 top-24 max-w-xl mx-auto bg-slate-900/95 border-2 border-red-900/80 p-4 rounded-xl z-40 hidden font-sans shadow-2xl">
+        <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-full bg-slate-800 border border-red-500 flex items-center justify-center text-red-400 font-bold flex-shrink-0">Ancião</div>
             <div>
-                <span class="text-[10px] text-blue-400 font-bold block uppercase">Conselho do Ancião (Elderbug):</span>
-                <p id="npc-feedback" class="text-xs text-red-300 text-narrative"></p>
+                <span class="text-xs text-red-400 font-bold block uppercase tracking-wider">Aviso de Elderbug:</span>
+                <p id="npc-feedback" class="text-xs md:text-sm text-red-200 mt-1 text-narrative leading-relaxed"></p>
+                <button onclick="fecharDialogo()" class="mt-3 px-3 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-[11px] text-white rounded transition-all">
+                    Entendido (Continuar)
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- TELA DE FIM DE JOGO -->
-    <div id="game-over-screen" class="absolute inset-0 bg-black/95 z-50 flex flex-col items-center justify-center p-6 text-center hidden">
-        <h2 id="game-over-title" class="text-4xl font-bold tracking-wider mb-4 text-red-500">SUAS MÁSCARAS QUEBRARAM</h2>
-        <p id="game-over-msg" class="text-gray-400 max-w-md font-sans text-sm mb-8 text-narrative"></p>
-        <button onclick="resetGame()" class="px-6 py-3 bg-blue-950 hover:bg-blue-900 border border-blue-500 text-white font-bold rounded transition-all tracking-widest">
-            TENTAR NOVAMENTE
+    <div id="game-over-screen" class="absolute inset-0 bg-black/98 z-50 flex flex-col items-center justify-center p-6 text-center hidden">
+        <h2 class="text-4xl font-bold tracking-wider mb-4 text-red-600">O RECIPIENTE QUEBROU</h2>
+        <p id="game-over-msg" class="text-gray-400 max-w-md font-sans text-sm mb-8 leading-relaxed"></p>
+        <button onclick="resetGame()" class="px-6 py-3 bg-cyan-950 hover:bg-cyan-900 border border-cyan-500 text-white font-bold rounded transition-all tracking-widest">
+            REFORJAR ALMA
         </button>
     </div>
 
-    <!-- CANVAS -->
-    <canvas id="gameCanvas" width="900" height="420" class="rounded border border-slate-800 max-w-full hidden"></canvas>
+    <canvas id="gameCanvas" width="1000" height="380" class="rounded border border-slate-800 max-w-full hidden"></canvas>
 
     <script>
         const canvas = document.getElementById('gameCanvas');
@@ -92,81 +99,58 @@
         let score = 0;
         let keys = {};
         let player;
-        
-        // Cidades / Portas configuradas
+        let shade = null; // Inimigo que surge ao errar
+        let particles = [];
+        let activeDialog = false;
+
         const cities = [
-            { name: "Dirtmouth", color: "#475569" },
-            { name: "Cruzamentos", color: "#2563eb" },
-            { name: "Cidade Lágrimas", color: "#0891b2" },
-            { name: "Ninho Profundo", color: "#7c3aed" },
-            { name: "Jardins Rainha", color: "#16a34a" }
+            { name: "Dirtmouth", color: "#334155" },
+            { name: "Cruzamentos", color: "#1d4ed8" },
+            { name: "Cidade Lágrimas", color: "#0e7490" },
+            { name: "Ninho Profundo", color: "#5b21b6" },
+            { name: "Jardins Rainha", color: "#065f46" }
         ];
 
-        let doorWidth = 130;
-        let doorHeight = 55;
+        let doorWidth = 140;
+        let doorHeight = 45;
         let doors = [];
 
-        // Banco de Dados de Perguntas sobre Magnetismo
         const poolPerguntas = [
             {
-                q: "Se partirmos um ímã em formato de barra exatamente ao meio, o que acontece com as suas propriedades magnéticas?",
+                q: "Se cortarmos um ímã em formato de barra exatamente ao meio, o que acontece de acordo com as leis magnéticas?",
                 options: [
-                    "Uma metade vira apenas polo Norte e a outra apenas polo Sul.",
-                    "Ambas as metades deixam imediatamente de ser magnéticas.",
-                    "Obtemos dois novos ímãs menores, cada um com polo Norte e Sul próprios.",
-                    "O magnetismo concentra-se todo na metade esquerda.",
-                    "O ímã explode devido à liberação da força eletrostática."
+                    "Uma metade transforma-se em polo Norte puro e a outra em Sul puro.",
+                    "Ambas as metades perdem instantaneamente todo o seu magnetismo.",
+                    "Surgem dois novos ímãs completos, cada um possuindo o seu próprio polo Norte e Sul.",
+                    "O campo concentra-se inteiramente na ponta da metade esquerda.",
+                    "Os polos destroem-se e libertam radiação elétrica perigosa."
                 ],
                 correctIndex: 2,
-                explanation: "Pelo Princípio da Inseparabilidade dos Polos Magnéticos, é impossível isolar um único polo. Ao quebrar um ímã, novos polos nascem nas extremidades partidas!"
+                explanation: "Princípio da Inseparabilidade! É impossível isolar um único polo magnético. Cortar um ímã gera novos ímãs menores."
             },
             {
-                q: "Aproximando dois ímãs pelos seus polos de mesmo nome (Norte com Norte ou Sul com Sul), qual é o comportamento esperado?",
+                q: "Aproximando dois ímãs pelos seus polos homónimos (Norte com Norte ou Sul com Sul), qual é a reação mecânica?",
                 options: [
-                    "Eles sofrem uma força de atração mútua intensa.",
-                    "Eles anulam-se e perdem as propriedades magnéticas.",
-                    "Eles sofrem uma força de repulsão mútua.",
-                    "Eles começam a girar no sentido dos ponteiros do relógio.",
-                    "Eles fundem-se num único polo magnético gigante."
+                    "Ocorre uma forte e imediata atração magnética mútua.",
+                    "Os campos fundem-se, dobrando o poder total do ímã resultante.",
+                    "Eles exercem uma força de repulsão magnética, empurrando-se para longe.",
+                    "Os ímãs começam a girar velozmente em sentidos opostos.",
+                    "A matéria ferromagnética derrete devido à fricção atómica."
+                ],
+                correctIndex: 3,
+                explanation: "Polos de nomes iguais repelem-se com intensidade; polos diferentes atraem-se."
+            },
+            {
+                q: "Qual dos seguintes elementos responde fortemente ao campo de um ímã permanente, sendo ferromagnético?",
+                options: [
+                    "Lâmina de Cobre Puro",
+                    "Bloco Maciço de Ouro",
+                    "Prego de Ferro ou liga de Cobalto/Níquel",
+                    "Placa Estática de Alumínio",
+                    "Filamento de Vidro Reforçado"
                 ],
                 correctIndex: 2,
-                explanation: "A lei fundamental do magnetismo dita: polos de nomes iguais repelem-se, enquanto polos opostos atraem-se."
-            },
-            {
-                q: "Qual dos seguintes materiais abaixo é considerado estritamente Ferromagnético (fortemente atraído por ímãs)?",
-                options: [
-                    "Cobre",
-                    "Ferro puro",
-                    "Plástico isolante",
-                    "Ouro",
-                    "Vidro cristalino"
-                ],
-                correctIndex: 1,
-                explanation: "Materiais ferromagnéticos como o Ferro, Cobalto e Níquel possuem domínios magnéticos que se alinham facilmente na presença de um campo externo."
-            },
-            {
-                q: "O que acontece ao redor de um fio condutor quando uma corrente elétrica contínua passa por ele?",
-                options: [
-                    "Gera-se um campo magnético em forma de linhas circulares.",
-                    "O fio perde todos os seus eletrões e desintegra-se.",
-                    "Gera-se vácuo absoluto ao redor do metal.",
-                    "O campo magnético gerado aponta sempre para o Norte da Terra.",
-                    "A corrente elétrica impede a passagem de forças magnéticas."
-                ],
-                correctIndex: 0,
-                explanation: "Descoberto por Oersted, cargas elétricas em movimento (corrente) criam obrigatoriamente um campo magnético perpendicular ao fio."
-            },
-            {
-                q: "A bússola aponta para o Norte geográfico da Terra porque o nosso planeta se comporta como um grande ímã. Onde fica o polo Sul Magnético da Terra?",
-                options: [
-                    "Exatamente no Polo Sul Geográfico.",
-                    "Próximo ao Polo Norte Geográfico.",
-                    "No centro da Linha do Equador.",
-                    "Embaixo das florestas tropicais.",
-                    "O planeta não possui polos magnéticos definidos."
-                ],
-                correctIndex: 1,
-                explanation: "Os polos magnéticos da Terra são invertidos em relação aos geográficos. O polo Norte da agulha da bússola é atraído pelo polo Sul Magnético, que fica no Norte geográfico!"
+                explanation: "O Ferro, o Cobalto e o Níquel são os materiais ferromagnéticos clássicos, cujos domínios se alinham de forma poderosa."
             }
         ];
 
@@ -174,42 +158,90 @@
 
         class Knight {
             constructor(x, y) {
-                this.x = x;
-                this.y = y;
-                this.radius = 15;
-                this.speed = 5;
-                this.hp = 3;
-                this.maxHp = 3;
+                this.x = x; this.y = y;
+                this.radius = 14; this.speed = 4.5;
+                this.hp = 3; this.maxHp = 3;
+                this.attackCooldown = 0;
             }
             draw() {
                 ctx.save();
                 // Capa
-                ctx.fillStyle = '#334155';
+                ctx.fillStyle = '#1e293b';
                 ctx.beginPath(); ctx.arc(this.x, this.y + 6, this.radius, 0, Math.PI, false); ctx.fill();
                 // Máscara
-                ctx.fillStyle = '#f8fafc';
-                ctx.strokeStyle = '#0f172a';
-                ctx.lineWidth = 3;
+                ctx.fillStyle = '#f8fafc'; ctx.strokeStyle = '#020617'; ctx.lineWidth = 3;
                 ctx.beginPath(); ctx.arc(this.x, this.y - 4, this.radius - 2, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
                 // Olhos
                 ctx.fillStyle = '#020617';
                 ctx.beginPath();
-                ctx.ellipse(this.x - 5, this.y - 4, 3, 6, 0, 0, Math.PI * 2);
-                ctx.ellipse(this.x + 5, this.y - 4, 3, 6, 0, 0, Math.PI * 2);
+                ctx.ellipse(this.x - 5, this.y - 4, 3, 5, 0, 0, Math.PI * 2);
+                ctx.ellipse(this.x + 5, this.y - 4, 3, 5, 0, 0, Math.PI * 2);
                 ctx.fill();
+                
+                // Animação visual do golpe do Prego
+                if (this.attackCooldown > 10) {
+                    ctx.strokeStyle = '#67e8f9'; ctx.lineWidth = 4;
+                    ctx.beginPath(); ctx.arc(this.x, this.y, this.radius + 15, -Math.PI/4, Math.PI/4); ctx.stroke();
+                }
                 ctx.restore();
             }
             update() {
+                if (activeDialog) return;
+                if (this.attackCooldown > 0) this.attackCooldown--;
+
                 if (keys['w'] || keys['arrowup']) this.y -= this.speed;
                 if (keys['s'] || keys['arrowdown']) this.y += this.speed;
                 if (keys['a'] || keys['arrowleft']) this.x -= this.speed;
                 if (keys['d'] || keys['arrowright']) this.x += this.speed;
 
-                // Limites
-                if (this.x < this.radius + 15) this.x = this.radius + 15;
-                if (this.x > canvas.width - this.radius - 15) this.x = canvas.width - this.radius - 15;
-                if (this.y < this.radius + 15) this.y = this.radius + 15;
-                if (this.y > canvas.height - this.radius - 15) this.y = canvas.height - this.radius - 15;
+                if (this.x < this.radius + 20) this.x = this.radius + 20;
+                if (this.x > canvas.width - this.radius - 20) this.x = canvas.width - this.radius - 20;
+                if (this.y < this.radius + 20) this.y = this.radius + 20;
+                if (this.y > canvas.height - this.radius - 20) this.y = canvas.height - this.radius - 20;
+            }
+        }
+
+        class ShadeEnemy {
+            constructor(x, y) {
+                this.x = x; this.y = y;
+                this.radius = 14; this.speed = 1.8;
+                this.hp = 3;
+            }
+            draw() {
+                ctx.save();
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+                ctx.shadowBlur = 15; ctx.shadowColor = '#000000';
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fill();
+                // Olhos Brancos Brilhantes da Sombra
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.ellipse(this.x - 4, this.y - 2, 3, 5, 0, 0, Math.PI * 2);
+                ctx.ellipse(this.x + 4, this.y - 2, 3, 5, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+            update() {
+                let angle = Math.atan2(player.y - this.y, player.x - this.x);
+                this.x += Math.cos(angle) * this.speed;
+                this.y += Math.sin(angle) * this.speed;
+            }
+        }
+
+        class DustParticle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = -Math.random() * 0.4 - 0.1;
+                this.alpha = Math.random() * 0.4 + 0.1;
+            }
+            update() {
+                this.x += this.vx; this.y += this.vy;
+                if (this.y < 0) this.y = canvas.height;
+            }
+            draw() {
+                ctx.fillStyle = `rgba(103, 232, 249, ${this.alpha})`;
+                ctx.beginPath(); ctx.arc(this.x, this.y, 1.5, 0, Math.PI * 2); ctx.fill();
             }
         }
 
@@ -220,84 +252,58 @@
             document.getElementById('gameCanvas').classList.remove('hidden');
             
             gameActive = true;
-            player = new Knight(canvas.width / 2, canvas.height - 50);
+            player = new Knight(canvas.width / 2, canvas.height - 40);
+            shade = null;
             score = 0;
-            player.hp = 3;
+            particles = [];
+            for(let i=0; i<30; i++) particles.push(new DustParticle());
             
             gerarNovaQuestao();
             updateHUD();
             gameLoop();
         }
 
-        // Função crucial: baralha as perguntas e as alternativas a cada rodada!
         function gerarNovaQuestao() {
-            document.getElementById('npc-box').classList.add('hidden');
             player.x = canvas.width / 2;
-            player.y = canvas.height - 50;
+            player.y = canvas.height - 40;
+            shade = null;
+            document.getElementById('status-badge').innerText = "SALA LIMPA";
+            document.getElementById('status-badge').className = "text-xs bg-slate-900 px-4 py-1.5 rounded border border-slate-700 text-cyan-400 font-bold tracking-wider";
 
-            // Escolhe uma pergunta aleatória do banco de dados
             const randQ = poolPerguntas[Math.floor(Math.random() * poolPerguntas.length)];
-            
-            // Mapeia as alternativas e guarda qual é a certa antes de baralhar
-            let alternatives = randQ.options.map((opt, idx) => {
-                return { text: opt, originalIndex: idx };
-            });
-
-            // Baralhar as alternativas para nunca ficarem na mesma porta
+            let alternatives = randQ.options.map((opt, idx) => ({ text: opt, origIdx: idx }));
             alternatives.sort(() => Math.random() - 0.5);
 
-            perguntaAtual = {
-                question: randQ.q,
-                choices: alternatives,
-                correctLetter: "",
-                explanation: randQ.explanation
-            };
-
-            // Determina as posições físicas das 5 portas no ecrã
-            doors = [];
             let letras = ["A", "B", "C", "D", "E"];
-            let totalWidth = canvas.width - 40;
-            let spacing = (totalWidth - (doorWidth * 5)) / 4;
+            let space = (canvas.width - 40 - (doorWidth * 5)) / 4;
 
+            doors = [];
             for (let i = 0; i < 5; i++) {
-                let xPos = 20 + i * (doorWidth + spacing);
-                let isCorrect = alternatives[i].originalIndex === randQ.correctIndex;
-                
-                if (isCorrect) {
-                    perguntaAtual.correctLetter = letras[i];
-                }
-
+                let xPos = 20 + i * (doorWidth + space);
                 doors.push({
-                    x: xPos,
-                    y: 20,
-                    width: doorWidth,
-                    height: doorHeight,
-                    letter: letras[i],
-                    cityName: cities[i].name,
-                    color: cities[i].color,
-                    answerText: alternatives[i].text,
-                    correct: isCorrect
+                    x: xPos, y: 20, width: doorWidth, height: doorHeight,
+                    letter: letras[i], cityName: cities[i].name, color: cities[i].color,
+                    textProposed: alternatives[i].text, correct: alternatives[i].origIdx === randQ.correctIndex
                 });
             }
-
-            // Exibe a pergunta na interface
-            document.getElementById('question-text').innerText = perguntaAtual.question;
+            document.getElementById('question-text').innerText = randQ.q;
+            document.getElementById('door-inspector').innerHTML = `<span class="text-slate-500">Caminha perto de uma porta para inspecionar os teus dados de física...</span>`;
         }
 
         function updateHUD() {
             document.getElementById('score-val').innerText = score;
-            const hpContainer = document.getElementById('hp-container');
-            hpContainer.innerHTML = '';
+            const container = document.getElementById('hp-container');
+            container.innerHTML = '';
             for (let i = 0; i < player.maxHp; i++) {
-                if (i < player.hp) {
-                    hpContainer.innerHTML += '<i class="fa-solid fa-ghost text-slate-100 drop-shadow-[0_0_3px_rgba(255,255,255,0.8)]"></i>';
-                } else {
-                    hpContainer.innerHTML += '<i class="fa-solid fa-ghost opacity-10 text-gray-800"></i>';
-                }
+                container.innerHTML += i < player.hp 
+                    ? '<i class="fa-solid fa-ghost text-slate-200 drop-shadow-[0_0_4px_rgba(255,255,255,0.8)]"></i>'
+                    : '<i class="fa-solid fa-ghost opacity-10 text-slate-800"></i>';
             }
         }
 
-        function verificarEscolha(door) {
+        function verificarPorta(door) {
+            if (shade !== null) return; // Se a sombra estiver viva, as portas trancam
+
             if (door.correct) {
                 score++;
                 updateHUD();
@@ -306,105 +312,143 @@
                 player.hp--;
                 updateHUD();
                 
-                // Exibe a explicação do erro dinamicamente fornecida pelo Elderbug
-                const npcBox = document.getElementById('npc-box');
-                const npcFeedback = document.getElementById('npc-feedback');
-                npcBox.classList.remove('hidden');
-                npcFeedback.innerText = `Errado! Entraste em ${door.cityName}. O correto seria a Porta ${perguntaAtual.correctLetter}. Explicação: ${perguntaAtual.explanation}`;
+                // Altera o HUD indicando perigo
+                document.getElementById('status-badge').innerText = "SOMBRA INVOCADA";
+                document.getElementById('status-badge').className = "text-xs bg-red-950 px-4 py-1.5 rounded border border-red-800 text-red-400 font-bold tracking-wider";
+
+                // Invoca a Sombra no centro do mapa
+                shade = new ShadeEnemy(canvas.width / 2, canvas.height / 2 - 40);
                 
-                // Reposiciona o jogador para tentar novamente a mesma pergunta
+                // Abre aviso do Elderbug com a explicação física
+                activeDialog = true;
+                document.getElementById('elderbug-dialog').classList.remove('hidden');
+                document.getElementById('npc-feedback').innerText = `Cuidado! Entrar em ${door.cityName} rompeu a tua sintonia. O conceito está incorreto. Explicação: ${door.textProposed} está errado! ${door.correct ? '' : 'Lembre-se: ' + door.textProposed}`;
+                
                 player.x = canvas.width / 2;
-                player.y = canvas.height - 50;
+                player.y = canvas.height - 40;
 
                 if (player.hp <= 0) {
-                    endGame();
+                    gameActive = false;
+                    document.getElementById('game-over-screen').classList.remove('hidden');
+                    document.getElementById('game-over-msg').innerText = `As tuas máscaras partiram-se devido aos erros acumulados no campo magnético. Conseguiste decifrar ${score} enigmas. Reforja a tua mente!`;
                 }
             }
         }
 
-        function endGame() {
-            gameActive = false;
-            document.getElementById('game-over-screen').classList.remove('hidden');
-            document.getElementById('game-over-msg').innerText = `Respondeste corretamente a ${score} enigmas magnéticos sequenciais antes de perderes a sintonia com as cidades de Hollownest. Tenta outra vez, as perguntas mudaram!`;
+        function fecharDialogo() {
+            activeDialog = false;
+            document.getElementById('elderbug-dialog').classList.add('hidden');
         }
 
-        function resetGame() {
-            document.getElementById('game-over-screen').classList.add('hidden');
-            startGame();
-        }
+        // Ataque com o Prego via clique do Rato
+        window.addEventListener('mousedown', () => {
+            if (!gameActive || activeDialog || player.attackCooldown > 0) return;
+            player.attackCooldown = 20; // Duração da animação
+
+            // Se a Sombra existir, verifica se o golpe do Prego a acertou
+            if (shade !== null) {
+                let dist = Math.hypot(player.x - shade.x, player.y - shade.y);
+                if (dist < player.radius + shade.radius + 25) {
+                    shade.hp--;
+                    // Repele a Sombra levemente para trás (Repulsão por Impacto)
+                    let angle = Math.atan2(shade.y - player.y, shade.x - player.x);
+                    shade.x += Math.cos(angle) * 35;
+                    shade.y += Math.sin(angle) * 35;
+
+                    if (shade.hp <= 0) {
+                        shade = null;
+                        document.getElementById('status-badge').innerText = "SALA LIMPA";
+                        document.getElementById('status-badge').className = "text-xs bg-slate-900 px-4 py-1.5 rounded border border-slate-700 text-cyan-400 font-bold tracking-wider";
+                    }
+                }
+            }
+        });
 
         function gameLoop() {
             if (!gameActive) return;
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Paredes da sala de testes
-            ctx.strokeStyle = '#1e293b';
-            ctx.lineWidth = 4;
-            ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
+            // Paredes Internas Seguras
+            ctx.strokeStyle = '#334155'; ctx.lineWidth = 4;
+            ctx.strokeRect(15, 15, canvas.width - 30, canvas.height - 30);
 
-            // Desenhar as 5 Portas Temáticas
+            let playerNearAnyDoor = false;
+
+            // Renderização das Portas
             doors.forEach(d => {
-                // Corpo da Porta
                 ctx.fillStyle = d.color;
                 ctx.fillRect(d.x, d.y, d.width, d.height);
-                
-                // Moldura
-                ctx.strokeStyle = '#f8fafc';
-                ctx.lineWidth = 2;
+                ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 2;
                 ctx.strokeRect(d.x, d.y, d.width, d.height);
 
-                // Texto: Letra + Nome da Cidade
-                ctx.fillStyle = '#ffffff';
-                ctx.font = 'bold 12px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText(`Porta ${d.letter}`, d.x + d.width/2, d.y + 22);
-                
-                ctx.fillStyle = '#e2e8f0';
-                ctx.font = '9px sans-serif';
-                ctx.fillText(d.cityName, d.x + d.width/2, d.y + 40);
+                // Letras e Cidades dentro do Canvas
+                ctx.fillStyle = '#ffffff'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center';
+                ctx.fillText(`Porta ${d.letter}`, d.x + d.width/2, d.y + 18);
+                ctx.fillStyle = '#cbd5e1'; ctx.font = '9px sans-serif';
+                ctx.fillText(d.cityName, d.x + d.width/2, d.y + 34);
 
-                // Linha de texto da alternativa impressa logo abaixo de cada porta no chão
-                ctx.save();
-                ctx.fillStyle = '#94a3b8';
-                ctx.font = '10px sans-serif';
-                wrapText(ctx, `${d.letter}) ${d.answerText}`, d.x - 5, d.y + d.height + 20, d.width + 10, 12);
-                ctx.restore();
+                // Detecção de Proximidade (Exibição Inteligente no Quadro Inferior)
+                let distanceToDoor = Math.hypot(player.x - (d.x + d.width/2), player.y - (d.y + d.height/2));
+                if (distanceToDoor < 75) {
+                    playerNearAnyDoor = true;
+                    document.getElementById('door-inspector').innerHTML = `
+                        <strong class="text-cyan-400 block mb-0.5">Opção ${d.letter} (${d.cityName}):</strong>
+                        <span class="text-slate-200">${d.textProposed}</span>
+                    `;
+                }
 
-                // Checar se o Knight encostou/entrou na porta
+                // Gatilho de Entrada na Porta
                 if (player.x > d.x && player.x < d.x + d.width && player.y > d.y && player.y < d.y + d.height) {
-                    verificarEscolha(d);
+                    verificarPorta(d);
                 }
             });
 
-            // Atualizar e desenhar personagem
+            if (!playerNearAnyDoor && shade === null) {
+                document.getElementById('door-inspector').innerHTML = `<span class="text-slate-500 italic">Aproxima-te de uma das portas superiores para ler a sua proposta...</span>`;
+            } else if (shade !== null) {
+                document.getElementById('door-inspector').innerHTML = `<span class="text-red-400 font-bold animate-pulse"><i class="fa-solid fa-skull mr-1"></i> PORTAS TRANCADAS! Destrói a tua Sombra com o Prego antes de responder!</span>`;
+            }
+
+            // Atualização do Inimigo Sombra (Se ativo)
+            if (shade !== null) {
+                shade.update();
+                shade.draw();
+
+                // Colisão da Sombra causa dano direto
+                let distToKnight = Math.hypot(shade.x - player.x, shade.y - player.y);
+                if (distToKnight < shade.radius + player.radius) {
+                    player.hp--;
+                    updateHUD();
+                    player.x = canvas.width / 2;
+                    player.y = canvas.height - 40;
+
+                    if (player.hp <= 0) {
+                        gameActive = false;
+                        document.getElementById('game-over-screen').classList.remove('hidden');
+                    }
+                }
+            }
+
+            // Partículas
+            particles.forEach(p => { p.update(); p.draw(); });
+
+            // Jogador
             player.update();
             player.draw();
 
             requestAnimationFrame(gameLoop);
         }
 
-        // Função auxiliar para quebrar linhas de texto longas no Canvas automaticamente
-        function wrapText(context, text, x, y, maxWidth, lineHeight) {
-            let words = text.split(' ');
-            let line = '';
-            for(let n = 0; n < words.length; n++) {
-                let testLine = line + words[n] + ' ';
-                let metrics = context.measureText(testLine);
-                let testWidth = metrics.width;
-                if (testWidth > maxWidth && n > 0) {
-                    context.fillText(line, x, y);
-                    line = words[n] + ' ';
-                    y += lineHeight;
-                } else {
-                    line = testLine;
-                }
-            }
-            context.fillText(line, x, y);
-        }
-
         window.addEventListener('keydown', e => keys[e.key.toLowerCase()] = true);
         window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
+
+        function resetGame() {
+            document.getElementById('game-over-screen').classList.add('hidden');
+            document.getElementById('elderbug-dialog').classList.add('hidden');
+            activeDialog = false;
+            startGame();
+        }
     </script>
 </body>
 </html>
