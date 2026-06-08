@@ -209,24 +209,44 @@
                 this.radius = 15; this.speed = 4.8;
                 this.hp = 3; this.maxHp = 3;
                 this.attackCooldown = 0;
+                this.walkTimer = 0;
+                this.isMoving = false;
             }
             draw() {
                 ctx.save();
                 
-                // Sombra de Chão
+                // Sombra de Chão Estática
                 ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
                 ctx.beginPath();
                 ctx.ellipse(this.x, this.y + 12, 12, 4, 0, 0, Math.PI*2);
                 ctx.fill();
 
-                // Capa com gradiente místico de Hollow Knight
-                let cloakGrad = ctx.createLinearGradient(this.x, this.y, this.x, this.y + 14);
+                // Translação para o centro do personagem para rotação orgânica
+                ctx.translate(this.x, this.y);
+
+                let bob = 0;
+                let sway = 0;
+                if (this.isMoving) {
+                    bob = Math.abs(Math.sin(this.walkTimer)) * -3.2; // Movimento vertical de passo
+                    sway = Math.sin(this.walkTimer) * 0.08;        // Inclinação lateral
+                }
+
+                ctx.rotate(sway);
+
+                // Capa com gradiente místico ondulando suavemente
+                let cloakGrad = ctx.createLinearGradient(0, 0, 0, 14);
                 cloakGrad.addColorStop(0, '#2d3748');
                 cloakGrad.addColorStop(1, '#111827');
                 ctx.fillStyle = cloakGrad;
                 ctx.beginPath();
-                ctx.arc(this.x, this.y + 5, this.radius, 0, Math.PI, false);
+                ctx.save();
+                ctx.rotate(-sway * 0.4); // A capa ondula ligeiramente em sentido contrário
+                ctx.arc(0, 5, this.radius, 0, Math.PI, false);
                 ctx.fill();
+                ctx.restore();
+
+                // Aplica o efeito de passos ao resto da cabeça/máscara
+                ctx.translate(0, bob);
 
                 // Máscara (Cabeça com Cornos Icónicos)
                 ctx.fillStyle = '#f8fafc';
@@ -234,19 +254,19 @@
                 ctx.lineWidth = 3;
                 ctx.beginPath();
                 
-                // Desenho do contorno da cabeça e cornos curvados
-                ctx.moveTo(this.x - 10, this.y - 12);
+                // Desenho do contorno da cabeça e cornos curvados (coordenadas relativas a 0,0)
+                ctx.moveTo(-10, -12);
                 // Corno Esquerdo
-                ctx.quadraticCurveTo(this.x - 16, this.y - 28, this.x - 12, this.y - 34);
-                ctx.quadraticCurveTo(this.x - 8, this.y - 25, this.x - 4, this.y - 15);
+                ctx.quadraticCurveTo(-16, -28, -12, -34);
+                ctx.quadraticCurveTo(-8, -25, -4, -15);
                 // Topo da Cabeça
-                ctx.lineTo(this.x + 4, this.y - 15);
+                ctx.lineTo(4, -15);
                 // Corno Direito
-                ctx.quadraticCurveTo(this.x + 8, this.y - 25, this.x + 12, this.y - 34);
-                ctx.quadraticCurveTo(this.x + 16, this.y - 28, this.x + 10, this.y - 12);
+                ctx.quadraticCurveTo(8, -25, 12, -34);
+                ctx.quadraticCurveTo(16, -28, 10, -12);
                 // Curva Inferior da Máscara
-                ctx.quadraticCurveTo(this.x + 14, this.y + 4, this.x, this.y + 6);
-                ctx.quadraticCurveTo(this.x - 14, this.y + 4, this.x - 10, this.y - 12);
+                ctx.quadraticCurveTo(14, 4, 0, 6);
+                ctx.quadraticCurveTo(-14, 4, -10, -12);
                 
                 ctx.closePath();
                 ctx.fill();
@@ -255,15 +275,15 @@
                 // Olhos Pretos Característicos
                 ctx.fillStyle = '#020617';
                 ctx.beginPath();
-                ctx.ellipse(this.x - 5, this.y - 4, 3, 5, 0, 0, Math.PI * 2);
-                ctx.ellipse(this.x + 5, this.y - 4, 3, 5, 0, 0, Math.PI * 2);
+                ctx.ellipse(-5, -4, 3, 5, 0, 0, Math.PI * 2);
+                ctx.ellipse(5, -4, 3, 5, 0, 0, Math.PI * 2);
                 ctx.fill();
 
                 // Brilho nos Olhos (Alma residual)
                 ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
                 ctx.beginPath();
-                ctx.arc(this.x - 4, this.y - 5, 1, 0, Math.PI*2);
-                ctx.arc(this.x + 6, this.y - 5, 1, 0, Math.PI*2);
+                ctx.arc(-4, -5, 1, 0, Math.PI*2);
+                ctx.arc(6, -5, 1, 0, Math.PI*2);
                 ctx.fill();
                 
                 // Animação visual do golpe do Prego (Nail)
@@ -274,20 +294,44 @@
                     ctx.strokeStyle = 'rgba(103, 232, 249, 0.8)';
                     ctx.lineWidth = 5;
                     ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.radius + 18, -Math.PI / 3, Math.PI / 3);
+                    ctx.arc(0, 0, this.radius + 18, -Math.PI / 3, Math.PI / 3);
                     ctx.stroke();
                     ctx.restore();
                 }
                 ctx.restore();
             }
             update() {
-                if (activeDialog) return;
+                if (activeDialog) {
+                    this.isMoving = false;
+                    return;
+                }
                 if (this.attackCooldown > 0) this.attackCooldown--;
 
-                if (keys['w'] || keys['arrowup']) this.y -= this.speed;
-                if (keys['s'] || keys['arrowdown']) this.y += this.speed;
-                if (keys['a'] || keys['arrowleft']) this.x -= this.speed;
-                if (keys['d'] || keys['arrowright']) this.x += this.speed;
+                let moving = false;
+                if (keys['w'] || keys['arrowup']) { this.y -= this.speed; moving = true; }
+                if (keys['s'] || keys['arrowdown']) { this.y += this.speed; moving = true; }
+                if (keys['a'] || keys['arrowleft']) { this.x -= this.speed; moving = true; }
+                if (keys['d'] || keys['arrowright']) { this.x += this.speed; moving = true; }
+
+                this.isMoving = moving;
+                if (moving) {
+                    this.walkTimer += 0.22; // Avanço do relógio de animação
+                    
+                    // Emissão de poeira de alma azul sob os pés
+                    if (Math.random() < 0.18) {
+                        particles.push(new GameParticle(
+                            this.x + (Math.random() - 0.5) * 12,
+                            this.y + 12,
+                            'rgba(34, 211, 238, 0.25)',
+                            (Math.random() - 0.5) * 0.3,
+                            (Math.random() - 0.5) * 0.3,
+                            20,
+                            1.5
+                        ));
+                    }
+                } else {
+                    this.walkTimer = 0; // Para a animação suavemente
+                }
 
                 if (this.x < this.radius + 20) this.x = this.radius + 20;
                 if (this.x > canvas.width - this.radius - 20) this.x = canvas.width - this.radius - 20;
