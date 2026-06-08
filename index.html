@@ -3,556 +3,485 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hollow Knight: As Ruínas Magnéticas</title>
-    <!-- Tailwind CSS para design moderno e responsivo -->
+    <title>Hollow Knight: Magnetic Isaac</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome para ícones temáticos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Special+Elite&display=swap');
-        
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Special+Elite&display=swap');
         body {
-            background-color: #080a0f;
+            background-color: #030712;
             color: #d1d5db;
             font-family: 'Cinzel', serif;
-            background-image: radial-gradient(circle at center, #111827 0%, #030712 100%);
-            overflow-x: hidden;
+            user-select: none;
+            overflow: hidden;
         }
-
-        .text-narrative {
-            font-family: 'Special Elite', cursive;
-            line-height: 1.8;
+        canvas {
+            display: block;
+            background: radial-gradient(circle at center, #111827 0%, #030712 100%);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
         }
-
-        .hk-card {
-            background: rgba(13, 18, 30, 0.85);
-            border: 2px solid #374151;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(59, 130, 246, 0.15);
-            backdrop-filter: blur(8px);
-        }
-
-        .hk-blue-glow {
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
-            text-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
-        }
-
-        .mask-icon {
-            filter: drop-shadow(0 0 4px #fff);
-            transition: all 0.3s ease;
-        }
-
-        .mask-lost {
-            filter: grayscale(100%) brightness(30%) drop-shadow(0 0 0px #000);
-            opacity: 0.3;
-            transform: scale(0.9);
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-8px); }
-            100% { transform: translateY(0px); }
-        }
-
-        .float-animation {
-            animation: float 4s ease-in-out infinite;
-        }
-
-        .soul-orb {
-            box-shadow: 0 0 25px rgba(255, 255, 255, 0.7), inset 0 0 10px rgba(255, 255, 255, 0.5);
-            transition: height 0.5s ease;
+        .hk-ui {
+            font-family: 'Cinzel', serif;
+            text-shadow: 0 0 4px rgba(0,0,0,0.8);
         }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4 md:p-8">
+<body class="h-screen w-screen flex flex-col items-center justify-center p-2 relative">
 
-    <!-- CANVAS DE PARTÍCULAS EM SEGUNDO PLANO -->
-    <canvas id="ambient-canvas" class="absolute inset-0 pointer-events-none z-0"></canvas>
-
-    <!-- TELA DE INTRODUÇÃO COM BOTÃO PLAY -->
-    <div id="intro-screen" class="relative z-10 w-full max-w-2xl hk-card p-8 md:p-12 rounded-xl text-center flex flex-col items-center justify-center">
-        <div class="mb-4">
-            <span class="text-xs uppercase tracking-widest text-blue-400 font-semibold hk-blue-glow">RPG de Estudos de Física</span>
-        </div>
+    <div id="start-menu" class="absolute inset-0 bg-gray-950/95 z-50 flex flex-col items-center justify-center p-6 text-center">
+        <h1 class="text-4xl md:text-6xl font-bold tracking-wider text-slate-100 mb-2">HOLLOW KNIGHT</h1>
+        <h2 class="text-xl md:text-2xl text-blue-400 font-light mb-8 tracking-widest">As Ruínas Magnéticas (Isaac Style)</h2>
         
-        <h1 class="text-3xl md:text-5xl font-bold tracking-wider text-slate-100 mb-2" style="text-shadow: 0 0 15px rgba(255,255,255,0.2)">
-            HOLLOW KNIGHT
-        </h1>
-        <h2 class="text-xl md:text-2xl tracking-widest text-blue-300 font-light mb-8">
-            As Ruínas Magnéticas
-        </h2>
-
-        <!-- Ilustração do Knight e Ímã -->
-        <div class="relative w-48 h-48 mb-8 flex items-center justify-center">
-            <svg viewBox="0 0 200 200" class="w-full h-full float-animation">
-                <path d="M 40,100 C 40,40 160,40 160,100" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="5,5" opacity="0.6"/>
-                <path d="M 40,100 C 40,160 160,160 160,100" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="5,5" opacity="0.6"/>
-                <g transform="translate(100, 45) scale(0.75)">
-                    <rect x="-30" y="-10" width="30" height="20" fill="#dc2626" rx="2" />
-                    <rect x="0" y="-10" width="30" height="20" fill="#1e3a8a" rx="2" />
-                    <text x="-15" y="5" fill="white" font-family="sans-serif" font-weight="bold" font-size="12" text-anchor="middle">N</text>
-                    <text x="15" y="5" fill="white" font-family="sans-serif" font-weight="bold" font-size="12" text-anchor="middle">S</text>
-                </g>
-                <g transform="translate(100, 110)">
-                    <path d="M -25,-30 C -25,-30 -35,-5 -30,20 C -25,45 0,45 0,45 C 0,45 25,45 30,20 C 35,-5 25,-30 25,-30 C 25,-30 20,-55 35,-75 C 35,-75 22,-65 15,-48 C 5,-50 -5,-50 -15,-48 C -22,-65 -35,-75 -35,-75 C -35,-75 -20,-55 -25,-30 Z" fill="#f3f4f6" stroke="#1f2937" stroke-width="4"/>
-                    <ellipse cx="-10" cy="0" rx="6" ry="12" fill="#0b0f19" transform="rotate(-5, -10, 0)"/>
-                    <ellipse cx="10" cy="0" rx="6" ry="12" fill="#0b0f19" transform="rotate(5, 10, 0)"/>
-                    <path d="M -15,42 L -25,90 L 25,90 L 15,42 Z" fill="#2d3748" />
-                </g>
-            </svg>
+        <div class="max-w-md bg-slate-900/80 p-6 rounded-lg border border-slate-700 text-left font-sans text-sm mb-8 space-y-3 text-gray-300">
+            <p class="font-bold text-center text-blue-300 uppercase tracking-wider">Controlos do Recipiente:</p>
+            <p>⌨️ <strong class="text-white">W, A, S, D / Setas:</strong> Mover o Cavaleiro</p>
+            <p>🖱️ <strong class="text-white">Clique Esquerdo do Rato:</strong> Disparar Lágrimas de Energia</p>
+            <p>⎵ <strong class="text-white">Espaço:</strong> Alternar Polaridade Magnética (<span class="text-blue-400 font-bold">Norte/+</span> ou <span class="text-red-400 font-bold">Sul/-</span>)</p>
+            <hr class="border-slate-700 my-2">
+            <p class="text-xs text-gray-400">💡 <strong class="text-amber-400">Regra de Física:</strong> Dispara em inimigos com a polaridade OPOSTA à deles para causar dano massivo (Atração)! Disparar com a mesma polaridade causa pouca força e empurra-os levemente (Repulsão).</p>
         </div>
 
-        <p class="text-gray-400 text-sm md:text-base mb-8 max-w-md text-narrative">
-            "Para aqueles que buscam a verdade em Hollownest, as leis do invisível devem ser compreendidas. Estuda o magnetismo para sobreviver às profundezas."
-        </p>
-
-        <button onclick="iniciarJogo()" class="px-8 py-4 bg-blue-900/60 hover:bg-blue-800 border-2 border-blue-400 text-blue-200 font-bold rounded-lg text-lg tracking-widest transition-all duration-300 transform hover:scale-105 hover:hk-blue-glow">
-            <i class="fa-solid fa-gamepad mr-2"></i> ADENTRAR HOLLOWNEST (PLAY)
+        <button onclick="startGame()" class="px-8 py-4 bg-blue-900/50 hover:bg-blue-800 border-2 border-blue-400 text-blue-200 font-bold rounded-lg text-xl tracking-widest transition-all transform hover:scale-105">
+            INICIAR JORNADA
         </button>
     </div>
 
-    <!-- TELA DO JOGO (RPG PRINCIPAL) -->
-    <div id="game-screen" class="hidden relative z-10 w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        <!-- COLUNA DA ESQUERDA: STATUS DO JOGADOR -->
-        <div class="lg:col-span-4 flex flex-col gap-4">
-            <!-- Painel do Cavaleiro -->
-            <div class="hk-card p-5 rounded-lg flex flex-col gap-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-14 h-14 rounded-full bg-slate-900 border-2 border-slate-700 flex items-end justify-center overflow-hidden relative shadow-inner">
-                        <div id="soul-fill" class="soul-orb w-full bg-white opacity-90 h-3/4"></div>
-                        <span class="absolute inset-0 flex items-center justify-center text-[10px] text-slate-800 font-bold font-sans">SOUL</span>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-slate-200">The Knight</h3>
-                        <p class="text-xs text-blue-400 tracking-wider">Aventureiro de Física</p>
-                    </div>
-                </div>
-
-                <!-- Barra de Máscaras (Vida) -->
-                <div class="border-t border-slate-800 pt-3">
-                    <span class="text-xs text-gray-500 uppercase tracking-widest mb-2 block">Máscaras de Vida</span>
-                    <div class="flex gap-2" id="hearts-container"></div>
-                </div>
-
-                <!-- Equipamento / Prego -->
-                <div class="border-t border-slate-800 pt-3 flex justify-between items-center text-sm">
-                    <span class="text-gray-400"><i class="fa-solid fa-gavel mr-1 text-slate-500"></i> Prego (Nail):</span>
-                    <span class="text-blue-300 font-semibold" id="nail-level">Antigo Prego +1</span>
-                </div>
-            </div>
-
-            <!-- Ajuda de NPC: Elderbug -->
-            <div id="npc-panel" class="hk-card p-5 rounded-lg flex-1 flex flex-col justify-between border-l-4 border-l-blue-500">
-                <div>
-                    <div class="flex items-center gap-2 mb-2 text-blue-400">
-                        <i class="fa-solid fa-feather-pointed"></i>
-                        <span class="text-xs uppercase tracking-widest font-bold">Conselho de Ancião</span>
-                    </div>
-                    <div class="flex items-start gap-3">
-                        <div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-600 flex items-center justify-center flex-shrink-0">
-                            <i class="fa-solid fa-user-tie text-slate-400"></i>
-                        </div>
-                        <p id="npc-text" class="text-xs text-gray-300 text-narrative">
-                            "Ah, jovem viajante... Este santuário é moldado por forças que não vemos. Estuda o magnetismo para não perecer."
-                        </p>
-                    </div>
-                </div>
-                <div class="mt-4 text-[11px] text-gray-500 text-right">Elderbug</div>
-            </div>
+    <div id="physics-panel" class="absolute bottom-4 left-4 right-4 md:left-auto md:w-96 bg-slate-900/90 border border-slate-700 p-4 rounded-lg z-40 font-sans text-xs hidden">
+        <div class="flex items-center gap-2 text-blue-400 font-bold mb-1">
+            <i class="fa-solid fa-circle-info"></i> <span>CONSELHO DE ELDERBUG:</span>
         </div>
-
-        <!-- COLUNA DA DIREITA: NARRATIVA E DECISÕES -->
-        <div class="lg:col-span-8 hk-card p-6 md:p-8 rounded-lg flex flex-col justify-between min-h-[450px]">
-            <div>
-                <!-- Cabeçalho da Fase -->
-                <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
-                    <span id="phase-badge" class="text-xs bg-blue-950 text-blue-300 px-3 py-1 rounded-full border border-blue-800 font-sans font-semibold">Fase 1</span>
-                    <span id="phase-title" class="text-sm font-semibold tracking-wide text-slate-300">O Portão dos Polos Opostos</span>
-                </div>
-
-                <!-- Ilustração da fase/Esquema técnico -->
-                <div id="phase-illustration" class="w-full h-32 bg-slate-950/80 rounded-lg mb-5 border border-slate-800 flex items-center justify-center p-4"></div>
-
-                <!-- Texto Narrativo -->
-                <div id="story-text" class="text-narrative text-sm md:text-base text-gray-300 mb-6 space-y-4"></div>
-            </div>
-
-            <!-- Alternativas de Resposta -->
-            <div id="choices-container" class="flex flex-col gap-3"></div>
-        </div>
-
+        <p id="physics-tip" class="text-gray-300">Lembra-te: Cargas opostas atraem-se com força intensa! Se o inimigo for Vermelho (Sul), ataca-o com Azul (Norte) para o destruir depressa.</p>
     </div>
 
-    <!-- TELA DE VITÓRIA / DERROTA TOTAL -->
-    <div id="end-screen" class="hidden relative z-10 w-full max-w-md hk-card p-8 rounded-xl text-center flex flex-col items-center">
-        <div id="end-icon" class="text-6xl mb-4"></div>
-        <h2 id="end-title" class="text-2xl md:text-3xl font-bold tracking-wider mb-4">Fim da Jornada</h2>
-        <p id="end-message" class="text-gray-400 text-sm mb-8 text-narrative"></p>
-        <button onclick="reiniciarJogo()" class="px-6 py-3 bg-blue-900/60 hover:bg-blue-800 border border-blue-400 text-blue-200 font-bold rounded-lg tracking-widest transition-all duration-300 transform hover:scale-105">
-            RECOMEÇAR A JORNADA
+    <div id="game-hud" class="w-full max-w-4xl flex justify-between items-center mb-2 px-2 hk-ui hidden">
+        <div class="flex flex-col">
+            <span class="text-[10px] uppercase tracking-wider text-gray-500">Máscaras</span>
+            <div id="hp-container" class="flex gap-1.5 text-xl text-slate-100"></div>
+        </div>
+        <div class="flex flex-col items-center">
+            <span class="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Tua Polaridade</span>
+            <div id="polarity-badge" class="px-4 py-1 rounded text-xs font-bold transition-all duration-200 bg-blue-600 text-white shadow-[0_0_10px_rgba(59,130,246,0.5)]">
+                NORTE (+)
+            </div>
+        </div>
+        <div class="text-right">
+            <span class="text-[10px] uppercase tracking-wider text-gray-500 block">Almas Libertadas</span>
+            <span id="score-val" class="text-xl font-bold text-amber-400">0</span>
+        </div>
+    </div>
+
+    <div id="game-over-screen" class="absolute inset-0 bg-black/90 z-50 flex flex-col items-center justify-center p-6 text-center hidden">
+        <h2 id="game-over-title" class="text-4xl font-bold tracking-wider mb-4">A SUA ALMA DESVANACEU</h2>
+        <p id="game-over-msg" class="text-gray-400 max-w-md font-sans text-sm mb-8"></p>
+        <button onclick="resetGame()" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 border border-slate-500 text-white font-bold rounded transition-all">
+            TENTAR NOVAMENTE
         </button>
     </div>
 
-    <!-- SISTEMA DE ÁUDIO VIA WEB AUDIO API (Sintetizadores em código) -->
+    <canvas id="gameCanvas" width="800" height="500" class="rounded border border-slate-800 max-w-full hidden"></canvas>
+
     <script>
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-        function playSound(type) {
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-
-            if (type === 'click') {
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(440, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(110, audioCtx.currentTime + 0.15);
-                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.15);
-            } else if (type === 'hit') {
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(800, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.25);
-                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.25);
-            } else if (type === 'damage') {
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-                osc.frequency.linearRampToValueAtTime(30, audioCtx.currentTime + 0.4);
-                gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.45);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.45);
-            } else if (type === 'victory') {
-                const now = audioCtx.currentTime;
-                const notes = [261.63, 329.63, 392.00, 523.25];
-                notes.forEach((freq, index) => {
-                    const oscNote = audioCtx.createOscillator();
-                    const gainNote = audioCtx.createGain();
-                    oscNote.connect(gainNote);
-                    gainNote.connect(audioCtx.destination);
-                    
-                    oscNote.type = 'sine';
-                    oscNote.frequency.setValueAtTime(freq, now + index * 0.15);
-                    gainNote.gain.setValueAtTime(0.15, now + index * 0.15);
-                    gainNote.gain.exponentialRampToValueAtTime(0.01, now + index * 0.15 + 0.3);
-                    
-                    oscNote.start(now + index * 0.15);
-                    oscNote.stop(now + index * 0.15 + 0.35);
-                });
-            }
-        }
-    </script>
-
-    <!-- LÓGICA DO JOGO -->
-    <script>
-        let state = {
-            maxHp: 5,
-            hp: 5,
-            soul: 100,
-            nail: 1,
-            currentPhase: 0
-        };
-
-        const phases = [
-            {
-                id: 1,
-                badge: "Fase 1: Conceitos Básicos",
-                title: "O Portão dos Polos Opostos",
-                text: "Você se depara com um imenso portão de ferro cravado no fundo da caverna. Duas místicas pedras magnéticas (ímãs) bloqueiam a fechadura por atração. Um fantasma antigo avisa: 'Polos iguais se repelem; polos diferentes se atraem'. Para destravar o mecanismo você deve usar o magnetismo natural. Como agir?",
-                illustration: `
-                    <svg viewBox="0 0 400 100" class="w-full h-full">
-                        <g transform="translate(100, 50)">
-                            <rect x="-40" y="-15" width="40" height="30" fill="#dc2626" rx="2" />
-                            <rect x="0" y="-15" width="40" height="30" fill="#1e3a8a" rx="2" />
-                            <text x="-20" y="5" fill="white" font-family="sans-serif" font-weight="bold" font-size="14" text-anchor="middle">N</text>
-                            <text x="20" y="5" fill="white" font-family="sans-serif" font-weight="bold" font-size="14" text-anchor="middle">S</text>
-                        </g>
-                        <g transform="translate(300, 50)">
-                            <rect x="-40" y="-15" width="40" height="30" fill="#1e3a8a" rx="2" />
-                            <rect x="0" y="-15" width="40" height="30" fill="#dc2626" rx="2" />
-                            <text x="-20" y="5" fill="white" font-family="sans-serif" font-weight="bold" font-size="14" text-anchor="middle">S</text>
-                            <text x="20" y="5" fill="white" font-family="sans-serif" font-weight="bold" font-size="14" text-anchor="middle">N</text>
-                        </g>
-                        <path d="M 160,50 L 240,50" stroke="#60a5fa" stroke-width="2" stroke-dasharray="4,4"/>
-                        <polygon points="170,45 150,50 170,55" fill="#60a5fa" />
-                        <polygon points="230,45 250,50 230,55" fill="#60a5fa" />
-                    </svg>
-                `,
-                options: [
-                    {
-                        letter: "A",
-                        desc: "Alinhar o polo Norte (N) de um ímã diretamente contra o polo Norte (N) do outro.",
-                        correct: false,
-                        explanation: "Pense de novo, pequeno Knight. Polos magnéticos do mesmo nome repelem-se mutuamente. Se empurrar polos iguais uns contra os outros, a força de repulsão aumentará, disparando a armadilha do teto."
-                    },
-                    {
-                        letter: "B",
-                        desc: "Alinhar o polo Norte (N) de um ímã virado para o polo Sul (S) do outro.",
-                        correct: true,
-                        explanation: "Perfeito! Polos de nomes diferentes (Norte e Sul) exercem forças de atração mútua. Os ímãs encaixam-se magneticamente com perfeição e o portão abre-se."
-                    },
-                    {
-                        letter: "C",
-                        desc: "Cortar um dos ímãs ao meio com seu Prego para isolar apenas o polo Norte.",
-                        correct: false,
-                        explanation: "Infelizmente, isso viola o Princípio da Inseparabilidade dos Polos Magnéticos. Ao partir um ímã, novos polos surgem instantaneamente nas metades. Você apenas desperdiçou força!"
-                    }
-                ]
-            },
-            {
-                id: 2,
-                badge: "Fase 2: Imantação & Materiais",
-                title: "A Forja do Ferreiro de Pregos",
-                text: "O Ferreiro de Pregos (Nailsmith) das profundezas oferece-se para fortificar o seu Prego de ferro comum, mas precisa de magnetizá-lo para que atraia pequenos minérios. Ele pergunta-lhe: qual é o melhor método físico para transformar temporariamente um prego de ferro puro num ímã?",
-                illustration: `
-                    <svg viewBox="0 0 400 100" class="w-full h-full">
-                        <g transform="translate(140, 50)">
-                            <rect x="-80" y="-4" width="160" height="8" fill="#9ca3af" />
-                            <polygon points="-80,-10 -80,10 -100,0" fill="#9ca3af" />
-                            <rect x="80" y="-8" width="10" height="16" fill="#4b5563" />
-                        </g>
-                        <g transform="translate(260, 30)">
-                            <rect x="-20" y="-8" width="20" height="16" fill="#dc2626" />
-                            <rect x="0" y="-8" width="20" height="16" fill="#1e3a8a" />
-                            <text x="-10" y="4" fill="white" font-size="8" font-family="sans-serif" text-anchor="middle">N</text>
-                            <text x="10" y="4" fill="white" font-size="8" font-family="sans-serif" text-anchor="middle">S</text>
-                        </g>
-                        <path d="M 280,30 C 240,10 160,10 120,30" fill="none" stroke="#60a5fa" stroke-width="2" stroke-dasharray="4,4" />
-                    </svg>
-                `,
-                options: [
-                    {
-                        letter: "A",
-                        desc: "Esfregar continuamente um polo de um ímã forte ao longo do prego, sempre na mesma direção.",
-                        correct: true,
-                        explanation: "Brilhante! Esse processo (Imantação por Atrito) faz com que os domínios magnéticos desordenados do ferro se alinhem na mesma direção, tornando o prego um ímã temporário."
-                    },
-                    {
-                        letter: "B",
-                        desc: "Aquecer o prego de ferro no fogo da forja a altas temperaturas até ficar rubro.",
-                        correct: false,
-                        explanation: "O calor intenso agita os átomos e desorganiza completamente os domínios magnéticos, destruindo qualquer magnetização prévia (ponto Curie). O prego perderia as propriedades magnéticas!"
-                    },
-                    {
-                        letter: "C",
-                        desc: "Deixar o prego em repouso absoluto no escuro da masmorra longe de qualquer campo externo.",
-                        correct: false,
-                        explanation: "O repouso isolado não fornece energia para alinhar os domínios magnéticos desalinhados do ferro. O prego permaneceria inalterado."
-                    }
-                ]
-            },
-            {
-                id: 3,
-                badge: "Fase 3: Campo & Força Magnética",
-                title: "A Armadilha de Cargas no Ninho Profundo",
-                text: "No Ninho Profundo, você depara-se com partículas eletrizadas positivamente a moverem-se horizontalmente para a direita. Para evitar que o atinjam, um poderoso campo magnético uniforme está a apontar verticalmente para baixo no local. Usando a regra da mão direita para a força magnética, para onde essas partículas serão desviadas?",
-                illustration: `
-                    <svg viewBox="0 0 400 100" class="w-full h-full">
-                        <circle cx="80" cy="50" r="10" fill="#f59e0b" />
-                        <text x="80" y="54" fill="white" font-weight="bold" font-size="12" text-anchor="middle">+</text>
-                        <path d="M 100,50 L 150,50" stroke="#f59e0b" stroke-width="3" />
-                        <polygon points="145,45 155,50 145,55" fill="#f59e0b" />
-                        <g transform="translate(250, 20)">
-                            <text x="0" y="0" fill="#3b82f6" font-size="12" font-family="sans-serif">Campo B</text>
-                            <path d="M 25,10 L 25,50" stroke="#3b82f6" stroke-width="3" />
-                            <polygon points="20,45 25,55 30,45" fill="#3b82f6" />
-                        </g>
-                    </svg>
-                `,
-                options: [
-                    {
-                        letter: "A",
-                        desc: "Elas serão desviadas horizontalmente para fora do ecrã (em direção ao jogador).",
-                        correct: true,
-                        explanation: "Excelente uso da Regra da Mão Direita! Polegar no sentido da velocidade (direita), dedos no sentido do campo (baixo), a palma da mão aponta para fora da página (para si). As partículas desviam-se na sua direção de fuga."
-                    },
-                    {
-                        letter: "B",
-                        desc: "Elas serão desviadas horizontalmente para dentro do ecrã (afastando-se de si).",
-                        correct: false,
-                        explanation: "Se a carga fosse negativa, a força apontaria para as costas da mão (para dentro do ecrã). Como as partículas são positivas, a força vem da palma (para fora)."
-                    },
-                    {
-                        letter: "C",
-                        desc: "Elas continuarão em linha reta sem sofrer qualquer desvio.",
-                        correct: false,
-                        explanation: "Cargas elétricas em movimento numa região com campo magnético perpendicular sofrem a ação da Força de Lorentz, o que altera obrigatoriamente a trajetória das mesmas."
-                    }
-                ]
-            }
-        ];
-
-        // Partículas ambientais de fundo
-        const canvas = document.getElementById('ambient-canvas');
+        const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
+
+        // Estados do Jogo
+        let gameActive = false;
+        let score = 0;
+        let keys = {};
+        let mouse = { x: 0, y: 0 };
+        
+        // Entidades
+        let player;
+        let projectiles = [];
+        let enemies = [];
         let particles = [];
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        class Particle {
-            constructor() { this.reset(); }
-            reset() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2 + 1;
-                this.speedX = Math.random() * 0.4 - 0.2;
-                this.speedY = Math.random() * 0.5 + 0.1;
-                this.alpha = Math.random() * 0.5 + 0.2;
-            }
-            update() {
-                this.y -= this.speedY;
-                this.x += this.speedX;
-                if (this.y < 0) {
-                    this.reset();
-                    this.y = canvas.height;
-                }
+        // Configurações do Cavaleiro (Jogador)
+        class Knight {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.radius = 16;
+                this.speed = 4;
+                this.hp = 5;
+                this.maxHp = 5;
+                this.polarity = 'N'; // N (Norte/Positivo - Azul) ou S (Sul/Negativo - Vermelho)
+                this.invulnerableFrames = 0;
             }
             draw() {
-                ctx.fillStyle = `rgba(96, 165, 250, ${this.alpha})`;
+                ctx.save();
+                // Efeito de invulnerabilidade piscando
+                if (this.invulnerableFrames > 0 && Math.floor(this.invulnerableFrames / 4) % 2 === 0) {
+                    ctx.restore();
+                    return;
+                }
+                
+                // Desenhar Capa do Knight
+                ctx.fillStyle = '#374151';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y + 6, this.radius, 0, Math.PI, false);
+                ctx.fill();
+
+                // Desenhar Máscara Branca do Knight
+                ctx.fillStyle = '#f3f4f6';
+                ctx.strokeStyle = '#111827';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y - 4, this.radius - 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                // Olhos Pretos Característicos de Hollow Knight
+                ctx.fillStyle = '#090d16';
+                ctx.beginPath();
+                ctx.ellipse(this.x - 5, this.y - 4, 3, 6, 0, 0, Math.PI * 2);
+                ctx.ellipse(this.x + 5, this.y - 4, 3, 6, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Brilho da Aura Magnética ao redor do corpo
+                ctx.strokeStyle = this.polarity === 'N' ? '#3b82f6' : '#ef4444';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius + 4, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.restore();
+            }
+            update() {
+                if (this.invulnerableFrames > 0) this.invulnerableFrames--;
+
+                // Movimento pelas teclas
+                if (keys['w'] || keys['arrowup']) this.y -= this.speed;
+                if (keys['s'] || keys['arrowdown']) this.y += this.speed;
+                if (keys['a'] || keys['arrowleft']) this.x -= this.speed;
+                if (keys['d'] || keys['arrowright']) this.x += this.speed;
+
+                // Bloqueio de bordas da sala do mapa (Estilo Isaac)
+                if (this.x < this.radius + 20) this.x = this.radius + 20;
+                if (this.x > canvas.width - this.radius - 20) this.x = canvas.width - this.radius - 20;
+                if (this.y < this.radius + 20) this.y = this.radius + 20;
+                if (this.y > canvas.height - this.radius - 20) this.y = canvas.height - this.radius - 20;
+            }
+        }
+
+        // Configuração de Projéteis (Lágrimas Magnéticas)
+        class Tear {
+            constructor(x, y, targetX, targetY, polarity) {
+                this.x = x;
+                this.y = y;
+                this.radius = 6;
+                this.speed = 7;
+                this.polarity = polarity;
+                
+                let angle = Math.atan2(targetY - y, targetX - x);
+                this.vx = Math.cos(angle) * this.speed;
+                this.vy = Math.sin(angle) * this.speed;
+                this.life = 60; // Duração do tiro antes de sumir
+            }
+            draw() {
+                ctx.save();
+                ctx.fillStyle = this.polarity === 'N' ? '#60a5fa' : '#f87171';
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = this.polarity === 'N' ? '#3b82f6' : '#ef4444';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.life--;
+            }
+        }
+
+        // Inimigos: Criaturas com Carga Magnética Estática
+        class MagneticEnemy {
+            constructor(x, y, type) {
+                this.x = x;
+                this.y = y;
+                this.radius = 14;
+                this.speed = Math.random() * 1.2 + 0.8;
+                this.polarity = Math.random() > 0.5 ? 'N' : 'S'; // Azul ou Vermelho
+                this.hp = 3;
+                this.type = type; // Tipo decorativo
+            }
+            draw() {
+                ctx.save();
+                // Corpo do Inseto Infectado
+                ctx.fillStyle = this.polarity === 'N' ? '#1e40af' : '#991b1b';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Núcleo com Sinal Magnético (+ ou -)
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 14px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(this.polarity === 'N' ? '+' : '-', this.x, this.y);
+
+                // Brilho de Infecção de Hollownest ao redor do Inimigo
+                ctx.strokeStyle = this.polarity === 'N' ? '#2563eb' : '#dc2626';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius + 3, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.restore();
+            }
+            update() {
+                // Inteligência Artificial Simples: Persegue o Knight pela sala
+                let angle = Math.atan2(player.y - this.y, player.x - this.x);
+                this.x += Math.cos(angle) * this.speed;
+                this.y += Math.sin(angle) * this.speed;
+            }
+        }
+
+        // Partículas para Explosão e Impacto Visual
+        class Spark {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 3 + 1;
+                this.vx = (Math.random() - 0.5) * 4;
+                this.vy = (Math.random() - 0.5) * 4;
+                this.color = color;
+                this.alpha = 1;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.fillStyle = this.color;
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fill();
+                ctx.restore();
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.alpha -= 0.02;
             }
         }
 
-        for (let i = 0; i < 40; i++) particles.push(new Particle());
+        // Inicializadores de Interface Web
+        function startGame() {
+            document.getElementById('start-menu').classList.add('hidden');
+            document.getElementById('game-hud').classList.remove('hidden');
+            document.getElementById('physics-panel').classList.remove('hidden');
+            document.getElementById('gameCanvas').classList.remove('hidden');
+            
+            gameActive = true;
+            player = new Knight(canvas.width / 2, canvas.height / 2);
+            enemies = [];
+            projectiles = [];
+            particles = [];
+            score = 0;
+            
+            updateHUD();
+            spawnEnemyWave();
+            gameLoop();
+        }
 
-        function animate() {
+        function updateHUD() {
+            document.getElementById('score-val').innerText = score;
+            
+            // Renderiza as Máscaras de Vida (HP) do Cavaleiro
+            const hpContainer = document.getElementById('hp-container');
+            hpContainer.innerHTML = '';
+            for (let i = 0; i < player.maxHp; i++) {
+                if (i < player.hp) {
+                    hpContainer.innerHTML += '<i class="fa-solid fa-ghost text-slate-100 drop-shadow-[0_0_3px_rgba(255,255,255,0.8)]"></i>';
+                } else {
+                    hpContainer.innerHTML += '<i class="fa-solid fa-ghost opacity-20 text-gray-700"></i>';
+                }
+            }
+
+            // Atualiza a Identidade Visual do Badge de Polaridade
+            const badge = document.getElementById('polarity-badge');
+            if (player.polarity === 'N') {
+                badge.innerText = "NORTE (+)";
+                badge.className = "px-4 py-1 rounded text-xs font-bold bg-blue-600 text-white shadow-[0_0_10px_rgba(59,130,246,0.5)]";
+            } else {
+                badge.innerText = "SUL (-)";
+                badge.className = "px-4 py-1 rounded text-xs font-bold bg-red-600 text-white shadow-[0_0_10px_rgba(239,68,68,0.5)]";
+            }
+        }
+
+        // Mecânica de Ondas Dinâmicas de Inimigos
+        function spawnEnemyWave() {
+            if (!gameActive) return;
+            let count = Math.floor(score / 3) + 3; // Aumenta a dificuldade progressivamente
+            
+            for (let i = 0; i < count; i++) {
+                let x, y;
+                // Faz os inimigos surgirem apenas nas bordas das paredes exteriores da sala
+                if (Math.random() > 0.5) {
+                    x = Math.random() > 0.5 ? 40 : canvas.width - 40;
+                    y = Math.random() * (canvas.height - 80) + 40;
+                } else {
+                    x = Math.random() * (canvas.width - 80) + 40;
+                    y = Math.random() > 0.5 ? 40 : canvas.height - 40;
+                }
+                enemies.push(new MagneticEnemy(x, y, 'crawler'));
+            }
+
+            // Atualiza dicas com base física no painel inferior
+            const tips = [
+                "A Lei de Coulomb diz que cargas opostas têm atração mútua destrutiva. Altera a tua polaridade!",
+                "Se usares a mesma polaridade, a força de repulsão magnética vai afastar o inimigo sem lhe tirar muita vida.",
+                "Cuidado! Ficar encurralado nas paredes impede o Knight de desviar do fluxo de forças elétricas."
+            ];
+            document.getElementById('physics-tip').innerText = tips[Math.floor(Math.random() * tips.length)];
+        }
+
+        // Ciclo Principal do Jogo (Renderização por Frame)
+        function gameLoop() {
+            if (!gameActive) return;
+
+            // Limpa o canvas da sala de testes
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => {
+
+            // Desenha o Fundo da Sala (Muralhas e Linhas de Cenário)
+            ctx.strokeStyle = '#1f2937';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
+
+            // Atualiza e desenha o Cavaleiro
+            player.update();
+            player.draw();
+
+            // Gerenciamento de Projéteis (Lágrimas)
+            for (let i = projectiles.length - 1; i >= 0; i--) {
+                let t = projectiles[i];
+                t.update();
+                t.draw();
+
+                // Remove o tiro se sair dos limites ou perder vida útil
+                if (t.life <= 0 || t.x < 20 || t.x > canvas.width - 20 || t.y < 20 || t.y > canvas.height - 20) {
+                    projectiles.splice(i, 1);
+                    continue;
+                }
+
+                // Detecção de Colisão com Inimigos Magnéticos
+                for (let j = enemies.length - 1; j >= 0; j--) {
+                    let e = enemies[j];
+                    let dist = Math.hypot(t.x - e.x, t.y - e.y);
+
+                    if (dist < t.radius + e.radius) {
+                        // APLICAÇÃO DE FÍSICA: Atração (Polaridades Opostas) vs Repulsão (Iguais)
+                        let isOpposite = t.polarity !== e.polarity;
+                        
+                        // Explosão visual de faíscas coloridas
+                        for (let k = 0; k < 8; k++) {
+                            particles.push(new Spark(e.x, e.y, isOpposite ? '#f59e0b' : '#6b7280'));
+                        }
+
+                        if (isOpposite) {
+                            // Cargas opostas: Alta Atração / Dano Crítico Estilo Isaac!
+                            e.hp -= 1.5; 
+                            // Leve puxão magnético em direção à lágrima
+                        } else {
+                            // Mesma carga: Repulsão Magnética! Empurra o inimigo para trás
+                            let pushAngle = Math.atan2(e.y - t.y, e.x - t.x);
+                            e.x += Math.cos(pushAngle) * 20;
+                            e.y += Math.sin(pushAngle) * 20;
+                            e.hp -= 0.5;
+                        }
+
+                        // Remove a lágrima após o impacto
+                        projectiles.splice(i, 1);
+
+                        // Se o inimigo morrer
+                        if (e.hp <= 0) {
+                            enemies.splice(j, 1);
+                            score++;
+                            updateHUD();
+                            
+                            // Se a sala for totalmente limpa, invoca nova vaga
+                            if (enemies.length === 0) {
+                                spawnEnemyWave();
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+
+            // Gerenciamento e Atualização dos Inimigos
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                let e = enemies[i];
+                e.update();
+                e.draw();
+
+                // Colisão do Inimigo contra o Cavaleiro (Dano sofrido)
+                let distToPlayer = Math.hypot(e.x - player.x, e.y - player.y);
+                if (distToPlayer < e.radius + player.radius) {
+                    if (player.invulnerableFrames === 0) {
+                        player.hp--;
+                        player.invulnerableFrames = 60; // 1 segundo de imunidade temporária
+                        updateHUD();
+
+                        if (player.hp <= 0) {
+                            endGame(false);
+                        }
+                    }
+                }
+            }
+
+            // Atualiza efeitos visuais de poeira e faíscas
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let p = particles[i];
                 p.update();
                 p.draw();
-            });
-            requestAnimationFrame(animate);
-        }
-        animate();
-
-        // Controlos da Interface
-        function iniciarJogo() {
-            playSound('click');
-            document.getElementById('intro-screen').classList.add('hidden');
-            document.getElementById('game-screen').classList.remove('hidden');
-            atualizarUI();
-            carregarFase();
-        }
-
-        function atualizarUI() {
-            const heartsContainer = document.getElementById('hearts-container');
-            heartsContainer.innerHTML = '';
-            for (let i = 0; i < state.maxHp; i++) {
-                const mask = document.createElement('i');
-                mask.className = `fa-solid fa-ghost text-2xl mask-icon ${i < state.hp ? 'text-slate-100' : 'mask-lost'}`;
-                heartsContainer.appendChild(mask);
+                if (p.alpha <= 0) particles.splice(i, 1);
             }
 
-            const soulFill = document.getElementById('soul-fill');
-            soulFill.style.height = `${state.soul}%`;
-
-            document.getElementById('nail-level').innerText = `Antigo Prego +${state.nail}`;
+            requestAnimationFrame(gameLoop);
         }
 
-        function carregarFase() {
-            const phase = phases[state.currentPhase];
-            
-            document.getElementById('phase-badge').innerText = phase.badge;
-            document.getElementById('phase-title').innerText = phase.title;
-            document.getElementById('phase-illustration').innerHTML = phase.illustration;
-            document.getElementById('story-text').innerText = phase.text;
-
-            const choicesContainer = document.getElementById('choices-container');
-            choicesContainer.innerHTML = '';
-
-            phase.options.forEach(opt => {
-                const btn = document.createElement('button');
-                btn.className = "w-full text-left p-4 rounded bg-slate-900 hover:bg-blue-950/60 border border-slate-800 hover:border-blue-700 transition-all duration-200 text-sm md:text-base flex gap-3 items-center group";
-                btn.innerHTML = `
-                    <span class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center font-bold text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition-all duration-200">${opt.letter}</span>
-                    <span class="flex-1 text-gray-300 group-hover:text-slate-100">${opt.desc}</span>
-                `;
-                btn.onclick = () => responder(opt);
-                choicesContainer.appendChild(btn);
-            });
+        // Fim da Partida
+        function endGame(victory) {
+            gameActive = false;
+            document.getElementById('game-over-screen').classList.remove('hidden');
+            document.getElementById('game-over-msg').innerText = `Tu purificaste as masmorras de ${score} entidades carregadas eletricamente, mas o colapso dos campos magnéticos destruiu a tua armadura de metal. Estuda as cargas e tenta de novo!`;
         }
 
-        function responder(opcao) {
-            if (opcao.correct) {
-                playSound('victory');
-                state.soul = Math.min(100, state.soul + 25);
-                state.nail += 1;
-                
-                document.getElementById('npc-text').innerText = `"Brilhante, Knight! O seu prego vibra com o fluxo invisível do magnetismo. Continua adiante!"`;
-                
-                state.currentPhase++;
-                if (state.currentPhase < phases.length) {
-                    atualizarUI();
-                    carregarFase();
-                } else {
-                    fimDeJogo(true);
-                }
-            } else {
-                playSound('damage');
-                state.hp--;
-                state.soul = Math.max(0, state.soul - 15);
-                
-                document.getElementById('npc-text').innerText = `"${opcao.explanation}"`;
-                
-                atualizarUI();
+        function resetGame() {
+            document.getElementById('game-over-screen').classList.add('hidden');
+            startGame();
+        }
 
-                if (state.hp <= 0) {
-                    fimDeJogo(false);
+        // CAPTURA DE EVENTOS DE ENTRADA DO JOGADOR
+        window.addEventListener('keydown', (e) => {
+            keys[e.key.toLowerCase()] = true;
+
+            // Mecânica Alternar Polaridade (Barra de Espaço)
+            if (e.key === ' ' || e.code === 'Space') {
+                if (gameActive) {
+                    e.preventDefault();
+                    player.polarity = player.polarity === 'N' ? 'S' : 'N';
+                    updateHUD();
                 }
             }
-        }
+        });
 
-        function fimDeJogo(vitoria) {
-            document.getElementById('game-screen').classList.add('hidden');
-            document.getElementById('end-screen').classList.remove('hidden');
+        window.addEventListener('keyup', (e) => {
+            keys[e.key.toLowerCase()] = false;
+        });
 
-            const icon = document.getElementById('end-icon');
-            const title = document.getElementById('end-title');
-            const msg = document.getElementById('end-message');
-
-            if (vitoria) {
-                icon.innerHTML = '<i class="fa-solid fa-crown text-yellow-500 float-animation"></i>';
-                title.innerText = "Santuário Conquistado!";
-                title.className = "text-2xl md:text-3xl font-bold tracking-wider mb-4 text-yellow-400";
-                msg.innerText = "Decifrou todas as propriedades invisíveis do Magnetismo, domou as forças de atração de Hollownest e conquistou o lendário Amuleto Magnético de Puro Ouro! O seu prego agora brilha com pura indução elétrica.";
-            } else {
-                icon.innerHTML = '<i class="fa-solid fa-skull-crossbones text-red-500"></i>';
-                title.innerText = "A sua Alma Desvaneceu...";
-                title.className = "text-2xl md:text-3xl font-bold tracking-wider mb-4 text-red-500";
-                msg.innerText = "As forças magnéticas descontroladas arremessaram espinhos contra si. As suas máscaras partiram-se e regressou ao vazio das masmorras. Tente novamente para dominar a física!";
-            }
-        }
-
-        function reiniciarJogo() {
-            playSound('click');
-            state.hp = 5;
-            state.soul = 100;
-            state.nail = 1;
-            state.currentPhase = 0;
+        // Evento de Disparar Lágrimas com o Rato
+        window.addEventListener('mousedown', (e) => {
+            if (!gameActive) return;
             
-            document.getElementById('npc-text').innerText = `"Ah, jovem viajante... Este santuário é moldado por forças que não vemos. Estuda o magnetismo para não perecer."`;
-            document.getElementById('end-screen').classList.add('hidden');
-            document.getElementById('game-screen').classList.remove('hidden');
-            
-            atualizarUI();
-            carregarFase();
-        }
+            // Descobre a posição real do clique relativa ao Canvas
+            const rect = canvas.getBoundingClientRect();
+            const canvasX = e.clientX - rect.left;
+            const canvasY = e.clientY - rect.top;
+
+            // Dispara a lágrima de energia baseada na polaridade atual do Knight
+            projectiles.push(new Tear(player.x, player.y, canvasX, canvasY, player.polarity));
+        });
     </script>
 </body>
 </html>
