@@ -4,15 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hollow Knight: O Santuário dos Polos</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- KaTeX para as fórmulas -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
-
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght=500;700&family=Lora:ital,wght=0,500;1,400&display=swap');
         
@@ -62,17 +56,27 @@
             height: 20px;
             border-radius: 50%;
         }
+
+        /* Estilização especial para equações inline ficarem destacadas e legíveis */
+        .equation-highlight {
+            font-family: 'Cambria', 'Georgia', serif;
+            font-style: italic;
+            color: #22d3ee;
+            background: rgba(14, 116, 144, 0.2);
+            padding: 1px 6px;
+            border-radius: 4px;
+            border: 1px solid rgba(34, 211, 238, 0.3);
+        }
     </style>
 </head>
 <body class="h-screen w-screen flex flex-col items-center justify-center p-3 relative">
     
     <div class="vignette"></div>
 
-    <!-- TELA INICIAL (MENU) -->
     <div id="start-menu" class="absolute inset-0 bg-slate-950/98 z-50 flex flex-col items-center justify-center p-6 text-center">
         <div class="hk-border p-12 max-w-xl flex flex-col items-center">
             <h1 class="text-4xl md:text-5xl font-bold tracking-widest text-slate-200 mb-2">HOLLOW KNIGHT</h1>
-            <h2 class="text-md text-cyan-400 font-light mb-8 tracking-widest uppercase">O Santuário dos Polos v3</h2>
+            <h2 class="text-md text-cyan-400 font-light mb-8 tracking-widest uppercase">O Santuário dos Polos v3.1</h2>
             <p class="hk-font-serif text-base text-slate-400 italic mb-8 max-w-md">
                 "Supere o Quiz de 5 desafios aleatórios extraídos do grande arquivo. Se falhar, você será banido para a Sala de Purificação para aprender antes de retornar."
             </p>
@@ -82,7 +86,6 @@
         </div>
     </div>
 
-    <!-- HUD GERAL -->
     <div id="game-hud" class="w-full max-w-5xl justify-between items-center mb-3 px-4 hidden flex">
         <div class="flex flex-col">
             <span class="text-[10px] tracking-widest text-slate-500 mb-1">MÁSCARAS DE VIDA</span>
@@ -99,11 +102,9 @@
         </div>
     </div>
 
-    <!-- PAINEL DE COMUNICADOS -->
     <div id="display-panel" class="w-full max-w-5xl hk-border p-5 mb-3 hidden font-sans min-h-[160px] flex flex-col justify-center">
         <div id="theory-display" class="w-full text-center"></div>
         
-        <!-- Painel de Arena de Enigmas -->
         <div id="arena-interface" class="hidden grid grid-cols-1 md:grid-cols-12 gap-4 w-full">
             <div class="md:col-span-8 border-r border-slate-900 pr-4 flex flex-col justify-between">
                 <div>
@@ -121,7 +122,6 @@
         </div>
     </div>
 
-    <!-- TELA DE RESULTADOS FINAIS (NOVA) -->
     <div id="victory-screen" class="absolute inset-0 bg-slate-950/98 z-50 flex flex-col items-center justify-center p-6 text-center hidden">
         <div class="hk-border p-12 max-w-xl flex flex-col items-center">
             <h2 class="text-3xl font-bold tracking-widest text-cyan-400 mb-2">ARQUIVO FINALIZADO</h2>
@@ -143,7 +143,6 @@
         </div>
     </div>
 
-    <!-- GAME OVER -->
     <div id="game-over-screen" class="absolute inset-0 bg-slate-950/95 z-50 flex flex-col items-center justify-center p-6 text-center hidden">
         <div class="max-w-sm space-y-4">
             <h2 class="text-3xl font-bold tracking-widest text-red-500">O RECIPIENTE QUEBROU</h2>
@@ -154,7 +153,6 @@
         </div>
     </div>
 
-    <!-- CANVAS DO JOGO -->
     <div class="hk-border rounded-sm overflow-hidden hidden shadow-2xl" id="canvas-wrap">
         <canvas id="gameCanvas" width="1000" height="340"></canvas>
     </div>
@@ -185,7 +183,7 @@
 
         // Murais de Estudo Sala 2
         const theoryBoards = [
-            { x: 150, y: 110, w: 300, h: 100, title: "📜 LEI DE GAUSS DO MAGNETISMO", text: "As linhas de campo magnético são sempre circuitadas e fechadas. O fluxo através de superfícies tridimensionais fechadas é nulo: $\\oint \\vec{B} \\cdot d\\vec{A} = 0$. Isto atesta a inexistência de monopolos isolados.", example: "Exemplo Prático: Se fraturar um ímã macroscópico, seus dipolos atômicos formam instantaneamente novos polos Norte/Sul." },
+            { x: 150, y: 110, w: 300, h: 100, title: "📜 LEI DE GAUSS DO MAGNETISMO", text: "As linhas de campo magnético são sempre circuitadas e fechadas. O fluxo através de superfícies tridimensionais fechadas é nulo: <span class='equation-highlight'>∮ B · dA = 0</span>. Isto atesta a inexistência de monopolos isolados.", example: "Exemplo Prático: Se fraturar um ímã macroscópico, seus dipolos atômicos formam instantaneamente novos polos Norte/Sul." },
             { x: 550, y: 110, w: 300, h: 100, title: "🚀 TECNOLOGIA DE CAMPOS DINÂMICOS", text: "Campos magnéticos variantes geram forças motoras e armazenamento de dados por meio da variação espacial ou de correntes indutivas.", example: "Exemplos Reais: Trens Maglev utilizam supercondutores e bobinas para levitação eliminando o atrito mecânico da pista." }
         ];
 
@@ -195,7 +193,7 @@
         const doorColors = ["#cbd5e1", "#577399", "#495867", "#fe5f55", "#bdd6d2"];
         let doors = [];
 
-        // BANCO DE DADOS COMPLETO - 10 QUESTÕES DE ELETROMAGNETISMO
+        // BANCO DE DADOS COMPLETO COM EQUAÇÕES FORMATADAS MANUALMENTE
         const bancoPerguntasGeral = [
             {
                 category: "Cidade das Lágrimas",
@@ -224,7 +222,7 @@
             {
                 category: "Borda do Reino",
                 bgGradient: ["#1e293b", "#0f172a"], particleType: "RAIN", themeId: "CITY",
-                q: "A cinza cai sobre a Borda do Reino. Um condutor retilíneo longo é percorrido por uma corrente elétrica constante $I$. O que se gera circularmente ao redor desse fio?",
+                q: "A cinza cai sobre a Borda do Reino. Um condutor retilíneo longo é percorrido por uma corrente elétrica constante <span class='equation-highlight'>I</span>. O que se gera circularmente ao redor desse fio?",
                 options: ["Uma onda gravitacional estacionária.", "Um campo magnético cujas linhas são circunferências concêntricas ao condutor.", "Um campo eletrostático perfeitamente uniforme e paralelo ao eixo do condutor.", "Um vácuo de indução magnética absoluto.", "Um campo de força nuclear forte polarizado."],
                 correctIndex: 1, explanation: "Conforme o Experimento de Oersted verificado na Bobina do laboratório, cargas elétricas em movimento geram um campo magnético induzido circular e concêntrico ao fio.",
                 svgs: [`<svg width="140" height="70"><line x1="10" y1="35" x2="130" y2="35" stroke="#94a3b8"/></svg>`,`<svg width="140" height="70"><circle cx="70" cy="35" r="22" fill="none" stroke="#38bdf8" stroke-width="2"/><circle cx="70" cy="35" r="3" fill="#38bdf8"/></svg>`,`<svg width="140" height="70"><line x1="20" y1="20" x2="120" y2="20" stroke="#ff0"/><line x1="20" y1="50" x2="120" y2="50" stroke="#ff0"/></svg>`,`<svg width="140" height="70"><rect x="30" y="20" width="80" height="30" fill="none" stroke="#475569" stroke-dasharray="4"/></svg>`,`<svg width="140" height="70"><path d="M10,10 L130,60" stroke="#ef4444"/></svg>`]
@@ -248,8 +246,8 @@
             {
                 category: "Páramo dos Ventos",
                 bgGradient: ["#334155", "#0f172a"], particleType: "RAIN", themeId: "CITY",
-                q: "A lei de Gauss para o magnetismo, escrita na forma integrável como $\\oint \\vec{B} \\cdot d\\vec{A} = 0$, dita qual propriedade do espaço?",
-                options: ["Que a carga elétrica e magnética são idênticas.", "Que as linhas de campo são abertas espirais matemáticas.", "A impossibilidade de isolar monopolos magnéticos na natureza.", "A conservação direta da energia mecânica translacional.", "O decaimento exponencial do campo com o cubo do raio."],
+                q: "A lei de Gauss para o magnetismo, escrita na forma integrável como <span class='equation-highlight'>∮ B · dA = 0</span>, dita qual propriedade do espaço?",
+                options: ["Que a carga elétrica e magnética são idênticas.", "Que as lines de campo são abertas espirais matemáticas.", "A impossibilidade de isolar monopolos magnéticos na natureza.", "A conservação direta da energia mecânica translacional.", "O decaimento exponencial do campo com o cubo do raio."],
                 correctIndex: 2, explanation: "Se a integral do fluxo magnético em uma superfície fechada é sempre zero, significa que toda linha que entra deve sair. Portanto, não existem fontes isoladas (monopolos).",
                 svgs: [`<svg width="140" height="70"><text x="70" y="40" fill="#fff" text-anchor="middle">q = 0</text></svg>`,`<svg width="140" height="70"><path d="M10,10 Q40,60 130,10" fill="none" stroke="#fff"/></svg>`,`<svg width="140" height="70"><circle cx="70" cy="35" r="20" fill="none" stroke="#38bdf8"/><line x1="50" y1="35" x2="90" y2="35" stroke="#ef4444"/><text x="70" y="30" fill="#ef4444" font-size="8" text-anchor="middle">Inseparável</text></svg>`,`<svg width="140" height="70"><rect x="20" y="20" width="100" height="30" fill="#1e293b"/></svg>`,`<svg width="140" height="70"><circle cx="70" cy="35" r="5" fill="#fff"/></svg>`]
             },
@@ -265,8 +263,8 @@
                 category: "O Abismo",
                 bgGradient: ["#02040a", "#000000"], particleType: "WEB", themeId: "LAB",
                 q: "Uma partícula carregada positivamente penetra paralelamente às linhas de um campo magnético uniforme. Qual será a força magnética executada sobre ela?",
-                options: ["A força magnética será nula ($F_m = 0$), mantendo movimento retilíneo uniforme.", "A partícula executará movimento circular uniforme imediatamente.", "A trajetória desvia-se formando uma hélice tridimensional perfeita.", "A carga desacelera bruscamente até parar e converter-se em antimatéria.", "Gera-se uma força perpendicular máxima regida pela regra da mão direita."],
-                correctIndex: 0, explanation: "A equação da força magnética sobre cargas é $F_m = q \cdot v \cdot B \cdot \sin(\theta)$. Se penetra de forma paralela, $\theta = 0^{\circ}$, logo $\sin(0) = 0$ e a força resultante é nula.",
+                options: ["A força magnética será nula (<span class='equation-highlight'>Fm = 0</span>), mantendo movimento retilíneo uniforme.", "A partícula executará movimento circular uniforme imediatamente.", "A trajetória desvia-se formando uma hélice tridimensional perfeita.", "A carga desacelera bruscamente até parar e converter-se em antimatéria.", "Gera-se uma força perpendicular máxima regida pela regra da mão direita."],
+                correctIndex: 0, explanation: "A equação da força magnética sobre cargas é <span class='equation-highlight'>Fm = q · v · B · sen(θ)</span>. Se penetra de forma paralela, θ = 0°, logo sen(0) = 0 e a força resultante é nula.",
                 svgs: [`<svg width="140" height="70"><line x1="10" y1="20" x2="130" y2="20" stroke="#fff" stroke-dasharray="2"/><circle cx="50" cy="20" r="5" fill="#38bdf8"/><text x="70" y="40" fill="#38bdf8" font-size="10">F = 0</text></svg>`,`<svg width="140" height="70"><circle cx="70" cy="35" r="15" fill="none" stroke="#ef4444" stroke-width="2"/></svg>`,`<svg width="140" height="70"><path d="M10,35 Q40,10 70,35 T130,35" fill="none" stroke="#a855f7"/></svg>`,`<svg width="140" height="70"><rect x="60" y="20" width="20" height="30" fill="#fff"/></svg>`,`<svg width="140" height="70"><line x1="70" y1="10" x2="70" y2="60" stroke="#ff0" stroke-width="2"/></svg>`]
             },
             {
@@ -282,18 +280,15 @@
         // FUNÇÃO DE EMBARALHAMENTO (FISHER-YATES SHUFFLE)
         function prepararQuizDeCincoPerguntas() {
             let copiaBanco = [...bancoPerguntasGeral];
-            
-            // Embaralha o banco completo de forma caótica
             for (let i = copiaBanco.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [copiaBanco[i], copiaBanco[j]] = [copiaBanco[j], copiaBanco[i]];
             }
-            
-            // Pega os 5 primeiros elementos resultantes desse novo embaralhadora
             perguntasSelecionadas = copiaBanco.slice(0, 5);
             indicePerguntaAtual = 0;
         }
 
+        // ALTERAÇÃO CRÍTICA: Instanciação segura de objetos síncronos
         function iniciarJogo() {
             document.getElementById("start-menu").classList.add("hidden");
             document.getElementById("game-hud").classList.remove("hidden");
@@ -303,14 +298,27 @@
             
             prepararQuizDeCincoPerguntas();
             
-            player = new Knight(40, canvas.height - 50);
+            // Instancia o Knight com vida cheia garantindo o surgimento imediato
+            player = new Knight(60, canvas.height - 50);
+            player.hp = 3;
             atualizarHpHUD();
             
+            // Força reset visual do laboratório
+            labObjects[0].broken = false;
+            labObjects[1].mode = "REPELLING";
+            labObjects[2].active = false;
+
             currentPhase = "LAB_PRACTICE";
             activeTheme = "LAB";
             gerarParticulas("LAB");
-            gameActive = true;
-            gameLoop();
+            
+            // Liga o loop apenas quando as estruturas estão prontas em memória
+            if(!gameActive) {
+                gameActive = true;
+                gameLoop();
+            } else {
+                gameActive = true;
+            }
         }
 
         function transicionarParaTeoria() {
@@ -345,19 +353,13 @@
             document.getElementById("ambient-title").className = "text-xs font-bold tracking-widest text-pink-400 uppercase bg-slate-950/80 px-4 py-1.5 border border-slate-800 rounded-sm";
             
             document.getElementById("category-badge").innerText = `✦ Investigação Científica (${indicePerguntaAtual + 1}/5) ✦`;
-            document.getElementById("question-text").innerText = perguntaAtual.q;
+            document.getElementById("question-text").innerHTML = perguntaAtual.q;
             
             let optionsGuide = "";
             perguntaAtual.options.forEach((opt, index) => {
                 optionsGuide += `<div><span class="text-cyan-400 font-bold">[Porta ${doorLetters[index]}]</span> ${opt}</div>`;
             });
             document.getElementById("options-text-guide").innerHTML = optionsGuide;
-            
-            setTimeout(() => { 
-                if(typeof renderMathInElement === 'function') {
-                    renderMathInElement(document.getElementById("options-text-guide")); 
-                }
-            }, 15);
 
             doors = [];
             let w = 140; let h = 42;
@@ -380,7 +382,6 @@
             scoreVal.innerText = score;
             victoryScreen.classList.remove("hidden");
 
-            // Tags customizadas do universo do jogo de acordo com a pontuação
             if (score === 5) {
                 perfTag.innerText = "Receptáculo Divino (Perfeito)";
                 perfTag.className = "text-xs font-bold tracking-widest uppercase py-1 px-3 inline-block rounded-sm bg-emerald-950 text-emerald-400 border border-emerald-800";
@@ -394,7 +395,6 @@
         }
 
         function retornarAoMenu() {
-            // Esconde todas as camadas de telas de jogo/resultados
             document.getElementById("victory-screen").classList.add("hidden");
             document.getElementById("game-over-screen").classList.add("hidden");
             document.getElementById("canvas-wrap").classList.add("hidden");
@@ -402,11 +402,9 @@
             document.getElementById("game-hud").classList.add("hidden");
             document.getElementById("arena-interface").classList.add("hidden");
             
-            // Libera e exibe o menu inicial padrão
             document.getElementById("start-menu").classList.remove("hidden");
             document.getElementById("theory-display").classList.remove("hidden");
             
-            // Zera todos os estados internos de jogo de forma segura
             score = 0;
             indicePerguntaAtual = 0;
             activeDialog = false;
@@ -549,11 +547,11 @@
                                     `<span class='text-cyan-400 font-bold'>Estação 1: Ímã Maciço.</span> Golpeie o bloco com seu Ferrão para testar o princípio da indivisibilidade magnética.`;
                             } else if (obj.type === "POLARITY_SWITCH") {
                                 document.getElementById("theory-display").innerHTML = obj.mode === "REPELLING" ?
-                                    `<span class='text-rose-400 font-bold'>Observação Local:</span> Polos homônimos ($N \\leftrightarrow N$) repelem-se mutuamente.` :
-                                    `<span class='text-emerald-400 font-bold'>Observação Local:</span> Polos opostos ($N \\rightarrow S$) atraem-se firmemente.`;
+                                    `<span class='text-rose-400 font-bold'>Observação Local:</span> Polos homônimos (<span class='equation-highlight'>N ↔ N</span>) repelem-se mutuamente.` :
+                                    `<span class='text-emerald-400 font-bold'>Observação Local:</span> Polos opostos (<span class='equation-highlight'>N → S</span>) atraem-se firmemente.`;
                             } else if (obj.type === "ELECTROMAGNET") {
                                 document.getElementById("theory-display").innerHTML = obj.active ?
-                                    `<span class='text-orange-400 font-bold'>Observação Local:</span> Cargas elétricas ordenadas geram o vetor de campo magnético induzido $\\vec{B}$.` :
+                                    `<span class='text-orange-400 font-bold'>Observação Local:</span> Cargas elétricas ordenadas geram o vetor de campo magnético induzido <span class='equation-highlight'>B</span>.` :
                                     `<span class='text-slate-400 font-bold'>Estação 3: Eletroímã.</span> Golpeie o circuito para injetar corrente e criar indução artificial.`;
                             } else if (obj.type === "COMPASS") {
                                 document.getElementById("theory-display").innerHTML = `<span class='text-purple-400 font-bold'>Observação Local:</span> A agulha alinha-se de forma tangente ao campo magnético externo ambiente.`;
@@ -583,7 +581,6 @@
                                     <p class='text-emerald-400 text-xs italic font-medium'>${board.example}</p>
                                 </div>
                             `;
-                            setTimeout(() => { if(typeof renderMathInElement === 'function') renderMathInElement(document.getElementById("theory-display")); }, 5);
                         }
                     });
 
@@ -621,7 +618,6 @@
                             <p class="text-xs text-slate-500 italic mt-2">Atravesse o Portal Verde à direita para retornar ao Quiz!</p>
                         </div>
                     `;
-                    setTimeout(() => { if(typeof renderMathInElement === 'function') renderMathInElement(document.getElementById("theory-display")); }, 5);
 
                     if (this.x > transitionPortal.x - 5) {
                         retornarDaPurificacaoParaProximaPergunta();
@@ -656,7 +652,7 @@
             let container = document.getElementById("hp-container");
             container.innerHTML = "";
             for(let i=0; i<3; i++) {
-                if(i < player.hp) container.innerHTML += `<span class="mask-hp"></span>`;
+                if(player && i < player.hp) container.innerHTML += `<span class="mask-hp"></span>`;
                 else container.innerHTML += `<span class="mask-hp broken"></span>`;
             }
         }
@@ -766,8 +762,10 @@
                 ctx.restore();
             }
 
-            player.update();
-            player.draw();
+            if(player) {
+                player.update();
+                player.draw();
+            }
             requestAnimationFrame(gameLoop);
         }
     </script>
