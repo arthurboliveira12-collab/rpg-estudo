@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hollow Knight: O Santuário dos Polos</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- KaTeX para as fórmulas -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
@@ -66,19 +68,21 @@
     
     <div class="vignette"></div>
 
+    <!-- TELA INICIAL (MENU) -->
     <div id="start-menu" class="absolute inset-0 bg-slate-950/98 z-50 flex flex-col items-center justify-center p-6 text-center">
         <div class="hk-border p-12 max-w-xl flex flex-col items-center">
             <h1 class="text-4xl md:text-5xl font-bold tracking-widest text-slate-200 mb-2">HOLLOW KNIGHT</h1>
-            <h2 class="text-md text-cyan-400 font-light mb-8 tracking-widest uppercase">O Santuário dos Polos v2</h2>
+            <h2 class="text-md text-cyan-400 font-light mb-8 tracking-widest uppercase">O Santuário dos Polos v3</h2>
             <p class="hk-font-serif text-base text-slate-400 italic mb-8 max-w-md">
                 "Supere o Quiz de 5 desafios aleatórios extraídos do grande arquivo. Se falhar, você será banido para a Sala de Purificação para aprender antes de retornar."
             </p>
             <button onclick="iniciarJogo()" class="px-8 py-3 bg-slate-900 border border-slate-700 hover:border-cyan-500 text-slate-200 text-sm tracking-widest transition-all transform hover:scale-105">
-                INICIAR DESAFIO DOS 5 PORTAIS
+                INICIAR JORNADA IMPREVISÍVEL
             </button>
         </div>
     </div>
 
+    <!-- HUD GERAL -->
     <div id="game-hud" class="w-full max-w-5xl justify-between items-center mb-3 px-4 hidden flex">
         <div class="flex flex-col">
             <span class="text-[10px] tracking-widest text-slate-500 mb-1">MÁSCARAS DE VIDA</span>
@@ -95,9 +99,11 @@
         </div>
     </div>
 
+    <!-- PAINEL DE COMUNICADOS -->
     <div id="display-panel" class="w-full max-w-5xl hk-border p-5 mb-3 hidden font-sans min-h-[160px] flex flex-col justify-center">
         <div id="theory-display" class="w-full text-center"></div>
         
+        <!-- Painel de Arena de Enigmas -->
         <div id="arena-interface" class="hidden grid grid-cols-1 md:grid-cols-12 gap-4 w-full">
             <div class="md:col-span-8 border-r border-slate-900 pr-4 flex flex-col justify-between">
                 <div>
@@ -115,26 +121,40 @@
         </div>
     </div>
 
+    <!-- TELA DE RESULTADOS FINAIS (NOVA) -->
     <div id="victory-screen" class="absolute inset-0 bg-slate-950/98 z-50 flex flex-col items-center justify-center p-6 text-center hidden">
         <div class="hk-border p-12 max-w-xl flex flex-col items-center">
-            <h2 class="text-3xl font-bold tracking-widest text-emerald-400 mb-4">SANTUÁRIO CONVERTIDO</h2>
-            <p class="hk-font-serif text-slate-300 text-base mb-6">Você completou o Quiz de 5 perguntas do laboratório e sintonizou sua mente com as correntes eletromagnéticas universais!</p>
-            <button onclick="resetGame()" class="px-8 py-3 bg-slate-900 border border-emerald-700 hover:border-emerald-400 text-slate-200 text-xs tracking-widest transition-all">
-                REINICIAR EXPERIMENTO
+            <h2 class="text-3xl font-bold tracking-widest text-cyan-400 mb-2">ARQUIVO FINALIZADO</h2>
+            <div class="text-xs text-slate-500 tracking-widest mb-6 uppercase">Resultados do Teste de Campo</div>
+            
+            <div class="bg-slate-900/60 border border-slate-800 p-6 rounded-sm w-full mb-6">
+                <div class="text-sm text-slate-400 uppercase tracking-widest mb-1">Sintonias Obtidas</div>
+                <div class="text-5xl font-bold text-slate-100 mb-3"><span id="final-score-val">0</span> <span class="text-xl text-slate-500">/ 5</span></div>
+                <div id="performance-tag" class="text-xs font-bold tracking-widest uppercase py-1 px-3 inline-block rounded-sm"></div>
+            </div>
+
+            <p class="hk-font-serif text-slate-400 text-sm italic mb-8 max-w-sm">
+                "Os polos magnéticos alteraram-se nos cruzamentos. Retornar agora reorganizará todas as salas com novos mistérios."
+            </p>
+
+            <button onclick="retornarAoMenu()" class="px-8 py-3 bg-slate-900 border border-slate-700 hover:border-cyan-400 text-slate-200 text-xs tracking-widest transition-all transform hover:scale-105">
+                VOLTAR AO MENU INICIAL
             </button>
         </div>
     </div>
 
+    <!-- GAME OVER -->
     <div id="game-over-screen" class="absolute inset-0 bg-slate-950/95 z-50 flex flex-col items-center justify-center p-6 text-center hidden">
         <div class="max-w-sm space-y-4">
             <h2 class="text-3xl font-bold tracking-widest text-red-500">O RECIPIENTE QUEBROU</h2>
             <p class="hk-font-serif text-slate-500 text-sm italic">Sua energia dissipou-se completamente antes de selar o templo...</p>
-            <button onclick="resetGame()" class="px-6 py-2 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-bold tracking-widest">
-                REFORJAR RECEPTÁCULO
+            <button onclick="retornarAoMenu()" class="px-6 py-2 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-bold tracking-widest">
+                RETORNAR AO MENU
             </button>
         </div>
     </div>
 
+    <!-- CANVAS DO JOGO -->
     <div class="hk-border rounded-sm overflow-hidden hidden shadow-2xl" id="canvas-wrap">
         <canvas id="gameCanvas" width="1000" height="340"></canvas>
     </div>
@@ -143,7 +163,7 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        // FASES: "LAB_PRACTICE", "THEORY_SANCTUARY", "ARENA", "PURIFICATION_ROOM"
+        // VARIÁVEIS DE ESTADO
         let currentPhase = "LAB_PRACTICE"; 
         let gameActive = false;
         let score = 0;
@@ -151,12 +171,11 @@
         let player;
         let activeDialog = false;
 
-        // Controle do Quiz Dinâmico de 5 Perguntas
         let perguntasSelecionadas = [];
         let indicePerguntaAtual = 0;
         let justificativaErroAtual = "";
 
-        // Objetos Interativos Sala 1
+        // Elementos Interativos Sala 1
         const labObjects = [
             { x: 80, y: 150, w: 110, h: 40, type: "BREAKABLE_MAGNET", broken: false, label: "1. Ímã Quebrável" },
             { x: 290, y: 150, w: 110, h: 40, type: "POLARITY_SWITCH", mode: "REPELLING", label: "2. Polos Ajustáveis" },
@@ -176,7 +195,7 @@
         const doorColors = ["#cbd5e1", "#577399", "#495867", "#fe5f55", "#bdd6d2"];
         let doors = [];
 
-        // BANCO DE DADOS EXPANDIDO - 10 QUESTÕES COMPLETA DE ELETROMAGNETISMO
+        // BANCO DE DADOS COMPLETO - 10 QUESTÕES DE ELETROMAGNETISMO
         const bancoPerguntasGeral = [
             {
                 category: "Cidade das Lágrimas",
@@ -239,7 +258,7 @@
                 bgGradient: ["#14532d", "#022c22"], particleType: "CRYSTAL", themeId: "CRYSTAL",
                 q: "O funcionamento tecnológico dos trens modernos de levitação (Maglev) fundamenta-se em qual princípio geométrico observado no laboratório?",
                 options: ["Atração coulombiana de capacitores de placas paralelas.", "Força mecânica de repulsão de polos magnéticos de mesma assinatura polar.", "Refração de ondas eletromagnéticas de altíssima frequência.", "Efeito Joule decorrente da resistência elétrica pura dos trilhos.", "Geração espontânea de monopolos instáveis temporários."],
-                correctIndex: 1, explanation: "Os trens Maglev aplicam potentes eletroímãs supercondutores configurados para gerar repulsão mútua entre o trem e os trilhos, anulando o atrito terrestre.",
+                correctIndex: 1, explanation: "Os trens Maglev aplicam potentes eletroímãs supercondutores configurados para gerar repulsão mútua entre o trem e os trilhos, abrindo mão do atrito terrestre.",
                 svgs: [`<svg width="140" height="70"><line x1="10" y1="45" x2="130" y2="45" stroke="#64748b" stroke-width="4"/></svg>`,`<svg width="140" height="70"><rect x="30" y="15" width="80" height="20" fill="#0ea5e9"/><rect x="30" y="42" width="80" height="8" fill="#475569"/><text x="70" y="30" fill="#fff" font-size="8" text-anchor="middle">↕ REPULSÃO</text></svg>`,`<svg width="140" height="70"><path d="M20,20 Q70,50 120,20" fill="none" stroke="#ff0"/></svg>`,`<svg width="140" height="70"><rect x="40" y="10" width="60" height="50" fill="#ef4444" opacity="0.3"/></svg>`,`<svg width="140" height="70"><circle cx="70" cy="35" r="12" fill="#fff"/></svg>`]
             },
             {
@@ -260,15 +279,18 @@
             }
         ];
 
+        // FUNÇÃO DE EMBARALHAMENTO (FISHER-YATES SHUFFLE)
         function prepararQuizDeCincoPerguntas() {
             let copiaBanco = [...bancoPerguntasGeral];
-            perguntasSelecionadas = [];
-            // Seleção puramente aleatória de 5 elementos não-repetidos
-            for (let i = 0; i < 5; i++) {
-                let idxAleatorio = Math.floor(Math.random() * copiaBanco.length);
-                perguntasSelecionadas.push(copiaBanco[idxAleatorio]);
-                copiaBanco.splice(idxAleatorio, 1);
+            
+            // Embaralha o banco completo de forma caótica
+            for (let i = copiaBanco.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [copiaBanco[i], copiaBanco[j]] = [copiaBanco[j], copiaBanco[i]];
             }
+            
+            // Pega os 5 primeiros elementos resultantes desse novo embaralhadora
+            perguntasSelecionadas = copiaBanco.slice(0, 5);
             indicePerguntaAtual = 0;
         }
 
@@ -308,9 +330,7 @@
 
         function carregarPerguntaQuizAtendida() {
             if (indicePerguntaAtual >= 5) {
-                // Fim do Quiz com Vitória!
-                gameActive = false;
-                document.getElementById("victory-screen").classList.remove("hidden");
+                mostrarResultadosFinais();
                 return;
             }
 
@@ -347,6 +367,54 @@
             }
         }
 
+        function mostrarResultadosFinais() {
+            gameActive = false;
+            document.getElementById("canvas-wrap").classList.add("hidden");
+            document.getElementById("display-panel").classList.add("hidden");
+            document.getElementById("game-hud").classList.add("hidden");
+            
+            const victoryScreen = document.getElementById("victory-screen");
+            const scoreVal = document.getElementById("final-score-val");
+            const perfTag = document.getElementById("performance-tag");
+            
+            scoreVal.innerText = score;
+            victoryScreen.classList.remove("hidden");
+
+            // Tags customizadas do universo do jogo de acordo com a pontuação
+            if (score === 5) {
+                perfTag.innerText = "Receptáculo Divino (Perfeito)";
+                perfTag.className = "text-xs font-bold tracking-widest uppercase py-1 px-3 inline-block rounded-sm bg-emerald-950 text-emerald-400 border border-emerald-800";
+            } else if (score >= 3) {
+                perfTag.innerText = "Guerreiro Sintonizado";
+                perfTag.className = "text-xs font-bold tracking-widest uppercase py-1 px-3 inline-block rounded-sm bg-cyan-950 text-cyan-400 border border-cyan-800";
+            } else {
+                perfTag.innerText = "Alma Dissipada";
+                perfTag.className = "text-xs font-bold tracking-widest uppercase py-1 px-3 inline-block rounded-sm bg-red-950 text-red-400 border border-red-900";
+            }
+        }
+
+        function retornarAoMenu() {
+            // Esconde todas as camadas de telas de jogo/resultados
+            document.getElementById("victory-screen").classList.add("hidden");
+            document.getElementById("game-over-screen").classList.add("hidden");
+            document.getElementById("canvas-wrap").classList.add("hidden");
+            document.getElementById("display-panel").classList.add("hidden");
+            document.getElementById("game-hud").classList.add("hidden");
+            document.getElementById("arena-interface").classList.add("hidden");
+            
+            // Libera e exibe o menu inicial padrão
+            document.getElementById("start-menu").classList.remove("hidden");
+            document.getElementById("theory-display").classList.remove("hidden");
+            
+            // Zera todos os estados internos de jogo de forma segura
+            score = 0;
+            indicePerguntaAtual = 0;
+            activeDialog = false;
+            gameActive = false;
+            
+            document.body.style.backgroundImage = "radial-gradient(circle at center, #091122 0%, #02040a 100%)";
+        }
+
         function banirParaSalaPurificacao(explicacaoText) {
             currentPhase = "PURIFICATION_ROOM";
             activeTheme = "DEEPNEST";
@@ -361,14 +429,13 @@
             document.getElementById("arena-interface").classList.add("hidden");
             document.getElementById("theory-display").classList.remove("hidden");
             
-            // O jogador renasce de forma estável no centro inferior da sala vermelha
             player.x = canvas.width / 2;
             player.y = canvas.height - 50;
-            activeDialog = false; // Garante o desbloqueio do Knight
+            activeDialog = false; 
         }
 
         function retornarDaPurificacaoParaProximaPergunta() {
-            indicePerguntaAtual++; // Passa para o próximo desafio
+            indicePerguntaAtual++; 
             document.getElementById("theory-display").classList.add("hidden");
             document.getElementById("arena-interface").classList.remove("hidden");
             currentPhase = "ARENA";
@@ -382,9 +449,9 @@
                 score++;
                 document.getElementById("score-val").innerText = score;
                 indicePerguntaAtual++;
-                carregarPerguntaQuizAtendida();
                 player.x = canvas.width / 2;
                 player.y = canvas.height - 50;
+                carregarPerguntaQuizAtendida();
             } else {
                 player.hp--;
                 atualizarHpHUD();
@@ -393,9 +460,25 @@
                     gameActive = false;
                     document.getElementById("game-over-screen").classList.remove("hidden");
                 } else {
-                    // Meca solicitada: Vai para a Sala de Purificação receber a explicação
                     banirParaSalaPurificacao(perguntaAtual.explanation);
                 }
+            }
+        }
+
+        let particles = [];
+        function gerarParticulas(tipo) {
+            particles = [];
+            let count = tipo === "RAIN" ? 55 : 25;
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: tipo === "CRYSTAL" ? Math.random() * 3 + 1 : Math.random() * 2 + 0.5,
+                    speedY: tipo === "RAIN" ? (Math.random() * 4 + 4) : -(Math.random() * 0.3 + 0.1),
+                    speedX: tipo === "RAIN" ? 0.3 : (Math.random() * 0.4 - 0.2),
+                    alpha: Math.random() * 0.6 + 0.2,
+                    color: tipo === "CRYSTAL" ? "#f472b6" : (tipo === "RAIN" ? "#38bdf8" : "#64748b")
+                });
             }
         }
 
@@ -427,12 +510,10 @@
                 ctx.strokeStyle = "#1e293b"; ctx.lineWidth = 2.5;
                 ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2); ctx.fill(); ctx.stroke();
                 
-                // Chifres
                 ctx.fillStyle = (currentPhase === "PURIFICATION_ROOM") ? "#fecaca" : "#e2e8f0";
                 ctx.beginPath(); ctx.moveTo(this.x - 7, this.y - 10); ctx.quadraticCurveTo(this.x - 10, this.y - 22, this.x - 6, this.y - 24); ctx.quadraticCurveTo(this.x - 3, this.y - 18, this.x - 2, this.y - 10); ctx.fill(); ctx.stroke();
                 ctx.beginPath(); ctx.moveTo(this.x + 7, this.y - 10); ctx.quadraticCurveTo(this.x + 10, this.y - 22, this.x + 6, this.y - 24); ctx.quadraticCurveTo(this.x + 3, this.y - 18, this.x + 2, this.y - 10); ctx.fill(); ctx.stroke();
                 
-                // Olhos de Vazio
                 ctx.fillStyle = "#090d16";
                 ctx.beginPath(); ctx.ellipse(this.x - 4, this.y - 1, 2.5, 4.5, 0.1, 0, Math.PI*2); ctx.ellipse(this.x + 4, this.y - 1, 2.5, 4.5, -0.1, 0, Math.PI*2); ctx.fill();
                 
@@ -542,7 +623,6 @@
                     `;
                     setTimeout(() => { if(typeof renderMathInElement === 'function') renderMathInElement(document.getElementById("theory-display")); }, 5);
 
-                    // Se cruzar o portal à direita, retorna purificado à arena
                     if (this.x > transitionPortal.x - 5) {
                         retornarDaPurificacaoParaProximaPergunta();
                     }
@@ -581,32 +661,6 @@
             }
         }
 
-        function resetGame() {
-            document.getElementById("game-over-screen").classList.add("hidden");
-            document.getElementById("victory-screen").classList.add("hidden");
-            document.getElementById("arena-interface").classList.add("hidden");
-            document.getElementById("theory-display").classList.remove("hidden");
-            
-            score = 0;
-            indicePerguntaAtual = 0;
-            prepararQuizDeCincoPerguntas();
-            
-            player.hp = 3;
-            activeDialog = false;
-            document.getElementById("score-val").innerText = score;
-            document.getElementById("quiz-progress-hud").innerText = "PROGRESSO: 0 / 5";
-            document.getElementById("ambient-title").innerText = "Sala 1: Laboratório de Experimentos Ativos";
-            document.getElementById("ambient-title").className = "text-xs font-bold tracking-widest text-cyan-400 uppercase bg-slate-950/60 px-4 py-1.5 border border-slate-800 rounded-sm";
-            document.body.style.backgroundImage = "radial-gradient(circle at center, #091122 0%, #02040a 100%)";
-            
-            currentPhase = "LAB_PRACTICE";
-            activeTheme = "LAB";
-            gerarParticulas("LAB");
-            player.x = 40; player.y = canvas.height - 50;
-            atualizarHpHUD();
-            gameActive = true;
-        }
-
         window.addEventListener('keydown', e => { 
             keys[e.key.toLowerCase()] = true; 
             if(e.key === " " || e.key === "Spacebar") handlePlayerAttack();
@@ -619,7 +673,7 @@
             
             desenharCenarioFundo();
 
-            // Partículas de ambiente
+            // Partículas
             particles.forEach(p => {
                 p.y += p.speedY; p.x += p.speedX;
                 if (p.y < 0 || p.y > canvas.height) { p.y = p.speedY > 0 ? 0 : canvas.height; p.x = Math.random() * canvas.width; }
@@ -628,7 +682,6 @@
                 ctx.globalAlpha = 1.0;
             });
 
-            // RENDERIZAÇÃO DA SALA 1
             if (currentPhase === "LAB_PRACTICE") {
                 labObjects.forEach(obj => {
                     ctx.save();
@@ -672,12 +725,10 @@
                     ctx.restore();
                 });
 
-                // Portal de Saída Verde
                 ctx.fillStyle = "rgba(16, 185, 129, 0.15)"; ctx.strokeStyle = "#10b981"; ctx.lineWidth = 3;
                 ctx.fillRect(transitionPortal.x, transitionPortal.y, transitionPortal.width, transitionPortal.height);
                 ctx.strokeRect(transitionPortal.x, transitionPortal.y, transitionPortal.width, transitionPortal.height);
             } 
-            // RENDERIZAÇÃO DA SALA 2 (MURAIS)
             else if (currentPhase === "THEORY_SANCTUARY") {
                 theoryBoards.forEach(board => {
                     ctx.save();
@@ -691,12 +742,10 @@
                     ctx.restore();
                 });
 
-                // Portal de Saída Ciano
                 ctx.fillStyle = "rgba(6, 182, 212, 0.15)"; ctx.strokeStyle = "#22d3ee"; ctx.lineWidth = 3;
                 ctx.fillRect(transitionPortal.x, transitionPortal.y, transitionPortal.width, transitionPortal.height);
                 ctx.strokeRect(transitionPortal.x, transitionPortal.y, transitionPortal.width, transitionPortal.height);
             } 
-            // RENDERIZAÇÃO DA SALA 3 (ARENA) E DA SALA 4 (SALA DE ERRO)
             else if (currentPhase === "ARENA") {
                 doors.forEach(d => {
                     ctx.save();
@@ -708,7 +757,6 @@
                 });
             }
             else if (currentPhase === "PURIFICATION_ROOM") {
-                // Renderiza o portal exclusivo de retorno na sala de erro
                 ctx.save();
                 ctx.fillStyle = "rgba(34, 197, 94, 0.2)"; ctx.strokeStyle = "#22c55e"; ctx.lineWidth = 3;
                 ctx.fillRect(transitionPortal.x, transitionPortal.y, transitionPortal.width, transitionPortal.height);
