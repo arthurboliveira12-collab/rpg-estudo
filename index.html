@@ -69,21 +69,19 @@
     <div id="start-menu" class="absolute inset-0 bg-slate-950/98 z-50 flex flex-col items-center justify-center p-6 text-center">
         <div class="hk-border p-12 max-w-xl flex flex-col items-center">
             <h1 class="text-4xl md:text-5xl font-bold tracking-widest text-slate-200 mb-2">HOLLOW KNIGHT</h1>
-            <h2 class="text-md text-cyan-400 font-light mb-8 tracking-widest uppercase">O Santuário dos Polos</h2>
-            
+            <h2 class="text-md text-cyan-400 font-light mb-8 tracking-widest uppercase">O Santuário dos Polos v2</h2>
             <p class="hk-font-serif text-base text-slate-400 italic mb-8 max-w-md">
-                "Atravesse as câmaras sagradas. Primeiro experimente a força, depois contemple a teoria ancestral e seus exemplos no mundo material antes de desafiar os portais."
+                "Supere o Quiz de 5 desafios aleatórios extraídos do grande arquivo. Se falhar, você será banido para a Sala de Purificação para aprender antes de retornar."
             </p>
-
             <button onclick="iniciarJogo()" class="px-8 py-3 bg-slate-900 border border-slate-700 hover:border-cyan-500 text-slate-200 text-sm tracking-widest transition-all transform hover:scale-105">
-                INICIAR JORNADA CIENTÍFICA
+                INICIAR DESAFIO DOS 5 PORTAIS
             </button>
         </div>
     </div>
 
     <div id="game-hud" class="w-full max-w-5xl justify-between items-center mb-3 px-4 hidden flex">
         <div class="flex flex-col">
-            <span class="text-[10px] tracking-widest text-slate-500 mb-1">MÁSCARAS DE ALMA</span>
+            <span class="text-[10px] tracking-widest text-slate-500 mb-1">MÁSCARAS DE VIDA</span>
             <div id="hp-container" class="flex gap-2"></div>
         </div>
         <div class="text-center">
@@ -92,8 +90,8 @@
             </span>
         </div>
         <div class="text-right">
-            <span class="text-[10px] tracking-widest text-slate-500 block mb-0.5">SINTONIAS</span>
-            <span id="score-val" class="text-2xl font-bold text-slate-200">0</span>
+            <span id="quiz-progress-hud" class="text-[10px] tracking-widest text-slate-500 block mb-0.5">PROGRESSO: 0 / 5</span>
+            <span class="text-[10px] text-cyan-500 block">SINTONIAS: <span id="score-val">0</span></span>
         </div>
     </div>
 
@@ -117,23 +115,20 @@
         </div>
     </div>
 
-    <div id="elderbug-dialog" class="absolute inset-x-4 top-1/4 max-w-xl mx-auto hk-border p-6 z-50 hidden">
-        <div class="flex items-start gap-4 font-sans">
-            <div class="w-12 h-12 rounded-full bg-slate-950 border border-slate-700 flex items-center justify-center text-xl flex-shrink-0 shadow-inner">👁️</div>
-            <div class="flex-1">
-                <span id="feedback-title" class="text-xs font-bold block uppercase tracking-widest mb-1"></span>
-                <div id="npc-feedback" class="text-sm text-slate-400 hk-font-serif leading-relaxed space-y-2"></div>
-                <button onclick="fecharDialogo()" class="mt-4 px-5 py-2 bg-slate-900 border border-slate-700 hover:border-cyan-600 text-xs text-slate-300 font-bold tracking-wider transition-all">
-                    Continuar Avanço
-                </button>
-            </div>
+    <div id="victory-screen" class="absolute inset-0 bg-slate-950/98 z-50 flex flex-col items-center justify-center p-6 text-center hidden">
+        <div class="hk-border p-12 max-w-xl flex flex-col items-center">
+            <h2 class="text-3xl font-bold tracking-widest text-emerald-400 mb-4">SANTUÁRIO CONVERTIDO</h2>
+            <p class="hk-font-serif text-slate-300 text-base mb-6">Você completou o Quiz de 5 perguntas do laboratório e sintonizou sua mente com as correntes eletromagnéticas universais!</p>
+            <button onclick="resetGame()" class="px-8 py-3 bg-slate-900 border border-emerald-700 hover:border-emerald-400 text-slate-200 text-xs tracking-widest transition-all">
+                REINICIAR EXPERIMENTO
+            </button>
         </div>
     </div>
 
     <div id="game-over-screen" class="absolute inset-0 bg-slate-950/95 z-50 flex flex-col items-center justify-center p-6 text-center hidden">
         <div class="max-w-sm space-y-4">
-            <h2 class="text-3xl font-bold tracking-widest text-slate-400">O RECIPIENTE QUEBROU</h2>
-            <p class="hk-font-serif text-slate-500 text-sm italic">Sua Alma dissipou-se nos cruzamentos antigos...</p>
+            <h2 class="text-3xl font-bold tracking-widest text-red-500">O RECIPIENTE QUEBROU</h2>
+            <p class="hk-font-serif text-slate-500 text-sm italic">Sua energia dissipou-se completamente antes de selar o templo...</p>
             <button onclick="resetGame()" class="px-6 py-2 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-bold tracking-widest">
                 REFORJAR RECEPTÁCULO
             </button>
@@ -148,7 +143,7 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        // FASES: "LAB_PRACTICE" (Sala 1), "THEORY_SANCTUARY" (Sala 2), "ARENA" (Sala 3)
+        // FASES: "LAB_PRACTICE", "THEORY_SANCTUARY", "ARENA", "PURIFICATION_ROOM"
         let currentPhase = "LAB_PRACTICE"; 
         let gameActive = false;
         let score = 0;
@@ -156,7 +151,12 @@
         let player;
         let activeDialog = false;
 
-        // Elementos da Sala 1
+        // Controle do Quiz Dinâmico de 5 Perguntas
+        let perguntasSelecionadas = [];
+        let indicePerguntaAtual = 0;
+        let justificativaErroAtual = "";
+
+        // Objetos Interativos Sala 1
         const labObjects = [
             { x: 80, y: 150, w: 110, h: 40, type: "BREAKABLE_MAGNET", broken: false, label: "1. Ímã Quebrável" },
             { x: 290, y: 150, w: 110, h: 40, type: "POLARITY_SWITCH", mode: "REPELLING", label: "2. Polos Ajustáveis" },
@@ -164,10 +164,10 @@
             { x: 710, y: 150, w: 110, h: 40, type: "COMPASS", angle: 0, label: "4. Bússola Vetorial" }
         ];
 
-        // Elementos da Nova Sala 2 (Quadros Teóricos e Exemplos Reais)
+        // Murais de Estudo Sala 2
         const theoryBoards = [
-            { x: 150, y: 110, w: 300, h: 100, title: "📜 LEI DE GAUSS DO MAGNETISMO", text: "As linhas de campo magnético são sempre circuitadas e fechadas. O fluxo total através de uma superfície fechada é sempre zero: $\\oint \\vec{B} \\cdot d\\vec{A} = 0$. Isto prova geometricamente a inexistência de monopolos isolados.", example: "Exemplo Prático: Se cortar um ímã de geladeira ao meio, os domínios internos reorganizam-se instantaneamente criando novos polos." },
-            { x: 550, y: 110, w: 300, h: 100, title: "🚀 TECNOLOGIA DE CAMPOS DINÂMICOS", text: "Campos magnéticos variáveis geram forças motoras e armazenamento de dados. O magnetismo rege desde tecnologias microscópicas de leitura até superestruturas de transporte de alta velocidade.", example: "Exemplos Reais: 1) Trens Maglev usam repulsão eletromagnética para flutuar e eliminar o atrito. 2) Tarjas pretas de cartões de crédito armazenam dados modificando a polaridade de nanopartículas de ferro." }
+            { x: 150, y: 110, w: 300, h: 100, title: "📜 LEI DE GAUSS DO MAGNETISMO", text: "As linhas de campo magnético são sempre circuitadas e fechadas. O fluxo através de superfícies tridimensionais fechadas é nulo: $\\oint \\vec{B} \\cdot d\\vec{A} = 0$. Isto atesta a inexistência de monopolos isolados.", example: "Exemplo Prático: Se fraturar um ímã macroscópico, seus dipolos atômicos formam instantaneamente novos polos Norte/Sul." },
+            { x: 550, y: 110, w: 300, h: 100, title: "🚀 TECNOLOGIA DE CAMPOS DINÂMICOS", text: "Campos magnéticos variantes geram forças motoras e armazenamento de dados por meio da variação espacial ou de correntes indutivas.", example: "Exemplos Reais: Trens Maglev utilizam supercondutores e bobinas para levitação eliminando o atrito mecânico da pista." }
         ];
 
         const transitionPortal = { x: 940, y: 110, width: 40, height: 120 };
@@ -176,97 +176,100 @@
         const doorColors = ["#cbd5e1", "#577399", "#495867", "#fe5f55", "#bdd6d2"];
         let doors = [];
 
-        const poolPerguntas = [
+        // BANCO DE DADOS EXPANDIDO - 10 QUESTÕES COMPLETA DE ELETROMAGNETISMO
+        const bancoPerguntasGeral = [
             {
                 category: "Cidade das Lágrimas",
-                bgGradient: ["#0a182c", "#020612"],
-                particleType: "RAIN",
-                themeId: "CITY",
-                q: "Nas torres góticas sob a chuva eterna da Cidade das Lágrimas, os ferreiros tentam forjar um grande mineral magnético. Caso eles quebrem essa barra magnética exatamente ao meio, o que acontecerá imediatamente com as metades resultantes?",
-                options: [
-                    "O polo Norte isola-se em um pedaço e o polo Sul isola-se completamente no outro.",
-                    "O magnetismo é anulado pelo impacto, transformando as metades em ferro comum neutro.",
-                    "Dois novos ímãs completos se formam de imediato, cada um contendo seu próprio par Norte e Sul.",
-                    "O campo magnético condensa-se apenas na linha geométrica do corte, gerando um monopolo estável.",
-                    "As metades passam a se repelir violentamente de qualquer ângulo devido à inversão de spin."
-                ],
-                correctIndex: 2,
-                explanation: "Como você experimentou no laboratório ao partir o bloco: monopolos magnéticos não existem! A quebra de um ímã gera novos ímãs menores funcionais devido ao alinhamento dos domínios atômicos.",
-                svgs: [
-                    `<svg width="140" height="70"><rect x="10" y="20" width="60" height="25" fill="#334155"/><rect x="70" y="20" width="60" height="25" fill="#1e293b"/><text x="40" y="37" fill="white" font-weight="bold" text-anchor="middle">N</text><text x="100" y="37" fill="white" font-weight="bold" text-anchor="middle">S</text></svg>`,
-                    `<svg width="140" height="70"><rect x="10" y="20" width="120" height="25" fill="#111827" stroke="#334155"/><text x="70" y="36" fill="#475569" text-anchor="middle">Neutro</text></svg>`,
-                    `<svg width="140" height="70"><rect x="5" y="15" width="30" height="20" fill="#475569"/><rect x="35" y="15" width="30" height="20" fill="#1e293b"/><rect x="75" y="15" width="30" height="20" fill="#475569"/><rect x="105" y="15" width="30" height="20" fill="#1e293b"/><text x="20" y="29" fill="white" font-size="9" text-anchor="middle">N</text><text x="50" y="29" fill="white" font-size="9" text-anchor="middle">S</text><text x="90" y="29" fill="white" font-size="9" text-anchor="middle">N</text><text x="120" y="29" fill="white" font-size="9" text-anchor="middle">S</text></svg>`,
-                    `<svg width="140" height="70"><circle cx="70" cy="35" r="15" fill="#0284c7" opacity="0.5"/></svg>`,
-                    `<svg width="140" height="70"><path d="M10,35 Q70,5 130,35" fill="none" stroke="#ef4444" stroke-dasharray="3"/></svg>`
-                ]
+                bgGradient: ["#0a182c", "#020612"], particleType: "RAIN", themeId: "CITY",
+                q: "Caso os ferreiros da Cidade das Lágrimas quebrem uma barra magnética perfeitamente ao meio, o que ocorrerá com os fragmentos resultantes?",
+                options: ["O polo Norte isola-se em um pedaço e o polo Sul no outro.", "O magnetismo é totalmente anulado pelo estresse mecânico.", "Dois novos ímãs completos se formam, cada um com polos Norte e Sul próprios.", "O campo colapsa gerando radiação gama de alta intensidade.", "Os pedaços tornam-se paramagnéticos instáveis sem polos fixos."],
+                correctIndex: 2, explanation: "Monopolos magnéticos não existem! Romper um ímã simplesmente quebra os domínios macroscópicos, originando novos polos em cada extremidade fraturada.",
+                svgs: [`<svg width="140" height="70"><rect x="10" y="20" width="60" height="25" fill="#334155"/><rect x="70" y="20" width="60" height="25" fill="#1e293b"/><text x="40" y="37" fill="white" font-weight="bold" text-anchor="middle">N</text></svg>`,`<svg width="140" height="70"><rect x="10" y="20" width="120" height="25" fill="#111827" stroke="#334155"/></svg>`,`<svg width="140" height="70"><rect x="5" y="20" width="55" height="20" fill="#475569"/><rect x="75" y="20" width="55" height="20" fill="#1e293b"/><text x="32" y="34" fill="white" font-size="10" text-anchor="middle">N S</text><text x="102" y="34" fill="white" font-size="10" text-anchor="middle">N S</text></svg>`,`<svg width="140" height="70"><circle cx="70" cy="35" r="10" fill="#ef4444"/></svg>`,`<svg width="140" height="70"><line x1="10" y1="35" x2="130" y2="35" stroke="#fff"/></svg>`]
             },
             {
                 category: "Ninho Profundo (Deepnest)",
-                bgGradient: ["#0e1116", "#020305"],
-                particleType: "WEB",
-                themeId: "DEEPNEST",
-                q: "Nas galerias sombrias e repletas de teias de Deepnest, os tecelões usam agulhas imantadas para guiar suas construções. Se mapearmos a área externa de uma dessas agulhas magnéticas, qual será o sentido correto das linhas invisíveis do campo de indução?",
-                options: [
-                    "Elas nascem radialmente de forma reta e vão direto para o infinito, sem completar caminhos fechados.",
-                    "As linhas emanam da zona externa do polo Sul e viajam em direção ao polo Norte.",
-                    "As linhas emergem externamente a partir do polo Norte e realizam curvas fechadas até entrarem no polo Sul.",
-                    "Elas cruzam apenas a fenda transversal média da agulha sem se projetar para fora das bordas.",
-                    "Elas mudam caoticamente de sentido a cada passo que o jogador dá no cenário."
-                ],
-                correctIndex: 2,
-                explanation: "Por convenção geométrica adotada na física, as linhas externas de indução magnética fluem continuamente saindo do polo Norte e entrando no polo Sul.",
-                svgs: [
-                    `<svg width="140" height="70"><line x1="10" y1="35" x2="130" y2="35" stroke="#475569" stroke-width="2"/></svg>`,
-                    `<svg width="140" height="70"><path d="M130,35 C100,5 40,5 10,35" fill="none" stroke="#ef4444" stroke-width="1.5"/></svg>`,
-                    `<svg width="140" height="70"><rect x="40" y="25" width="60" height="20" fill="#334155"/><path d="M45,35 C30,10 110,10 95,35" fill="none" stroke="#22d3ee" stroke-width="1.5"/><text x="25" y="45" fill="#22d3ee" font-size="14">➔</text></svg>`,
-                    `<svg width="140" height="70"><line x1="70" y1="5" x2="70" y2="65" stroke="#94a3b8" stroke-dasharray="3"/></svg>`,
-                    `<svg width="140" height="70"><circle cx="70" cy="35" r="12" fill="none" stroke="#cbd5e1"/></svg>`
-                ]
+                bgGradient: ["#0e1116", "#020305"], particleType: "WEB", themeId: "DEEPNEST",
+                q: "Se mapearmos geometricamente a zona exterior de um ímã linear estável, qual será a orientação correta das linhas de indução magnética?",
+                options: ["Nascem no infinito e morrem no centro geométrico do elemento.", "Emanam do polo Sul e caminham externamente em direção ao polo Norte.", "Emergem do polo Norte e fecham-se externamente em direção ao polo Sul.", "Cruzam apenas a fenda transversal simétrica de forma linear.", "Mudam caoticamente de rumo dependendo da gravidade local."],
+                correctIndex: 2, explanation: "Por convenção de campo vetorial estabelecida, as linhas externas de indução fluem continuamente saindo do polo Norte e retornando pelo polo Sul.",
+                svgs: [`<svg width="140" height="70"><line x1="10" y1="35" x2="130" y2="35" stroke="#475569" stroke-width="2"/></svg>`,`<svg width="140" height="70"><path d="M130,35 C100,5 40,5 10,35" fill="none" stroke="#ef4444" stroke-width="1.5"/></svg>`,`<svg width="140" height="70"><rect x="40" y="25" width="60" height="20" fill="#334155"/><path d="M45,35 C30,10 110,10 95,35" fill="none" stroke="#22d3ee" stroke-width="1.5"/><text x="25" y="45" fill="#22d3ee" font-size="14">➔</text></svg>`,`<svg width="140" height="70"><line x1="70" y1="5" x2="70" y2="65" stroke="#94a3b8" stroke-dasharray="3"/></svg>`,`<svg width="140" height="70"><circle cx="70" cy="35" r="12" fill="none" stroke="#cbd5e1"/></svg>`]
             },
             {
                 category: "Picos de Cristal",
-                bgGradient: ["#240d2d", "#08020b"],
-                particleType: "CRYSTAL",
-                themeId: "CRYSTAL",
-                q: "Nos Picos de Cristal, as brocas dos mineradores encontram duas pedras altamente magnetizadas. Ao aproximar uma extremidade identificada como polo 'Norte' perto da extremidade da outra pedra que também é polo 'Norte', o que acontece?",
-                options: [
-                    "Ocorre uma violenta força de repulsão magnética, empurrando as pedras para longe uma da outra.",
-                    "Ocorre uma força de atração mecânica imediata que cola as duas superfícies.",
-                    "As pedras giram de forma frenética até consumirem toda a sua carga de alma interna.",
-                    "O campo elétrico sobrecarrega a área, dissipando o magnetismo dos dois cristais.",
-                    "Ambos os cristais se fundem e passam a atuar como um monopolo neutro sem polaridades definidas."
-                ],
-                correctIndex: 0,
-                explanation: "A lei fundamental das interações magnéticas dita que polos de nomes iguais se repelem e polos opostos se atraem. Como visto no laboratório!",
-                svgs: [
-                    `<svg width="140" height="70"><rect x="15" y="25" width="45" height="20" fill="#ec4899"/><rect x="80" y="25" width="45" height="20" fill="#ec4899"/><text x="37" y="38" fill="white" font-size="9">N</text><text x="102" y="38" fill="white" font-size="9">N</text><path d="M55,35 L62,35 M80,35 L73,35" stroke="#ec4899" stroke-width="2"/></svg>`,
-                    `<svg width="140" height="70"><rect x="15" y="25" width="45" height="20" fill="#ec4899"/><rect x="80" y="25" width="45" height="20" fill="#3b82f6"/><text x="37" y="38" fill="white" font-size="9">N</text><text x="102" y="38" fill="white" font-size="9">S</text></svg>`,
-                    `<svg width="140" height="70"><circle cx="70" cy="35" r="15" fill="none" stroke="#eab308" stroke-dasharray="2"/></svg>`,
-                    `<svg width="140" height="70"><rect x="40" y="25" width="60" height="20" fill="#334155"/></svg>`,
-                    `<svg width="140" height="70"><line x1="20" y1="35" x2="120" y2="35" stroke="#64748b" stroke-dasharray="4"/></svg>`
-                ]
+                bgGradient: ["#240d2d", "#08020b"], particleType: "CRYSTAL", themeId: "CRYSTAL",
+                q: "Dois cristais puramente magnéticos são colocados lado a lado. Ao aproximar uma extremidade Norte da extremidade Norte do outro cristal, o que acontecerá?",
+                options: ["Gera-se uma força intensa de repulsão eletromagnética.", "Gera-se uma atração mecânica instantânea que funde os blocos.", "Os blocos perdem o alinhamento de spin tornando-se isolantes elétricos.", "Ocorre uma descarga piezoelétrica que reverte a gravidade da sala.", "A energia interna evapora de imediato na forma de calor térmico."],
+                correctIndex: 0, explanation: "Polos magnéticos de mesmo nome (homônimos) repelem-se mutuamente, enquanto polos opostos atraem-se.",
+                svgs: [`<svg width="140" height="70"><rect x="15" y="25" width="45" height="20" fill="#ec4899"/><rect x="80" y="25" width="45" height="20" fill="#ec4899"/><path d="M55,35 L62,35 M80,35 L73,35" stroke="#ec4899" stroke-width="2"/></svg>`,`<svg width="140" height="70"><rect x="40" y="25" width="60" height="20" fill="#ec4899"/></svg>`,`<svg width="140" height="70"><circle cx="70" cy="35" r="10" fill="none" stroke="#fff"/></svg>`,`<svg width="140" height="70"><path d="M20,50 L120,20" stroke="#ff0" stroke-width="2"/></svg>`,`<svg width="140" height="70"><rect x="10" y="10" width="120" height="50" fill="#450a0a"/></svg>`]
+            },
+            {
+                category: "Borda do Reino",
+                bgGradient: ["#1e293b", "#0f172a"], particleType: "RAIN", themeId: "CITY",
+                q: "A cinza cai sobre a Borda do Reino. Um condutor retilíneo longo é percorrido por uma corrente elétrica constante $I$. O que se gera circularmente ao redor desse fio?",
+                options: ["Uma onda gravitacional estacionária.", "Um campo magnético cujas linhas são circunferências concêntricas ao condutor.", "Um campo eletrostático perfeitamente uniforme e paralelo ao eixo do condutor.", "Um vácuo de indução magnética absoluto.", "Um campo de força nuclear forte polarizado."],
+                correctIndex: 1, explanation: "Conforme o Experimento de Oersted verificado na Bobina do laboratório, cargas elétricas em movimento geram um campo magnético induzido circular e concêntrico ao fio.",
+                svgs: [`<svg width="140" height="70"><line x1="10" y1="35" x2="130" y2="35" stroke="#94a3b8"/></svg>`,`<svg width="140" height="70"><circle cx="70" cy="35" r="22" fill="none" stroke="#38bdf8" stroke-width="2"/><circle cx="70" cy="35" r="3" fill="#38bdf8"/></svg>`,`<svg width="140" height="70"><line x1="20" y1="20" x2="120" y2="20" stroke="#ff0"/><line x1="20" y1="50" x2="120" y2="50" stroke="#ff0"/></svg>`,`<svg width="140" height="70"><rect x="30" y="20" width="80" height="30" fill="none" stroke="#475569" stroke-dasharray="4"/></svg>`,`<svg width="140" height="70"><path d="M10,10 L130,60" stroke="#ef4444"/></svg>`]
+            },
+            {
+                category: "Caminhos Verdes (Greenpath)",
+                bgGradient: ["#064e3b", "#022c22"], particleType: "RAIN", themeId: "LAB",
+                q: "Nas matas ácidas de Greenpath, uma bússola de navegação é colocada sob a ação exclusiva do campo magnético da Terra. Qual o comportamento esperado da agulha?",
+                options: ["Aponta seu polo Norte magnético para o Sul geográfico da Terra aproximadamente.", "Gira indefinidamente devido ao magnetismo gerado pelos oceanos de ácido.", "Aponta seu polo Norte magnético diretamente para o Leste geométrico.", "Fica estática e paralela à linha do equador magnético regional.", "O polo Sul da bússola busca o Sul geográfico terrestre."],
+                correctIndex: 0, explanation: "O Norte geográfico da Terra funciona magneticamente como um Polo Sul Magnético! Por isso atrai o polo Norte da agulha da bússola.",
+                svgs: [`<svg width="140" height="70"><circle cx="70" cy="35" r="20" fill="none" stroke="#10b981"/><line x1="70" y1="15" x2="70" y2="55" stroke="#ef4444" stroke-width="2"/></svg>`,`<svg width="140" height="70"><circle cx="70" cy="35" r="15" fill="none" stroke="#f59e0b" stroke-dasharray="2"/></svg>`,`<svg width="140" height="70"><line x1="10" y1="35" x2="130" y2="35" stroke="#38bdf8"/></svg>`,`<svg width="140" height="70"><rect x="40" y="25" width="60" height="20" fill="#111827"/></svg>`,`<svg width="140" height="70"><circle cx="70" cy="35" r="22" fill="#fff" opacity="0.1"/></svg>`]
+            },
+            {
+                category: "Encruzilhadas Esquecidas",
+                bgGradient: ["#1e1b4b", "#0f172a"], particleType: "WEB", themeId: "DEEPNEST",
+                q: "Qual dos seguintes materiais apresenta propriedades ferromagnéticas fortes, ou seja, pode ser fortemente magnetizado por campos externos?",
+                options: ["Cobre elementar puro.", "Ferro metálico comercial.", "Plástico polímero sintético.", "Vidro borossilicato translúcido.", "Alumínio anodizado leve."],
+                correctIndex: 1, explanation: "Ferro, Cobalto e Níquel são os principais metais ferromagnéticos, cujos domínios atômicos se alinham fortemente na presença de campos externos.",
+                svgs: [`<svg width="140" height="70"><circle cx="70" cy="35" r="14" fill="#b45309"/></svg>`,`<svg width="140" height="70"><rect x="45" y="20" width="50" height="30" fill="#475569" stroke="#94a3b8" stroke-width="2"/></svg>`,`<svg width="140" height="70"><rect x="30" y="30" width="80" height="10" fill="#ec4899"/></svg>`,`<svg width="140" height="70"><circle cx="70" cy="35" r="18" fill="none" stroke="#38bdf8"/></svg>`,`<svg width="140" height="70"><polygon points="70,15 90,55 50,55" fill="#cbd5e1"/></svg>`]
+            },
+            {
+                category: "Páramo dos Ventos",
+                bgGradient: ["#334155", "#0f172a"], particleType: "RAIN", themeId: "CITY",
+                q: "A lei de Gauss para o magnetismo, escrita na forma integrável como $\\oint \\vec{B} \\cdot d\\vec{A} = 0$, dita qual propriedade do espaço?",
+                options: ["Que a carga elétrica e magnética são idênticas.", "Que as linhas de campo são abertas espirais matemáticas.", "A impossibilidade de isolar monopolos magnéticos na natureza.", "A conservação direta da energia mecânica translacional.", "O decaimento exponencial do campo com o cubo do raio."],
+                correctIndex: 2, explanation: "Se a integral do fluxo magnético em uma superfície fechada é sempre zero, significa que toda linha que entra deve sair. Portanto, não existem fontes isoladas (monopolos).",
+                svgs: [`<svg width="140" height="70"><text x="70" y="40" fill="#fff" text-anchor="middle">q = 0</text></svg>`,`<svg width="140" height="70"><path d="M10,10 Q40,60 130,10" fill="none" stroke="#fff"/></svg>`,`<svg width="140" height="70"><circle cx="70" cy="35" r="20" fill="none" stroke="#38bdf8"/><line x1="50" y1="35" x2="90" y2="35" stroke="#ef4444"/><text x="70" y="30" fill="#ef4444" font-size="8" text-anchor="middle">Inseparável</text></svg>`,`<svg width="140" height="70"><rect x="20" y="20" width="100" height="30" fill="#1e293b"/></svg>`,`<svg width="140" height="70"><circle cx="70" cy="35" r="5" fill="#fff"/></svg>`]
+            },
+            {
+                category: "Jardins da Rainha",
+                bgGradient: ["#14532d", "#022c22"], particleType: "CRYSTAL", themeId: "CRYSTAL",
+                q: "O funcionamento tecnológico dos trens modernos de levitação (Maglev) fundamenta-se em qual princípio geométrico observado no laboratório?",
+                options: ["Atração coulombiana de capacitores de placas paralelas.", "Força mecânica de repulsão de polos magnéticos de mesma assinatura polar.", "Refração de ondas eletromagnéticas de altíssima frequência.", "Efeito Joule decorrente da resistência elétrica pura dos trilhos.", "Geração espontânea de monopolos instáveis temporários."],
+                correctIndex: 1, explanation: "Os trens Maglev aplicam potentes eletroímãs supercondutores configurados para gerar repulsão mútua entre o trem e os trilhos, anulando o atrito terrestre.",
+                svgs: [`<svg width="140" height="70"><line x1="10" y1="45" x2="130" y2="45" stroke="#64748b" stroke-width="4"/></svg>`,`<svg width="140" height="70"><rect x="30" y="15" width="80" height="20" fill="#0ea5e9"/><rect x="30" y="42" width="80" height="8" fill="#475569"/><text x="70" y="30" fill="#fff" font-size="8" text-anchor="middle">↕ REPULSÃO</text></svg>`,`<svg width="140" height="70"><path d="M20,20 Q70,50 120,20" fill="none" stroke="#ff0"/></svg>`,`<svg width="140" height="70"><rect x="40" y="10" width="60" height="50" fill="#ef4444" opacity="0.3"/></svg>`,`<svg width="140" height="70"><circle cx="70" cy="35" r="12" fill="#fff"/></svg>`]
+            },
+            {
+                category: "O Abismo",
+                bgGradient: ["#02040a", "#000000"], particleType: "WEB", themeId: "LAB",
+                q: "Uma partícula carregada positivamente penetra paralelamente às linhas de um campo magnético uniforme. Qual será a força magnética executada sobre ela?",
+                options: ["A força magnética será nula ($F_m = 0$), mantendo movimento retilíneo uniforme.", "A partícula executará movimento circular uniforme imediatamente.", "A trajetória desvia-se formando uma hélice tridimensional perfeita.", "A carga desacelera bruscamente até parar e converter-se em antimatéria.", "Gera-se uma força perpendicular máxima regida pela regra da mão direita."],
+                correctIndex: 0, explanation: "A equação da força magnética sobre cargas é $F_m = q \cdot v \cdot B \cdot \sin(\theta)$. Se penetra de forma paralela, $\theta = 0^{\circ}$, logo $\sin(0) = 0$ e a força resultante é nula.",
+                svgs: [`<svg width="140" height="70"><line x1="10" y1="20" x2="130" y2="20" stroke="#fff" stroke-dasharray="2"/><circle cx="50" cy="20" r="5" fill="#38bdf8"/><text x="70" y="40" fill="#38bdf8" font-size="10">F = 0</text></svg>`,`<svg width="140" height="70"><circle cx="70" cy="35" r="15" fill="none" stroke="#ef4444" stroke-width="2"/></svg>`,`<svg width="140" height="70"><path d="M10,35 Q40,10 70,35 T130,35" fill="none" stroke="#a855f7"/></svg>`,`<svg width="140" height="70"><rect x="60" y="20" width="20" height="30" fill="#fff"/></svg>`,`<svg width="140" height="70"><line x1="70" y1="10" x2="70" y2="60" stroke="#ff0" stroke-width="2"/></svg>`]
+            },
+            {
+                category: "Santuário dos Polos",
+                bgGradient: ["#091122", "#02040a"], particleType: "RAIN", themeId: "LAB",
+                q: "Como as tarjas magnéticas encontradas no verso dos cartões de crédito armazenam informações confidenciais?",
+                options: ["Por meio de pequenos filamentos térmicos que queimam o leitor.", "Modificando localmente a orientação polar de minúsculas partículas ferromagnéticas de ferro.", "Utilizando circuitos quânticos integrados baseados em fótons.", "Armazenando cargas elétricas estáticas em microbolhas de ar.", "Emitindo sinais de rádio de curto alcance por decaimento alfa."],
+                correctIndex: 1, explanation: "A tarja contém milhões de nanopartículas de ferro. O gravador altera a polaridade magnética de zonas específicas criando um código binário legível por indução eletromagnética.",
+                svgs: [`<svg width="140" height="70"><rect x="10" y="25" width="120" height="20" fill="#ef4444"/></svg>`,`<svg width="140" height="70"><rect x="10" y="25" width="120" height="20" fill="#1e293b"/><text x="70" y="39" fill="#38bdf8" font-size="10" text-anchor="middle">↑↓↑↑↓↓ Binário</text></svg>`,`<svg width="140" height="70"><circle cx="70" cy="35" r="14" fill="#a855f7"/></svg>`,`<svg width="140" height="70"><rect x="30" y="20" width="80" height="30" fill="none" stroke="#fff"/></svg>`,`<svg width="140" height="70"><path d="M10,10 L40,50 L70,10" fill="none" stroke="#ff0"/></svg>`]
             }
         ];
 
-        let perguntaAtual;
-        let ultimaPerguntaIndex = -1;
-        let activeTheme = "LAB";
-        let particles = [];
-
-        function gerarParticulas(tipo) {
-            particles = [];
-            let count = tipo === "RAIN" ? 55 : 25;
-            for (let i = 0; i < count; i++) {
-                particles.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    radius: tipo === "CRYSTAL" ? Math.random() * 3 + 1 : Math.random() * 2 + 0.5,
-                    speedY: tipo === "RAIN" ? (Math.random() * 4 + 4) : -(Math.random() * 0.3 + 0.1),
-                    speedX: tipo === "RAIN" ? 0.3 : (Math.random() * 0.4 - 0.2),
-                    alpha: Math.random() * 0.6 + 0.2,
-                    color: tipo === "CRYSTAL" ? "#f472b6" : (tipo === "RAIN" ? "#38bdf8" : "#64748b")
-                });
+        function prepararQuizDeCincoPerguntas() {
+            let copiaBanco = [...bancoPerguntasGeral];
+            perguntasSelecionadas = [];
+            // Seleção puramente aleatória de 5 elementos não-repetidos
+            for (let i = 0; i < 5; i++) {
+                let idxAleatorio = Math.floor(Math.random() * copiaBanco.length);
+                perguntasSelecionadas.push(copiaBanco[idxAleatorio]);
+                copiaBanco.splice(idxAleatorio, 1);
             }
+            indicePerguntaAtual = 0;
         }
 
         function iniciarJogo() {
@@ -274,9 +277,13 @@
             document.getElementById("game-hud").classList.remove("hidden");
             document.getElementById("display-panel").classList.remove("hidden");
             document.getElementById("canvas-wrap").classList.remove("hidden");
+            document.getElementById("victory-screen").classList.add("hidden");
+            
+            prepararQuizDeCincoPerguntas();
             
             player = new Knight(40, canvas.height - 50);
             atualizarHpHUD();
+            
             currentPhase = "LAB_PRACTICE";
             activeTheme = "LAB";
             gerarParticulas("LAB");
@@ -286,8 +293,7 @@
 
         function transicionarParaTeoria() {
             currentPhase = "THEORY_SANCTUARY";
-            player.x = 40; 
-            player.y = canvas.height - 50;
+            player.x = 40; player.y = canvas.height - 50;
             document.getElementById("ambient-title").innerText = "Sala 2: Santuário de Teoria e Exemplos Reais";
             document.getElementById("ambient-title").className = "text-xs font-bold tracking-widest text-emerald-400 uppercase bg-slate-950/80 px-4 py-1.5 border border-slate-800 rounded-sm";
         }
@@ -296,28 +302,29 @@
             currentPhase = "ARENA";
             document.getElementById("theory-display").classList.add("hidden");
             document.getElementById("arena-interface").classList.remove("hidden");
-            player.x = canvas.width / 2;
-            player.y = canvas.height - 50;
-            initLevel();
+            player.x = canvas.width / 2; player.y = canvas.height - 50;
+            carregarPerguntaQuizAtendida();
         }
 
-        function initLevel() {
-            let novoIndex;
-            do {
-                novoIndex = Math.floor(Math.random() * poolPerguntas.length);
-            } while (novoIndex === ultimaPerguntaIndex && poolPerguntas.length > 1);
-            
-            ultimaPerguntaIndex = novoIndex;
-            perguntaAtual = poolPerguntas[novoIndex];
+        function carregarPerguntaQuizAtendida() {
+            if (indicePerguntaAtual >= 5) {
+                // Fim do Quiz com Vitória!
+                gameActive = false;
+                document.getElementById("victory-screen").classList.remove("hidden");
+                return;
+            }
+
+            document.getElementById("quiz-progress-hud").innerText = `PROGRESSO: ${indicePerguntaAtual} / 5`;
+            perguntaAtual = perguntasSelecionadas[indicePerguntaAtual];
             activeTheme = perguntaAtual.themeId;
 
             document.body.style.backgroundImage = `radial-gradient(circle at center, ${perguntaAtual.bgGradient[0]} 0%, ${perguntaAtual.bgGradient[1]} 100%)`;
             gerarParticulas(perguntaAtual.particleType);
 
-            document.getElementById("ambient-title").innerText = `Sala 3 - Arena: ${perguntaAtual.category}`;
+            document.getElementById("ambient-title").innerText = `Sala 3 - Portal ${indicePerguntaAtual + 1}: ${perguntaAtual.category}`;
             document.getElementById("ambient-title").className = "text-xs font-bold tracking-widest text-pink-400 uppercase bg-slate-950/80 px-4 py-1.5 border border-slate-800 rounded-sm";
             
-            document.getElementById("category-badge").innerText = `✦ Investigação Física em: ${perguntaAtual.category} ✦`;
+            document.getElementById("category-badge").innerText = `✦ Investigação Científica (${indicePerguntaAtual + 1}/5) ✦`;
             document.getElementById("question-text").innerText = perguntaAtual.q;
             
             let optionsGuide = "";
@@ -326,18 +333,69 @@
             });
             document.getElementById("options-text-guide").innerHTML = optionsGuide;
             
-            // Força a renderização segura das fórmulas matemáticas do KaTeX
             setTimeout(() => { 
                 if(typeof renderMathInElement === 'function') {
                     renderMathInElement(document.getElementById("options-text-guide")); 
                 }
-            }, 20);
+            }, 15);
 
             doors = [];
             let w = 140; let h = 42;
             let spacing = (canvas.width - (w * 5)) / 6;
             for(let i=0; i<5; i++) {
                 doors.push({ x: spacing + i * (w + spacing), y: 15, width: w, height: h, letter: doorLetters[i], color: doorColors[i] });
+            }
+        }
+
+        function banirParaSalaPurificacao(explicacaoText) {
+            currentPhase = "PURIFICATION_ROOM";
+            activeTheme = "DEEPNEST";
+            justificativaErroAtual = explicacaoText;
+            
+            document.body.style.backgroundImage = "radial-gradient(circle at center, #2e080a 0%, #050102 100%)";
+            gerarParticulas("CRYSTAL");
+
+            document.getElementById("ambient-title").innerText = "SALA DE PURIFICAÇÃO E RECUPERAÇÃO CONCEITUAL";
+            document.getElementById("ambient-title").className = "text-xs font-bold tracking-widest text-red-400 uppercase bg-slate-950/90 px-4 py-1.5 border border-red-950 rounded-sm";
+            
+            document.getElementById("arena-interface").classList.add("hidden");
+            document.getElementById("theory-display").classList.remove("hidden");
+            
+            // O jogador renasce de forma estável no centro inferior da sala vermelha
+            player.x = canvas.width / 2;
+            player.y = canvas.height - 50;
+            activeDialog = false; // Garante o desbloqueio do Knight
+        }
+
+        function retornarDaPurificacaoParaProximaPergunta() {
+            indicePerguntaAtual++; // Passa para o próximo desafio
+            document.getElementById("theory-display").classList.add("hidden");
+            document.getElementById("arena-interface").classList.remove("hidden");
+            currentPhase = "ARENA";
+            player.x = canvas.width / 2;
+            player.y = canvas.height - 50;
+            carregarPerguntaQuizAtendida();
+        }
+
+        function processarResposta(indexEscolhido) {
+            if (indexEscolhido === perguntaAtual.correctIndex) {
+                score++;
+                document.getElementById("score-val").innerText = score;
+                indicePerguntaAtual++;
+                carregarPerguntaQuizAtendida();
+                player.x = canvas.width / 2;
+                player.y = canvas.height - 50;
+            } else {
+                player.hp--;
+                atualizarHpHUD();
+                
+                if (player.hp <= 0) {
+                    gameActive = false;
+                    document.getElementById("game-over-screen").classList.remove("hidden");
+                } else {
+                    // Meca solicitada: Vai para a Sala de Purificação receber a explicação
+                    banirParaSalaPurificacao(perguntaAtual.explanation);
+                }
             }
         }
 
@@ -348,24 +406,10 @@
                 for (let i = 0; i < canvas.width; i += 40) {
                     ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
                 }
-                ctx.fillStyle = "#0c1322";
-                ctx.fillRect(0, 0, 20, canvas.height); ctx.fillRect(canvas.width - 20, 0, 20, canvas.height);
             } 
             else if (activeTheme === "CITY") {
                 ctx.fillStyle = "rgba(12, 23, 42, 0.4)";
-                ctx.fillRect(100, 80, 80, 260); ctx.fillRect(250, 40, 110, 300);
-                ctx.fillRect(650, 60, 90, 280); ctx.fillRect(800, 100, 120, 240);
-            } 
-            else if (activeTheme === "DEEPNEST") {
-                ctx.fillStyle = "rgba(10, 12, 16, 0.8)";
-                ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(140, 0); ctx.lineTo(80, 120); ctx.fill();
-                ctx.strokeStyle = "rgba(148, 163, 184, 0.15)"; ctx.lineWidth = 1;
-                ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(200, 100); ctx.stroke();
-            } 
-            else if (activeTheme === "CRYSTAL") {
-                ctx.fillStyle = "rgba(40, 15, 50, 0.6)";
-                ctx.beginPath(); ctx.moveTo(200, 0); ctx.lineTo(230, 70); ctx.lineTo(260, 0); ctx.fill();
-                ctx.beginPath(); ctx.moveTo(110, 340); ctx.lineTo(135, 260); ctx.lineTo(160, 340); ctx.fill();
+                ctx.fillRect(150, 60, 110, 280); ctx.fillRect(700, 40, 120, 300);
             }
             ctx.restore();
         }
@@ -379,21 +423,27 @@
                 ctx.save();
                 ctx.fillStyle = "rgba(0,0,0,0.5)";
                 ctx.beginPath(); ctx.ellipse(this.x, this.y + 12, 14, 5, 0, 0, Math.PI*2); ctx.fill();
-                ctx.fillStyle = "#e2e8f0"; ctx.strokeStyle = "#1e293b"; ctx.lineWidth = 2.5;
+                ctx.fillStyle = (currentPhase === "PURIFICATION_ROOM") ? "#fecaca" : "#e2e8f0"; 
+                ctx.strokeStyle = "#1e293b"; ctx.lineWidth = 2.5;
                 ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2); ctx.fill(); ctx.stroke();
-                ctx.fillStyle = "#e2e8f0";
+                
+                // Chifres
+                ctx.fillStyle = (currentPhase === "PURIFICATION_ROOM") ? "#fecaca" : "#e2e8f0";
                 ctx.beginPath(); ctx.moveTo(this.x - 7, this.y - 10); ctx.quadraticCurveTo(this.x - 10, this.y - 22, this.x - 6, this.y - 24); ctx.quadraticCurveTo(this.x - 3, this.y - 18, this.x - 2, this.y - 10); ctx.fill(); ctx.stroke();
                 ctx.beginPath(); ctx.moveTo(this.x + 7, this.y - 10); ctx.quadraticCurveTo(this.x + 10, this.y - 22, this.x + 6, this.y - 24); ctx.quadraticCurveTo(this.x + 3, this.y - 18, this.x + 2, this.y - 10); ctx.fill(); ctx.stroke();
+                
+                // Olhos de Vazio
                 ctx.fillStyle = "#090d16";
                 ctx.beginPath(); ctx.ellipse(this.x - 4, this.y - 1, 2.5, 4.5, 0.1, 0, Math.PI*2); ctx.ellipse(this.x + 4, this.y - 1, 2.5, 4.5, -0.1, 0, Math.PI*2); ctx.fill();
+                
                 if (this.attackCooldown > 10) {
-                    ctx.strokeStyle = "rgba(226, 232, 240, 0.9)"; ctx.lineWidth = 3;
+                    ctx.strokeStyle = "rgba(238, 242, 255, 0.9)"; ctx.lineWidth = 3;
                     ctx.beginPath(); ctx.arc(this.x, this.y - 18, 24, 0, Math.PI, true); ctx.stroke();
                 }
                 ctx.restore();
             }
             update() {
-                if (activeDialog) return; // Trava inputs se houver popups ativos
+                if (activeDialog) return; 
                 if (this.attackCooldown > 0) this.attackCooldown--;
 
                 if (keys['w'] || keys['arrowup']) this.y -= this.speed;
@@ -401,13 +451,11 @@
                 if (keys['a'] || keys['arrowleft']) this.x -= this.speed;
                 if (keys['d'] || keys['arrowright']) this.x += this.speed;
 
-                // Restrições de tela limpas
                 if (this.x < this.radius) this.x = this.radius;
                 if (this.x > canvas.width - this.radius) this.x = canvas.width - this.radius;
                 if (this.y < 50) this.y = 50;
                 if (this.y > canvas.height - this.radius) this.y = canvas.height - this.radius;
 
-                // GESTÃO LOGICA DA SALA 1
                 if (currentPhase === "LAB_PRACTICE") {
                     let pertoDeAlgo = false;
                     labObjects.forEach(obj => {
@@ -416,23 +464,23 @@
                             pertoDeAlgo = true;
                             if (obj.type === "BREAKABLE_MAGNET") {
                                 document.getElementById("theory-display").innerHTML = obj.broken ? 
-                                    `<span class='text-amber-400 font-bold'>Princípio Notado:</span> Inseparabilidade! Ao quebrar, o bloco gerou novos polos nas pontas fraturadas automaticamente.` :
+                                    `<span class='text-amber-400 font-bold'>Observação Local:</span> Inseparabilidade Magnética ativa. Não existem monopolos.` :
                                     `<span class='text-cyan-400 font-bold'>Estação 1: Ímã Maciço.</span> Golpeie o bloco com seu Ferrão para testar o princípio da indivisibilidade magnética.`;
                             } else if (obj.type === "POLARITY_SWITCH") {
                                 document.getElementById("theory-display").innerHTML = obj.mode === "REPELLING" ?
-                                    `<span class='text-rose-400 font-bold'>Princípio Notado:</span> Polos iguais ($N \\leftrightarrow N$) repelem-se mutuamente.` :
-                                    `<span class='text-emerald-400 font-bold'>Princípio Notado:</span> Polos opostos ($N \\rightarrow S$) atraem-se firmemente.`;
+                                    `<span class='text-rose-400 font-bold'>Observação Local:</span> Polos homônimos ($N \\leftrightarrow N$) repelem-se mutuamente.` :
+                                    `<span class='text-emerald-400 font-bold'>Observação Local:</span> Polos opostos ($N \\rightarrow S$) atraem-se firmemente.`;
                             } else if (obj.type === "ELECTROMAGNET") {
                                 document.getElementById("theory-display").innerHTML = obj.active ?
-                                    `<span class='text-orange-400 font-bold'>Princípio Notado:</span> Cargas elétricas em movimento geram um campo magnético induzido $\\vec{B}$.` :
-                                    `<span class='text-slate-400 font-bold'>Estação 3: Eletroímã.</span> Golpeie o circuito para injetar corrente e criar indução magnética artificial.`;
+                                    `<span class='text-orange-400 font-bold'>Observação Local:</span> Cargas elétricas ordenadas geram o vetor de campo magnético induzido $\\vec{B}$.` :
+                                    `<span class='text-slate-400 font-bold'>Estação 3: Eletroímã.</span> Golpeie o circuito para injetar corrente e criar indução artificial.`;
                             } else if (obj.type === "COMPASS") {
-                                document.getElementById("theory-display").innerHTML = `<span class='text-purple-400 font-bold'>Princípio Notado:</span> A agulha alinha-se de forma tangente às linhas invisíveis de indução que saem do polo norte.`;
+                                document.getElementById("theory-display").innerHTML = `<span class='text-purple-400 font-bold'>Observação Local:</span> A agulha alinha-se de forma tangente ao campo magnético externo ambiente.`;
                             }
                         }
                     });
                     if (!pertoDeAlgo) {
-                        document.getElementById("theory-display").innerHTML = `<p class="text-slate-200 text-lg font-medium hk-font-serif">⚔️ <span class="text-cyan-400 font-bold">Sala 1 (Prática):</span> Golpeie as estruturas centrais com seu Ferrão (<span class="bg-slate-800 px-2 py-0.5 rounded text-sm text-cyan-300">ESPAÇO</span>). Siga para a direita para ver a Teoria Avançada!</p>`;
+                        document.getElementById("theory-display").innerHTML = `<p class="text-slate-200 text-lg font-medium hk-font-serif">⚔️ <span class="text-cyan-400 font-bold">Sala 1 (Prática):</span> Golpeie as estruturas centrais com seu Ferrão (<span class="bg-slate-800 px-2 py-0.5 rounded text-sm text-cyan-300">ESPAÇO</span>). Siga à direita para a Teoria Avançada!</p>`;
                     }
 
                     let bússola = labObjects[3];
@@ -442,16 +490,15 @@
                         transicionarParaTeoria();
                     }
                 } 
-                // GESTÃO LOGICA DA NOVA SALA 2
                 else if (currentPhase === "THEORY_SANCTUARY") {
                     let lendoQuadro = false;
                     theoryBoards.forEach(board => {
                         if (this.x > board.x && this.x < board.x + board.w && this.y > board.y - 20 && this.y < board.y + board.h + 50) {
                             lendoQuadro = true;
                             document.getElementById("theory-display").innerHTML = `
-                                <div class='text-left max-w-3xl mx-auto space-y-2'>
-                                    <h4 class='text-sm font-bold text-cyan-400 tracking-wider'>${board.title}</h4>
-                                    <p class='text-slate-300 text-sm hk-font-serif leading-relaxed'>${board.text}</p>
+                                <div class='text-left max-w-3xl mx-auto space-y-1'>
+                                    <h4 class='text-xs font-bold text-cyan-400 tracking-wider'>${board.title}</h4>
+                                    <p class='text-slate-300 text-xs hk-font-serif'>${board.text}</p>
                                     <p class='text-emerald-400 text-xs italic font-medium'>${board.example}</p>
                                 </div>
                             `;
@@ -460,14 +507,13 @@
                     });
 
                     if (!lendoQuadro) {
-                        document.getElementById("theory-display").innerHTML = `<p class="text-slate-200 text-lg font-medium hk-font-serif">📖 <span class="text-emerald-400 font-bold">Sala 2 (Teoria & Exemplos):</span> Aproxime-se dos murais de pedra cinza para projetar as leis magnéticas e exemplos cotidianos. Avance pela direita rumo aos portais!</p>`;
+                        document.getElementById("theory-display").innerHTML = `<p class="text-slate-200 text-lg font-medium hk-font-serif">📖 <span class="text-emerald-400 font-bold">Sala 2 (Teoria & Exemplos):</span> Examine os murais de pedra para consolidar as leis físicas. Avance pela direita rumo aos portais!</p>`;
                     }
 
                     if (this.x > transitionPortal.x - 5) {
                         transicionarParaArena();
                     }
                 }
-                // GESTÃO DA ARENA
                 else if (currentPhase === "ARENA") {
                     let proximaAMalgumaPorta = false;
                     doors.forEach((d, idx) => {
@@ -484,6 +530,21 @@
                     });
                     if (!proximaAMalgumaPorta) {
                         document.getElementById("door-inspector").innerHTML = "Aproxime-se de um portal de pedra para projetar suas linhas de campo...";
+                    }
+                }
+                else if (currentPhase === "PURIFICATION_ROOM") {
+                    document.getElementById("theory-display").innerHTML = `
+                        <div class="text-center max-w-3xl mx-auto space-y-2">
+                            <span class="text-red-400 font-bold tracking-widest text-xs block">⚠️ RETORNO CONCEITUAL OBRIGATÓRIO</span>
+                            <p class="text-slate-300 text-sm hk-font-serif leading-relaxed">${justificativaErroAtual}</p>
+                            <p class="text-xs text-slate-500 italic mt-2">Atravesse o Portal Verde à direita para retornar ao Quiz!</p>
+                        </div>
+                    `;
+                    setTimeout(() => { if(typeof renderMathInElement === 'function') renderMathInElement(document.getElementById("theory-display")); }, 5);
+
+                    // Se cruzar o portal à direita, retorna purificado à arena
+                    if (this.x > transitionPortal.x - 5) {
+                        retornarDaPurificacaoParaProximaPergunta();
                     }
                 }
             }
@@ -511,52 +572,6 @@
             }
         }
 
-        function processarResposta(indexEscolhido) {
-            activeDialog = true;
-            let dialogBox = document.getElementById("elderbug-dialog");
-            let title = document.getElementById("feedback-title");
-            let desc = document.getElementById("npc-feedback");
-            dialogBox.classList.remove("hidden");
-
-            if (indexEscolhido === perguntaAtual.correctIndex) {
-                score++;
-                document.getElementById("score-val").innerText = score;
-                title.innerText = "✦ SINTONIA CONVERTIDA ✦";
-                title.className = "text-xs font-bold block uppercase tracking-widest mb-1 text-cyan-400";
-                desc.innerHTML = `<p class='text-base'>${perguntaAtual.explanation}</p>`;
-            } else {
-                player.hp--;
-                atualizarHpHUD();
-                title.innerText = "✦ CONEXÃO CORROMPIDA ✦";
-                title.className = "text-xs font-bold block uppercase tracking-widest mb-1 text-red-400";
-                desc.innerHTML = `
-                    <p class='text-base'>O impacto quebrou sua sintonia com a estrutura.</p>
-                    <p class="mt-3 font-bold text-slate-300 text-sm">Resolução Científica:</p>
-                    <p class='text-base'>${perguntaAtual.explanation}</p>
-                `;
-                if (player.hp <= 0) {
-                    setTimeout(() => {
-                        dialogBox.classList.add("hidden");
-                        document.getElementById("game-over-screen").classList.remove("hidden");
-                    }, 1500);
-                    return;
-                }
-            }
-            setTimeout(() => { if(typeof renderMathInElement === 'function') renderMathInElement(desc); }, 5);
-        }
-
-        function fecharDialogo() {
-            document.getElementById("elderbug-dialog").classList.add("hidden");
-            activeDialog = false; 
-            
-            // Corrige o bug reposicionando o Knight de forma segura no centro do chão
-            if (player.hp > 0) {
-                initLevel(); 
-                player.x = canvas.width / 2; 
-                player.y = canvas.height - 50;
-            }
-        }
-
         function atualizarHpHUD() {
             let container = document.getElementById("hp-container");
             container.innerHTML = "";
@@ -568,14 +583,18 @@
 
         function resetGame() {
             document.getElementById("game-over-screen").classList.add("hidden");
+            document.getElementById("victory-screen").classList.add("hidden");
             document.getElementById("arena-interface").classList.add("hidden");
             document.getElementById("theory-display").classList.remove("hidden");
-            document.getElementById("elderbug-dialog").classList.add("hidden");
             
-            player.hp = 3; score = 0;
-            ultimaPerguntaIndex = -1;
+            score = 0;
+            indicePerguntaAtual = 0;
+            prepararQuizDeCincoPerguntas();
+            
+            player.hp = 3;
             activeDialog = false;
             document.getElementById("score-val").innerText = score;
+            document.getElementById("quiz-progress-hud").innerText = "PROGRESSO: 0 / 5";
             document.getElementById("ambient-title").innerText = "Sala 1: Laboratório de Experimentos Ativos";
             document.getElementById("ambient-title").className = "text-xs font-bold tracking-widest text-cyan-400 uppercase bg-slate-950/60 px-4 py-1.5 border border-slate-800 rounded-sm";
             document.body.style.backgroundImage = "radial-gradient(circle at center, #091122 0%, #02040a 100%)";
@@ -585,6 +604,7 @@
             gerarParticulas("LAB");
             player.x = 40; player.y = canvas.height - 50;
             atualizarHpHUD();
+            gameActive = true;
         }
 
         window.addEventListener('keydown', e => { 
@@ -595,12 +615,11 @@
 
         function gameLoop() {
             if (!gameActive) return;
-            ctx.fillStyle = "#04060d";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#04060d"; ctx.fillRect(0, 0, canvas.width, canvas.height);
             
             desenharCenarioFundo();
 
-            // Partículas
+            // Partículas de ambiente
             particles.forEach(p => {
                 p.y += p.speedY; p.x += p.speedX;
                 if (p.y < 0 || p.y > canvas.height) { p.y = p.speedY > 0 ? 0 : canvas.height; p.x = Math.random() * canvas.width; }
@@ -609,7 +628,7 @@
                 ctx.globalAlpha = 1.0;
             });
 
-            // RENDERIZAÇÃO SALA 1
+            // RENDERIZAÇÃO DA SALA 1
             if (currentPhase === "LAB_PRACTICE") {
                 labObjects.forEach(obj => {
                     ctx.save();
@@ -618,8 +637,6 @@
                             ctx.fillStyle = "#1e293b"; ctx.fillRect(obj.x, obj.y, obj.w/2, obj.h);
                             ctx.fillStyle = "#334155"; ctx.fillRect(obj.x + obj.w/2, obj.y, obj.w/2, obj.h);
                             ctx.strokeStyle = "#0ea5e9"; ctx.lineWidth = 2; ctx.strokeRect(obj.x, obj.y, obj.w, obj.h);
-                            ctx.fillStyle = "#fff"; ctx.font = "bold 11px sans-serif"; ctx.textAlign = "center";
-                            ctx.fillText("N", obj.x + obj.w/4, obj.y + obj.h/2 + 4); ctx.fillText("S", obj.x + 3*obj.w/4, obj.y + obj.h/2 + 4);
                         } else {
                             ctx.fillStyle = "#1e293b"; ctx.fillRect(obj.x, obj.y, obj.w/4 - 2, obj.h);
                             ctx.fillStyle = "#334155"; ctx.fillRect(obj.x + obj.w/4, obj.y, obj.w/4 - 2, obj.h);
@@ -655,35 +672,31 @@
                     ctx.restore();
                 });
 
-                // Desenha Portal de Saída da Sala 1
+                // Portal de Saída Verde
                 ctx.fillStyle = "rgba(16, 185, 129, 0.15)"; ctx.strokeStyle = "#10b981"; ctx.lineWidth = 3;
                 ctx.fillRect(transitionPortal.x, transitionPortal.y, transitionPortal.width, transitionPortal.height);
                 ctx.strokeRect(transitionPortal.x, transitionPortal.y, transitionPortal.width, transitionPortal.height);
             } 
-            // RENDERIZAÇÃO NOVA SALA 2 (MURAIS TEÓRICOS)
+            // RENDERIZAÇÃO DA SALA 2 (MURAIS)
             else if (currentPhase === "THEORY_SANCTUARY") {
                 theoryBoards.forEach(board => {
                     ctx.save();
-                    // Caixa do quadro negro
                     ctx.fillStyle = "rgba(15, 23, 42, 0.85)"; ctx.strokeStyle = "#475569"; ctx.lineWidth = 2;
                     ctx.fillRect(board.x, board.y, board.w, board.h); ctx.strokeRect(board.x, board.y, board.w, board.h);
-                    
-                    // Detalhe estético gótico
                     ctx.fillStyle = "#334155"; ctx.fillRect(board.x + 10, board.y + 10, 4, board.h - 20);
-                    
                     ctx.fillStyle = "#94a3b8"; ctx.font = "bold 9px Cinzel"; ctx.textAlign = "left";
                     ctx.fillText(board.title, board.x + 24, board.y + 28);
                     ctx.font = "italic 10px Georgia"; ctx.fillStyle = "#cbd5e1";
-                    ctx.fillText("Aproxime-se para decifrar a inscrição...", board.x + 24, board.y + 55);
+                    ctx.fillText("Aproxime-se do painel para ler as inscrições...", board.x + 24, board.y + 55);
                     ctx.restore();
                 });
 
-                // Desenha Portal de Saída da Sala 2
+                // Portal de Saída Ciano
                 ctx.fillStyle = "rgba(6, 182, 212, 0.15)"; ctx.strokeStyle = "#22d3ee"; ctx.lineWidth = 3;
                 ctx.fillRect(transitionPortal.x, transitionPortal.y, transitionPortal.width, transitionPortal.height);
                 ctx.strokeRect(transitionPortal.x, transitionPortal.y, transitionPortal.width, transitionPortal.height);
             } 
-            // RENDERIZAÇÃO ARENA
+            // RENDERIZAÇÃO DA SALA 3 (ARENA) E DA SALA 4 (SALA DE ERRO)
             else if (currentPhase === "ARENA") {
                 doors.forEach(d => {
                     ctx.save();
@@ -693,6 +706,16 @@
                     ctx.fillText(`PORTAL ${d.letter}`, d.x + d.width/2, d.y + 26);
                     ctx.restore();
                 });
+            }
+            else if (currentPhase === "PURIFICATION_ROOM") {
+                // Renderiza o portal exclusivo de retorno na sala de erro
+                ctx.save();
+                ctx.fillStyle = "rgba(34, 197, 94, 0.2)"; ctx.strokeStyle = "#22c55e"; ctx.lineWidth = 3;
+                ctx.fillRect(transitionPortal.x, transitionPortal.y, transitionPortal.width, transitionPortal.height);
+                ctx.strokeRect(transitionPortal.x, transitionPortal.y, transitionPortal.width, transitionPortal.height);
+                ctx.fillStyle = "#22c55e"; ctx.font = "bold 9px Cinzel"; ctx.textAlign = "center";
+                ctx.fillText("RETORNAR", transitionPortal.x + 20, transitionPortal.y + 65);
+                ctx.restore();
             }
 
             player.update();
