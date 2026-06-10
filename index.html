@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hollow Knight: O Santuário dos Polos e Letras</title>
-    <!-- Tailwind CSS -->
+    <title>Hollow Knight: O Santuário das Letras Modernistas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -57,125 +56,92 @@
             height: 20px;
             border-radius: 50%;
         }
-
-        .equation-highlight {
-            font-family: 'Cambria', 'Georgia', serif;
-            font-style: italic;
-            color: #22d3ee;
-            background: rgba(14, 116, 144, 0.2);
-            padding: 1px 6px;
-            border-radius: 4px;
-            border: 1px solid rgba(34, 211, 238, 0.3);
-        }
     </style>
 </head>
 <body class="h-screen w-screen flex flex-col items-center justify-center p-3 relative">
     
     <div class="vignette"></div>
 
-    <!-- TELA INICIAL (MENU) -->
     <div id="start-menu" class="absolute inset-0 bg-slate-950/98 z-50 flex flex-col items-center justify-center p-6 text-center">
         <div id="menu-principal-bloco" class="hk-border p-12 max-w-xl flex flex-col items-center">
             <h1 class="text-4xl md:text-5xl font-bold tracking-widest text-slate-200 mb-2">HOLLOW KNIGHT</h1>
-            <h2 class="text-md text-cyan-400 font-light mb-8 tracking-widest uppercase">O Santuário do Conhecimento v4.0</h2>
+            <h2 class="text-md text-amber-400 font-light mb-8 tracking-widest uppercase">Arquivo Modernista Brasileiro v5.0</h2>
             <p class="hk-font-serif text-base text-slate-400 italic mb-8 max-w-md">
-                "Supere os desafios extraídos do grande arquivo mecânico e literário do reino. Escolha a sua sintonização fundamental."
+                "Explore as três gerações literárias que reinventaram a identidade do reino. Domine a técnica dos manifestos, o romance de 30 e o rigor de 45."
             </p>
-            <button onclick="abrirSelecaoTema()" class="px-8 py-3 bg-slate-900 border border-slate-700 hover:border-cyan-500 text-slate-200 text-sm tracking-widest transition-all transform hover:scale-105">
-                INICIAR JORNADA IMPREVISÍVEL
+            <button onclick="configurarTema('MODERNISMO')" class="px-8 py-3 bg-slate-900 border border-slate-700 hover:border-amber-500 text-slate-200 text-sm tracking-widest transition-all transform hover:scale-105">
+                INICIAR JORNADA LITERÁRIA
             </button>
-        </div>
-
-        <!-- PAINEL DE SELEÇÃO DE TEMA -->
-        <div id="theme-selector-bloco" class="hk-border p-10 max-w-2xl flex flex-col items-center hidden">
-            <h3 class="text-2xl font-bold tracking-widest text-slate-200 mb-6 uppercase">Escolha a Trilha do Conhecimento</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-lg">
-                <button onclick="configurarTema('MAGNETISMO')" class="p-5 bg-slate-900/80 border border-slate-800 hover:border-cyan-500 rounded text-left transition-all group">
-                    <div class="text-cyan-400 font-bold tracking-wider text-sm mb-1 group-hover:text-cyan-300">🧲 MAGNETISMO</div>
-                    <div class="text-xs text-slate-400 hk-font-serif">5 Desafios envolvendo polos magnéticos, cargas, bússolas, leis de Oersted e Gauss.</div>
-                </button>
-                <button onclick="configurarTema('MODERNISMO')" class="p-5 bg-slate-900/80 border border-slate-800 hover:border-amber-500 rounded text-left transition-all group">
-                    <div class="text-amber-400 font-bold tracking-wider text-sm mb-1 group-hover:text-amber-300">📜 MODERNISMO BRASILEIRO</div>
-                    <div class="text-xs text-slate-400 hk-font-serif">10 Desafios integrando criticamente a 1ª Geração (Heroica), a 2ª Geração (30) e a 3ª Geração (45).</div>
-                </button>
-            </div>
-            <button onclick="fecharSelecaoTema()" class="mt-8 text-xs text-slate-500 underline hover:text-slate-400 uppercase tracking-widest">Voltar</button>
         </div>
     </div>
 
-    <!-- HUD GERAL -->
     <div id="game-hud" class="w-full max-w-5xl justify-between items-center mb-3 px-4 hidden flex">
         <div class="flex flex-col">
             <span class="text-[10px] tracking-widest text-slate-500 mb-1">MÁSCARAS DE VIDA</span>
             <div id="hp-container" class="flex gap-2"></div>
         </div>
         <div class="text-center">
-            <span id="ambient-title" class="text-xs font-bold tracking-widest text-cyan-400 uppercase bg-slate-950/60 px-4 py-1.5 border border-slate-800 rounded-sm">
-                Sala 1: Laboratório de Experimentos Ativos
+            <span id="ambient-title" class="text-xs font-bold tracking-widest text-amber-400 uppercase bg-slate-950/60 px-4 py-1.5 border border-slate-800 rounded-sm">
+                Sala 1: Gabinete de Análise Estilística
             </span>
         </div>
         <div class="text-right">
-            <span id="quiz-progress-hud" class="text-[10px] tracking-widest text-slate-500 block mb-0.5">PROGRESSO: 0 / 5</span>
-            <span class="text-[10px] text-cyan-500 block">SINTONIAS: <span id="score-val">0</span></span>
+            <span id="quiz-progress-hud" class="text-[10px] tracking-widest text-slate-500 block mb-0.5">PROGRESSO: 0 / 10</span>
+            <span class="text-[10px] text-amber-500 block">SINTONIAS: <span id="score-val">0</span></span>
         </div>
     </div>
 
-    <!-- PAINEL DE COMUNICADOS -->
     <div id="display-panel" class="w-full max-w-5xl hk-border p-5 mb-3 hidden font-sans min-h-[160px] flex flex-col justify-center">
         <div id="theory-display" class="w-full text-center"></div>
         
-        <!-- Painel de Arena de Enigmas -->
         <div id="arena-interface" class="hidden grid grid-cols-1 md:grid-cols-12 gap-4 w-full">
             <div class="md:col-span-8 border-r border-slate-900 pr-4 flex flex-col justify-between">
                 <div>
-                    <div id="category-badge" class="text-xs font-bold text-cyan-400 mb-1 uppercase tracking-widest"></div>
+                    <div id="category-badge" class="text-xs font-bold text-amber-400 mb-1 uppercase tracking-widest"></div>
                     <p id="question-text" class="text-base md:text-lg text-slate-200 font-medium hk-font-serif leading-relaxed"></p>
                 </div>
                 <div id="options-text-guide" class="text-sm text-slate-400 mt-4 grid grid-cols-1 gap-2 hk-font-serif"></div>
             </div>
             <div class="md:col-span-4 flex flex-col justify-center items-center bg-slate-950/40 p-3 border border-slate-900 rounded-sm">
-                <span id="projection-title" class="text-[10px] font-bold text-slate-600 tracking-widest mb-1.5 w-full text-left">PROJEÇÃO GEOMÉTRICA:</span>
+                <span id="projection-title" class="text-[10px] font-bold text-slate-600 tracking-widest mb-1.5 w-full text-left">CHANCELAS DO PORTAL:</span>
                 <div id="door-inspector" class="text-xs text-slate-500 italic text-center w-full flex items-center justify-center min-h-[120px]">
-                    Aproxime-se de um portal para inspecionar seu diagrama magnético...
+                    Aproxime-se de uma das portas para verificar as chaves de resposta...
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- TELA DE RESULTADOS FINAIS -->
     <div id="victory-screen" class="absolute inset-0 bg-slate-950/98 z-50 flex flex-col items-center justify-center p-6 text-center hidden">
         <div class="hk-border p-12 max-w-xl flex flex-col items-center">
-            <h2 class="text-3xl font-bold tracking-widest text-cyan-400 mb-2">ARQUIVO FINALIZADO</h2>
-            <div class="text-xs text-slate-500 tracking-widest mb-6 uppercase">Resultados do Teste de Campo</div>
+            <h2 class="text-3xl font-bold tracking-widest text-amber-400 mb-2">ARQUIVO FINALIZADO</h2>
+            <div class="text-xs text-slate-500 tracking-widest mb-6 uppercase">Resultados do Teste Literário</div>
             
             <div class="bg-slate-900/60 border border-slate-800 p-6 rounded-sm w-full mb-6">
                 <div class="text-sm text-slate-400 uppercase tracking-widest mb-1">Sintonias Obtidas</div>
-                <div class="text-5xl font-bold text-slate-100 mb-3"><span id="final-score-val">0</span> <span id="max-score-hud-val" class="text-xl text-slate-500">/ 5</span></div>
+                <div class="text-5xl font-bold text-slate-100 mb-3"><span id="final-score-val">0</span> <span id="max-score-hud-val" class="text-xl text-slate-500">/ 10</span></div>
                 <div id="performance-tag" class="text-xs font-bold tracking-widest uppercase py-1 px-3 inline-block rounded-sm"></div>
             </div>
 
             <p class="hk-font-serif text-slate-400 text-sm italic mb-8 max-w-sm">
-                "Os vestígios alteraram-se nos cruzamentos. Retornar agora reorganizará todas as salas com novos mistérios."
+                "Os registros estéticos foram consolidados. Sua mente captou os movimentos de ruptura e engenharia da palavra."
             </p>
 
-            <button onclick="retornarAoMenu()" class="px-8 py-3 bg-slate-900 border border-slate-700 hover:border-cyan-400 text-slate-200 text-xs tracking-widest transition-all transform hover:scale-105">
+            <button onclick="retornarAoMenu()" class="px-8 py-3 bg-slate-900 border border-slate-700 hover:border-amber-400 text-slate-200 text-xs tracking-widest transition-all transform hover:scale-105">
                 VOLTAR AO MENU INICIAL
             </button>
         </div>
     </div>
 
-    <!-- GAME OVER -->
     <div id="game-over-screen" class="absolute inset-0 bg-slate-950/95 z-50 flex flex-col items-center justify-center p-6 text-center hidden">
         <div class="max-w-sm space-y-4">
             <h2 class="text-3xl font-bold tracking-widest text-red-500">O RECIPIENTE QUEBROU</h2>
-            <p class="hk-font-serif text-slate-500 text-sm italic">Sua energia dissipou-se completamente antes de selar o templo...</p>
+            <p class="hk-font-serif text-slate-500 text-sm italic">Sua energia dissipou-se antes de decifrar as correntes modernistas...</p>
             <button onclick="retornarAoMenu()" class="px-6 py-2 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-bold tracking-widest">
                 RETORNAR AO MENU
             </button>
         </div>
     </div>
 
-    <!-- CANVAS DO JOGO -->
     <div class="hk-border rounded-sm overflow-hidden hidden shadow-2xl" id="canvas-wrap">
         <canvas id="gameCanvas" width="1000" height="340"></canvas>
     </div>
@@ -192,344 +158,150 @@
         let player;
         let activeDialog = false;
 
-        let temaSelecionado = "MAGNETISMO";
-        let maxPerguntas = 5;
-
+        let maxPerguntas = 10;
         let perguntasSelecionadas = [];
         let indicePerguntaAtual = 0;
         let justificativaErroAtual = "";
 
-        // Elementos Interativos Sala 1
+        // Laboratório de Estudos da Sala 1 - Temas Literários Reformulados
         const labObjects = [
-            { x: 80, y: 150, w: 110, h: 40, type: "BREAKABLE_MAGNET", broken: false, label: "1. Ímã Quebrável" },
-            { x: 290, y: 150, w: 110, h: 40, type: "POLARITY_SWITCH", mode: "REPELLING", label: "2. Polos Ajustáveis" },
-            { x: 500, y: 150, w: 110, h: 40, type: "ELECTROMAGNET", active: false, label: "3. Bobina Elétrica" },
-            { x: 710, y: 150, w: 110, h: 40, type: "COMPASS", angle: 0, label: "4. Bússola Vetorial" }
+            { x: 50, y: 150, w: 140, h: 40, type: "VERSO_LIVRE", active: false, label: "📝 Tear do Verso Livre" },
+            { x: 230, y: 150, w: 140, h: 40, type: "MANIFESTO_MOCK", active: false, label: "🔥 Caldeirão Antropófago" },
+            { x: 410, y: 150, w: 140, h: 40, type: "REGIONAL_DENUNCIA", active: false, label: "🌾 Prensa Regionalista" },
+            { x: 590, y: 150, w: 140, h: 40, type: "PSICO_SONDAGEM", active: false, label: "🧠 Espelho da Epifania" },
+            { x: 770, y: 150, w: 140, h: 40, type: "RIGOR_GEOMETRICO", active: false, label: "📐 Compasso da Palavra" }
         ];
 
-        // Murais Dinâmicos Sala 2 (Preenchidos via JS com base no tema escolhido)
-        let theoryBoards = [];
+        // Sala 2 - Portas de Teoria por Fase com as Chaves de Resposta Estruturais dos Livros
+        const theoryBoards = [
+            { 
+                x: 60, y: 110, w: 260, h: 100, 
+                title: "🚪 PORTA DA 1ª FASE (HEROICA)", 
+                text: "🔍 <b>Foco no Exame:</b> Ruptura total com a rima e parnasianos. <br>• <i>Macunaíma (Mário)</i>: Rapsódia fragmentada que funde lendas e mitos de todo o Brasil sem ordem cronológica realista. <br>• <i>Poética (Bandeira)</i>: Ojeriza ao lirismo burocrata e comedido. <br>• <i>Antropofagia (Oswald)</i>: Engolir a técnica externa para criar a arte nacional crítica e irônica. Poema-piada curto.", 
+                example: "💡 Chave: Nacionalismo crítico e liberdade linguística (balsa e bonde)." 
+            },
+            { 
+                x: 370, y: 110, w: 260, h: 100, 
+                title: "🚪 PORTA DA 2ª FASE (CONSOLIDAÇÃO)", 
+                text: "🔍 <b>Foco no Exame:</b> Engajamento social e maturidade formal.<br>• <i>Vidas Secas (Graciliano)</i>: Romance com estilo seco/direto. Fenômeno da <b>zoomorfização</b> (bichos humanizados, humanos animalizados pela seca).<br>• <i>O Quinze (Rachel)</i>: A grande seca cearense de 1915.<br>• <i>A Rosa do Povo (Drummond)</i>: Poesia engajada contra a Guerra e ditadura do Estado Novo.<br>• <i>Capitães da Areia (Amado)</i>: Meninos marginalizados em Salvador com lirismo e forte crítica política.<br>• <i>Vinicius de Moraes</i>: Resgate do Soneto clássico.", 
+                example: "💡 Chave: Romance regionalista de denúncia no Nordeste e lirismo existencial." 
+            },
+            { 
+                x: 680, y: 110, w: 260, h: 100, 
+                title: "🚪 PORTA DA 3ª FASE (PÓS-MODERNA)", 
+                text: "🔍 <b>Foco no Exame:</b> Rigor formal e universalização.<br>• <i>Guimarães Rosa (Grande Sertão)</i>: O sertão mineiro narrado por Riobaldo vira espaço existencial universal através de <b>neologismos</b> (novas palavras) e sintaxe poética.<br>• <i>Clarice Lispector (A Hora da Estrela / Amor)</i>: Foco na <b>epifania</b> (revelação interna disparada por atos banais como ver um cego ou um ovo) e fluxo de consciência de Macabéa.<br>• <i>João Cabral (O Engenheiro / Morte e Vida Severina)</i>: Rigor geométrico, substantivo puro sem sentimentalismo. Retirante segue o Rio Capibaribe.", 
+                example: "💡 Chave: Retorno ao equilíbrio formal, neoparnasianismo e sondagem psicológica." 
+            }
+        ];
 
-        const transitionPortal = { x: 940, y: 110, width: 40, height: 120 };
-
+        const transitionPortal = { x: 960, y: 110, width: 30, height: 120 };
         const doorLetters = ["A", "B", "C", "D", "E"];
         const doorColors = ["#cbd5e1", "#577399", "#495867", "#fe5f55", "#bdd6d2"];
         let doors = [];
 
-        // BANCO DE DADOS DE MAGNETISMO
-        const bancoMagnetismo = [
-            {
-                category: "Cidade das Lágrimas", bgGradient: ["#0a182c", "#020612"], particleType: "RAIN", themeId: "CITY",
-                q: "Caso os ferreiros da Cidade das Lágrimas quebrem uma barra magnética perfeitamente ao meio, o que ocorrerá com os fragmentos resultantes?",
-                options: ["O polo Norte isola-se em um pedaço e o polo Sul no outro.", "O magnetismo é totalmente anulado pelo estresse mecânico.", "Dois novos ímãs completos se formam, cada um com polos Norte e Sul próprios.", "O campo colapsa gerando radiação gama de alta intensidade.", "Os pedaços tornam-se paramagnéticos instáveis sem polos fixos."],
-                correctIndex: 2, explanation: "Monopolos magnéticos não existem! Romper um ímã simplesmente quebra os domínios macroscópicos, originando novos polos em cada extremidade fraturada.",
-                svgs: [`<svg width="140" height="70"><rect x="10" y="20" width="60" height="25" fill="#334155"/><rect x="70" y="20" width="60" height="25" fill="#1e293b"/><text x="40" y="37" fill="white" font-weight="bold" text-anchor="middle">N</text></svg>`,`<svg width="140" height="70"><rect x="10" y="20" width="120" height="25" fill="#111827" stroke="#334155"/></svg>`,`<svg width="140" height="70"><rect x="5" y="20" width="55" height="20" fill="#475569"/><rect x="75" y="20" width="55" height="20" fill="#1e293b"/><text x="32" y="34" fill="white" font-size="10" text-anchor="middle">N S</text><text x="102" y="34" fill="white" font-size="10" text-anchor="middle">N S</text></svg>`,`<svg width="140" height="70"><circle cx="70" cy="35" r="10" fill="#ef4444"/></svg>`,`<svg width="140" height="70"><line x1="10" y1="35" x2="130" y2="35" stroke="#fff"/></svg>`]
-            },
-            {
-                category: "Ninho Profundo (Deepnest)", bgGradient: ["#0e1116", "#020305"], particleType: "WEB", themeId: "DEEPNEST",
-                q: "Se mapearmos geometricamente a zona exterior de um ímã linear estável, qual será a orientação correta das linhas de indução magnética?",
-                options: ["Nascem no infinito e morrem no centro geométrico do elemento.", "Emanam do polo Sul e caminham externamente em direção ao polo Norte.", "Emergem do polo Norte e fecham-se externamente em direção ao polo Sul.", "Cruzam apenas a fenda transversal simétrica de forma linear.", "Mudam caoticamente de rumo dependendo da gravidade local."],
-                correctIndex: 2, explanation: "Por convenção de campo vetorial estabelecida, as linhas externas de indução fluem continuamente saindo do polo Norte e retornando pelo polo Sul.",
-                svgs: [`<svg width="140" height="70"><line x1="10" y1="35" x2="130" y2="35" stroke="#475569" stroke-width="2"/></svg>`,`<svg width="140" height="70"><path d="M130,35 C100,5 40,5 10,35" fill="none" stroke="#ef4444" stroke-width="1.5"/></svg>`,`<svg width="140" height="70"><rect x="40" y="25" width="60" height="20" fill="#334155"/><path d="M45,35 C30,10 110,10 95,35" fill="none" stroke="#22d3ee" stroke-width="1.5"/><text x="25" y="45" fill="#22d3ee" font-size="14">➔</text></svg>`,`<svg width="140" height="70"><line x1="70" y1="5" x2="70" y2="65" stroke="#94a3b8" stroke-dasharray="3"/></svg>`,`<svg width="140" height="70"><circle cx="70" cy="35" r="12" fill="none" stroke="#cbd5e1"/></svg>`]
-            },
-            {
-                category: "Picos de Cristal", bgGradient: ["#240d2d", "#08020b"], particleType: "CRYSTAL", themeId: "CRYSTAL",
-                q: "Dois cristais puramente magnéticos são colocados lado a lado. Ao aproximar uma extremidade Norte da extremidade Norte do outro cristal, o que acontecerá?",
-                options: ["Gera-se uma força intensa de repulsão eletromagnética.", "Gera-se uma atração mecânica instantânea que funde os blocos.", "Os blocos perdem o alinhamento de spin tornando-se isolantes elétricos.", "Ocorre uma descarga piezoelétrica que reverte a gravidade da sala.", "A energia interna evapora de imediato na forma de calor térmico."],
-                correctIndex: 0, explanation: "Polos magnéticos de mesmo nome (homônimos) repelem-se mutuamente, enquanto polos opostos atraem-se.",
-                svgs: [`<svg width="140" height="70"><rect x="15" y="25" width="45" height="20" fill="#ec4899"/><rect x="80" y="25" width="45" height="20" fill="#ec4899"/><path d="M55,35 L62,35 M80,35 L73,35" stroke="#ec4899" stroke-width="2"/></svg>`,`<svg width="140" height="70"><rect x="40" y="25" width="60" height="20" fill="#ec4899"/></svg>`,`<svg width="140" height="70"><circle cx="70" cy="35" r="10" fill="none" stroke="#fff"/></svg>`,`<svg width="140" height="70"><path d="M20,50 L120,20" stroke="#ff0" stroke-width="2"/></svg>`,`<svg width="140" height="70"><rect x="10" y="10" width="120" height="50" fill="#450a0a"/></svg>`]
-            },
-            {
-                category: "Borda do Reino", bgGradient: ["#1e293b", "#0f172a"], particleType: "RAIN", themeId: "CITY",
-                q: "A cinza cai sobre a Borda do Reino. Um condutor retilíneo longo é percorrido por uma corrente elétrica constante I. O que se gera circularmente ao redor desse fio?",
-                options: ["Uma onda gravitacional estacionária.", "Um campo magnético cujas linhas são circunferências concêntricas ao condutor.", "Um campo eletrostático perfeitamente uniforme e paralelo ao eixo do condutor.", "Um vácuo de indução magnética absoluto.", "Um campo de força nuclear forte polarizado."],
-                correctIndex: 1, explanation: "Conforme o Experimento de Oersted verificado na Bobina do laboratório, cargas elétricas em movimento geram um campo magnético induzido circular e concêntrico ao fio.",
-                svgs: [`<svg width="140" height="70"><line x1="10" y1="35" x2="130" y2="35" stroke="#94a3b8"/></svg>`,`<svg width="140" height="70"><circle cx="70" cy="35" r="22" fill="none" stroke="#38bdf8" stroke-width="2"/><circle cx="70" cy="35" r="3" fill="#38bdf8"/></svg>`,`<svg width="140" height="70"><line x1="20" y1="20" x2="120" y2="20" stroke="#ff0"/><line x1="20" y1="50" x2="120" y2="50" stroke="#ff0"/></svg>`,`<svg width="140" height="70"><rect x="30" y="20" width="80" height="30" fill="none" stroke="#475569" stroke-dasharray="4"/></svg>`,`<svg width="140" height="70"><path d="M10,10 L130,60" stroke="#ef4444"/></svg>`]
-            },
-            {
-                category: "Caminhos Verdes (Greenpath)", bgGradient: ["#064e3b", "#022c22"], particleType: "RAIN", themeId: "LAB",
-                q: "Nas matas ácidas de Greenpath, uma bússola de navegação é colocada sob a ação exclusiva do campo magnético da Terra. Qual o comportamento esperado da agulha?",
-                options: ["Aponta seu polo Norte magnético para o Sul geográfico da Terra aproximadamente.", "Gira indefinidamente devido ao magnetismo gerado pelos oceanos de ácido.", "Aponta seu polo Norte magnético diretamente para o Leste geométrico.", "Fica estática e paralela à linha do equador magnético regional.", "O polo Sul da bússola busca o Sul geográfico terrestre."],
-                correctIndex: 0, explanation: "O Norte geográfico da Terra funciona magneticamente como um Polo Sul Magnético! Por isso atrai o polo Norte da agulha da bússola.",
-                svgs: [`<svg width="140" height="70"><circle cx="70" cy="35" r="20" fill="none" stroke="#10b981"/><line x1="70" y1="15" x2="70" y2="55" stroke="#ef4444" stroke-width="2"/></svg>`,`<svg width="140" height="70"><circle cx="70" cy="35" r="15" fill="none" stroke="#f59e0b" stroke-dasharray="2"/></svg>`,`<svg width="140" height="70"><line x1="10" y1="35" x2="130" y2="35" stroke="#38bdf8"/></svg>`,`<svg width="140" height="70"><rect x="40" y="25" width="60" height="20" fill="#111827"/></svg>`,`<svg width="140" height="70"><circle cx="70" cy="35" r="22" fill="#fff" opacity="0.1"/></svg>`]
-            }
-        ];
-
-        // BANCO DE DADOS DE MODERNISMO (CONTENDO AS QUESTÕES FORNECIDAS)
+        // BANCO DE DADOS INTEGRADO DE MODERNISMO (10 QUESTÕES MISTURADAS)
         const bancoModernismoCompleto = [
-            // 1ª FASE
             {
-                category: "Modernismo: 1ª Fase (Semana de 22)", bgGradient: ["#1e1b4b", "#090514"], particleType: "CRYSTAL", themeId: "CRYSTAL",
+                category: "1ª Fase (Contexto)", bgGradient: ["#1e1b4b", "#090514"], particleType: "CRYSTAL", themeId: "CRYSTAL",
                 q: "A Semana de Arte Moderna de 1922 foi o marco inicial da primeira fase do Modernismo brasileiro. Entre seus objetivos principais, destacava-se:",
                 options: ["A consolidação do rigor formal herdado dos poetas parnasianos.", "A busca por uma identidade artística nacional aliada à renovação estética das vanguardas europeias.", "O resgate dos valores e temas da literatura jesuítica colonial.", "O isolamento da cultura brasileira frente às influências estéticas estrangeiras.", "A defesa da rima rica e da metrificação rígida como pilares da poesia."],
-                correctIndex: 1, explanation: "A Primeira Fase buscou quebrar o academicismo tradicional por meio da renovação das vanguardas (Cubismo, Futurismo), mas com foco em construir uma essência autenticamente nacional."
+                correctIndex: 1, explanation: "A Primeira Geração pretendia romper as amarras do conservadorismo acadêmico, aplicando as inovações das vanguardas europeias na construção de uma arte genuinamente nacional."
             },
             {
-                category: "Modernismo: 1ª Fase (Estilo)", bgGradient: ["#1e1b4b", "#090514"], particleType: "CRYSTAL", themeId: "CRYSTAL",
-                q: "Leia o poema 'Poética', de Manuel Bandeira: <br><span class='text-slate-400 italic text-sm'>'Estou farto do lirismo comedido / Do lirismo bem-comportado / Do lirismo funcionário público com livro de ponto expediente protocolo...'</span><br> O trecho exemplifica uma postura típica da Primeira Geração Modernista, que é:",
+                category: "1ª Fase (Estilo)", bgGradient: ["#1e1b4b", "#090514"], particleType: "CRYSTAL", themeId: "CRYSTAL",
+                q: "Leia o poema 'Poética', de Manuel Bandeira: <br><span class='text-slate-400 italic text-sm'>'Estou farto do lirismo comedido / Do lirismo bem-comportado / Do lirismo funcionário público...'</span><br>O trecho exemplifica uma postura típica da Primeira Geração Modernista, que é:",
                 options: ["O apego ao sentimentalismo romântico tradicional.", "A defesa da burocratização da linguagem poética.", "A rejeição ao academicismo e às normas estéticas engessadas do passado.", "O retorno ao bucolismo e ao pastoralismo árcade.", "A exaltação da figura do funcionário público como herói nacional."],
-                correctIndex: 2, explanation: "Manuel Bandeira proclama a libertação total contra a estética parnasiana formalista, defendendo o verso livre e a quebra de regras antiquadas."
+                correctIndex: 2, explanation: "Bandeira faz um manifesto contra a poesia engessada, artificial e submissa às regras rígidas da tradição parnasiana."
             },
             {
-                category: "Modernismo: 1ª Fase (Movimentos)", bgGradient: ["#1e1b4b", "#090514"], particleType: "CRYSTAL", themeId: "CRYSTAL",
+                category: "1ª Fase (Movimentos)", bgGradient: ["#1e1b4b", "#090514"], particleType: "CRYSTAL", themeId: "CRYSTAL",
                 q: "O Manifesto Antropófago (1928), liderado por Oswald de Andrade, propunha como estratégia cultural:",
                 options: ["A rejeição absoluta de qualquer elemento vindo da cultura europeia.", "A cópia fiel dos modelos artísticos franceses e italianos.", "A 'deglutição' da cultura estrangeira para assimilá-la e transformá-la em uma arte genuinamente brasileira.", "O isolamento do Brasil no cenário cultural da América Latina.", "O foco exclusivo na literatura regionalista do interior do país."],
-                correctIndex: 3, explanation: "A metáfora da antropofagia indígena sugere engolir a técnica e influência externa, digeri-la, e excretar algo inteiramente original e brasileiro."
+                correctIndex: 2, explanation: "A antropofagia prega absorver criticamente a técnica estrangeira, assimilando-a e deglutindo-a para produzir uma cultura forte e autenticamente nacional."
             },
             {
-                category: "Modernismo: 1ª Fase (Teoria)", bgGradient: ["#1e1b4b", "#090514"], particleType: "CRYSTAL", themeId: "CRYSTAL",
-                q: "Mário de Andrade, em seu Prefácio Interessantíssimo (de Pauliceia Desvairada), teoriza sobre o fazer poético modernista. Uma das grandes inovações defendidas foi:",
-                options: ["O uso da 'polifonia' urbana e das associações analógicas livres na poesia.", "O retorno ao soneto clássico de herança camoniana.", "A padronização da língua falada com base na norma culta de Portugal.", "A eliminação completa do lirismo e das emoções do texto literário.", "A obrigatoriedade da rima em todos os versos."],
-                correctIndex: 0, explanation: "Mário propõe captar o ritmo frenético, fragmentado e polifônico de São Paulo nascente, quebrando a linearidade do verso tradicional."
-            },
-            {
-                category: "Modernismo: 1ª Fase (Obras)", bgGradient: ["#1e1b4b", "#090514"], particleType: "CRYSTAL", themeId: "CRYSTAL",
+                category: "1ª Fase (Análise de Obra)", bgGradient: ["#1e1b4b", "#090514"], particleType: "CRYSTAL", themeId: "CRYSTAL",
                 q: "O livro Macunaíma (1928), de Mário de Andrade, é considerado uma rapsódia porque:",
-                options: ["Segu uma ordem cronológica rígida e realista do desenvolvimento do herói.", "Reúne e funde mitos, lendas, folclore e dialetos de diferentes regiões do Brasil em uma narrativa fragmentada.", "Concentra-se na biografia psicológica de um único homem paulistano.", "É escrito inteiramente em versos alexandrinos rimados.", "Isola a cultura indígena das influências da modernidade urbana."],
-                correctIndex: 1, explanation: "Como uma rapsódia musical que colide diferentes cantos, a obra unifica o folclore e a geografia do Brasil inteiro em um herói sem nenhum caráter fixo."
+                options: ["Segue uma ordem cronológica rígida e realista do desenvolvimento do herói.", "Reúne e funde mitos, lendas, folclore e dialetos de diferentes regiões do Brasil em uma narrativa fragmentada.", "Concentra-se na biografia psicológica de um único homem paulistano.", "É escrito inteiramente em versos alexandrinos rimados.", "Isola a cultura indígena das influências da modernidade urbana."],
+                correctIndex: 1, explanation: "Como rapsódia, Mário de Andrade costura e justapõe de forma livre e sem linearidade cronológica os mitos, dialetos e folclores de toda a extensão do território brasileiro."
             },
             {
-                category: "Modernismo: 1ª Fase (Linguagem)", bgGradient: ["#1e1b4b", "#090514"], particleType: "CRYSTAL", themeId: "CRYSTAL",
-                q: "Oswald de Andrade celebrizou o 'poema-piada'. Esse recurso literário caracteriza-se por:",
-                options: ["Longas narrativas rimadas focadas na tragédia humana.", "Textos curtos, irônicos, que subvertem a solenidade tradicional com humor e concisão.", "Ensaios filosóficos densos disfarçados em forma de crônica.", "Poemas laudatórios de exaltação aos heróis da pátria.", "Uso exclusivo de vocabulário arcaico e construções sintáticas complexas."],
-                correctIndex: 1, explanation: "O poema-piada usa síntese, ironia e leveza para quebrar a pompa solene da poesia parnasiana burguesa."
-            },
-            {
-                category: "Modernismo: 1ª Fase (Estética)", bgGradient: ["#1e1b4b", "#090514"], particleType: "CRYSTAL", themeId: "CRYSTAL",
-                q: "A pintura Abaporu (1928), de Tarsila do Amaral, tornou-se o símbolo visual de qual momento do Modernismo?",
-                options: ["Movimento Verde-Amarelismo.", "Grupo dos Cinco original.", "Movimento Antropofágico.", "Segunda Geração do Romance de 30.", "Geração de 45."],
-                correctIndex: 2, explanation: "O Abaporu ('homem que come gente' em tupi) foi o presente de Tarsila que inspirou Oswald a fundar o Movimento Antropofágico."
-            },
-            {
-                category: "Modernismo: 1ª Fase (Temática)", bgGradient: ["#1e1b4b", "#090514"], particleType: "CRYSTAL", themeId: "CRYSTAL",
-                q: "O nacionalismo da Primeira Fase Modernista difere do nacionalismo Romântico porque o Modernismo:",
-                options: ["Idealizava o índio como um cavaleiro medieval europeu.", "Negava a existência de problemas sociais no Brasil.", "Era ufanista e considerava a natureza brasileira perfeita e sem defeitos.", "Apresentava um nacionalismo crítico, irônico, que expunha as contradições e a miscigenação real do país.", "Buscava transformar o Brasil em uma colônia cultural dos Estados Unidos."],
-                correctIndex: 3, explanation: "A primeira fase trouxe um nacionalismo primitivista e crítico, longe da idealização intocada do século XIX."
-            },
-            {
-                category: "Modernismo: 1ª Fase (Manifestos)", bgGradient: ["#1e1b4b", "#090514"], particleType: "CRYSTAL", themeId: "CRYSTAL",
-                q: "Leia o trecho de Oswald de Andrade: <br><span class='text-slate-400 italic text-sm'>'A língua sem arcaísmos, sem herança. Natural e neológica. O milhão de contribuições da balsa e do bonde.'</span><br> Esse fragmento do Manifesto da Poesia Pau-Brasil defende uma linguagem literária baseada:",
-                options: ["No purismo gramatical e na erudição.", "Na oralidade, no dinamismo urbano e na liberdade de criação vocabular.", "Na sintaxe clássica do século XIX.", "No vocabulário exclusivo das elites rurais brasileiras.", "Na tradução literal de termos estrangeiros para o português arcaico."],
-                correctIndex: 1, explanation: "Preza-se o português falado pelo povo nas ruas paulistanas e brasileiras, acolhendo erros e neologismos como riqueza natural."
-            },
-            {
-                category: "Modernismo: 1ª Fase (Autores)", bgGradient: ["#1e1b4b", "#090514"], particleType: "CRYSTAL", themeId: "CRYSTAL",
-                q: "Assinale a alternativa que apresenta apenas autores associados diretamente à consolidação da Primeira Fase do Modernismo no Brasil (Fase Heroica):",
-                options: ["Carlos Drummond de Andrade, Graciliano Ramos, Rachel de Queiroz.", "Manuel Bandeira, Oswald de Andrade, Mário de Andrade.", "Guimarães Rosa, Clarice Lispector, João Cabral de Melo Neto.", "Álvares de Azevedo, Castro Alves, Casimiro de Abreu.", "Olavo Bilac, Raimundo Correia, Alberto de Oliveira."],
-                correctIndex: 1, explanation: "A trindade Bandeira, Oswald e Mário formou o pilar conceitual e artístico da destruição de 1922."
-            },
-
-            // 2ª FASE
-            {
-                category: "Modernismo: 2ª Fase (Contexto)", bgGradient: ["#0a182c", "#020612"], particleType: "RAIN", themeId: "CITY",
+                category: "2ª Fase (Contexto)", bgGradient: ["#0a182c", "#020612"], particleType: "RAIN", themeId: "CITY",
                 q: "A prosa da Segunda Geração Modernista (Geração de 30) notabilizou-se pelo desenvolvimento do chamado 'Romance Regionalista'. O principal motor temático dessas obras era:",
-                options: ["A idealização da vida bucólica e das festas aristocráticas do interior.", "A denúncia das secas, da miséria, do coronelismo e das injustices sociais, especialmente no Nordeste.", "A exploração da ficção científica e do futurismo nas pequenas cidades brasileiras.", "O foco nas inovações tecnológicas e na industrialização da capital paulista.", "A busca por relatar misticismos medievais adaptados ao solo brasileiro."],
-                correctIndex: 1, explanation: "A Geração de 30 amadureceu os ideais de 22 para fazer um retrato cru da realidade geopolítica e social do sertão nordestino abandonado."
+                options: ["A idealização da vida bucólica e das festas aristocráticas do interior.", "A denúncia das secas, da miséria, do coronelismo e das injustiças sociais, especialmente no Nordeste.", "A exploração da ficção científica e do futurismo nas pequenas cidades brasileiras.", "O foco nas inovações tecnológicas e na industrialização da capital paulista.", "A busca por relatar misticismos medievais adaptados ao solo brasileiro."],
+                correctIndex: 1, explanation: "A Geração de 30 focou em uma literatura engajada de forte teor documental e crítico, retratando os flagelos sociais e a exploração política no Nordeste."
             },
             {
-                category: "Modernismo: 2ª Fase (Personagens)", bgGradient: ["#0a182c", "#020612"], particleType: "RAIN", themeId: "CITY",
+                category: "2ª Fase (Análise de Personagem)", bgGradient: ["#0a182c", "#020612"], particleType: "RAIN", themeId: "CITY",
                 q: "Em Vidas Secas (1938), de Graciliano Ramos, a desumanização das personagens provocada pela miséria extrema e pela opressão social é conhecida pela crítica literária como:",
                 options: ["Antropofagia cultural.", "Zoomorfização (ou animalização) do ser humano.", "Idealização romântica do sertanejo.", "Esteticismo parnasiano.", "Psicologismo urbano de vanguarda."],
-                correctIndex: 1, explanation: "Fabiano e sua família pensam por impulsos e sons básicos devido ao cerceamento cultural, enquanto a cachorra Baleia recebe traços quase humanos."
+                correctIndex: 1, explanation: "A zoomorfização expõe o homem reduzido aos seus instintos mais brutos de sobrevivência por falta de assistência social, enquanto os animais ganham traços quase humanos (como a cachorra Baleia)."
             },
             {
-                category: "Modernismo: 2ª Fase (Drummond)", bgGradient: ["#0a182c", "#020612"], particleType: "RAIN", themeId: "CITY",
+                category: "2ª Fase (Poesia)", bgGradient: ["#0a182c", "#020612"], particleType: "RAIN", themeId: "CITY",
                 q: "Carlos Drummond de Andrade é um dos maiores nomes da poesia da Segunda Fase. No livro A Rosa do Povo (1945), sua poesia assume um caráter fortemente:",
                 options: ["Alienado e puramente focado na beleza formal.", "Religioso e místico, voltado para a transcendência espiritual.", "Social, político e participante, refletindo as angústias da Segunda Guerra Mundial e da ditadura do Estado Novo.", "Indianista, resgatando as lendas da primeira fase.", "Romântico e egocêntrico, focado no sofrimento por amor."],
-                correctIndex: 2, explanation: "A Rosa do Povo é a poesia máxima do engajamento de Drummond, olhando para a opressão mundial e a dor coletiva das ditaduras modernas."
+                correctIndex: 2, explanation: "A Rosa do Povo representa o auge da poesia coletiva, social e politicamente engajada de Drummond, sintonizada com os conflitos de seu tempo histórico."
             },
             {
-                category: "Modernismo: 2ª Fase (Rachel)", bgGradient: ["#0a182c", "#020612"], particleType: "RAIN", themeId: "CITY",
-                q: "O romance O Quinze (1930), de Rachel de Queiroz, aborda uma temática histórica específica do Nordeste brasileiro. Trata-se:",
-                options: ["Da Revolução Farroupilha e seus desdobramentos.", "Da grande seca de 1915 e o consequente êxodo sertanejo.", "Da abolição da escravidão no Recôncavo Baiano.", "O ciclo do café no Vale do Paraíba.", "Da imigração italiana nas lavouras do sul do país."],
-                correctIndex: 1, explanation: "Escrito por Rachel com apenas 19 anos, o livro expõe os campos de concentração de flagelados da seca de 1915 no Ceará."
-            },
-            {
-                category: "Modernismo: 2ª Fase (Poesia)", bgGradient: ["#0a182c", "#020612"], particleType: "RAIN", themeId: "CITY",
-                q: "Cecília Meireles, embora vinculada temporalmente à Segunda Fase, apresenta em sua obra características que remetem ao Simbolismo. Sua poesia é marcada por:",
-                options: ["Críticas ácidas à burguesia e uso constante de gírias urbanas.", "Musicalidade, atmosfera de transitoriedade do tempo, melancolia e busca pelo absoluto.", "Poemas-piada rápidos e colagens de anúncios de jornal.", "Defesa do regionalismo estrito e descrição minuciosa do cangaço.", "Linguagem agressiva de cunho estritamente panfletário e político."],
-                correctIndex: 1, explanation: "Cecília trabalha o intimismo neosimbolista, focado na efemeridade das coisas, na fluidez e em construções melódicas."
-            },
-            {
-                category: "Modernismo: 2ª Fase (Sul)", bgGradient: ["#0a182c", "#020612"], particleType: "RAIN", themeId: "CITY",
-                q: "O Tempo e o Vento, obra monumental de Érico Veríssimo, difere do regionalismo nordestino de 30 por focar na formação histórica e cultural de qual região brasileira?",
-                options: ["O interior de Minas Gerais.", "A Amazônia profunda.", "O Rio Grande do Sul (formação do povo gaúcho).", "O Recôncavo Baiano.", "O norte do Paraná."],
-                correctIndex: 2, explanation: "Érico Veríssimo constrói a saga épica do Rio Grande do Sul através de gerações das famílias Terra e Cambará."
-            },
-            {
-                category: "Modernismo: 2ª Fase (Estilo)", bgGradient: ["#0a182c", "#020612"], particleType: "RAIN", themeId: "CITY",
-                q: "A prosa de Graciliano Ramos destaca-se no panorama da Geração de 30 por seu estilo:",
-                options: ["Proclive a excessos adjetivos, barroco e repleto de metáforas complexas.", "Seco, conciso, direto, avesso a sentimentalismos e focado na precisão vocabular.", "Fragmentado, caótico e sem pontuação tradicional, como o de Oswald de Andrade.", "Oratório, pomposo e focado na musicalidade das frases.", "Voltado ao realismo fantástico, misturando o cotidiano com o sobrenatural."],
-                correctIndex: 1, explanation: "Como diz a crítica, Graciliano 'escreve cortando palavras'. Seu estilo é seco e econômico como a própria terra do sertão."
-            },
-            {
-                category: "Modernismo: 2ª Fase (Espiritualismo)", bgGradient: ["#0a182c", "#020612"], particleType: "RAIN", themeId: "CITY",
-                q: "Jorge de Lima e Murilo Mendes, em determinado momento de suas carreiras na Segunda Fase Modernista, direcionaram sua poesia para:",
-                options: ["A poesia Pau-Brasil de exaltação tecnológica.", "O neoparnasianismo bucólico.", "Temáticas de forte apelo religioso, espiritualista e católico, flertando com o surrealismo.", "Ensaios puramente linguísticos e estruturais.", "Crônicas políticas cotidianas e sátiras jornalísticas."],
-                correctIndex: 2, explanation: "Ambos encabeçaram a vertente espiritual e mística dos anos 30, casando dogmas católicos com imagens livres e justaposições oníricas."
-            },
-            {
-                category: "Modernismo: 2ª Fase (Amado)", bgGradient: ["#0a182c", "#020612"], particleType: "RAIN", themeId: "CITY",
-                q: "O romance Capitães da Areia (1937), de Jorge Amado, retrata a vida de um grupo de meninos de rua em Salvador. A obra causou forte impacto na época devido:",
-                options: ["À linguagem erudita e de difícil acesso para as massas.", "Ao retrato cru da marginalidade infantil aliado a uma perspectiva de forte engajamento político-social e lírico.", "Ao foco exclusivo na elite açucareira da Bahia.", "À total ausência de personagens femininas na trama.", "Ao final feliz burguês reservado a todas as crianças do grupo."],
-                correctIndex: 1, explanation: "Jorge Amado alia denúncia comunista com lirismo poético para retratar a sobrevivência violenta de Pedro Bala e seu bando."
-            },
-            {
-                category: "Modernismo: 2ª Fase (Forma)", bgGradient: ["#0a182c", "#020612"], particleType: "RAIN", themeId: "CITY",
-                q: "Vinicius de Moraes integrou a Segunda Geração Modernista. Em sua produção, destaca-se a revitalização de uma forma poética clássica, adaptada à sensibilidade moderna. Essa forma é o:",
-                options: ["Haicai.", "Rondó.", "Soneto.", "Vilancete.", "Écloga."],
-                correctIndex: 2, explanation: "Vinicius recupera o soneto de 14 versos com rimas, mas inserindo temas passionais, vulgares e urbanos da modernidade."
-            },
-
-            // 3ª FASE
-            {
-                category: "Modernismo: 3ª Fase (Contexto)", bgGradient: ["#0e1116", "#020305"], particleType: "WEB", themeId: "DEEPNEST",
+                category: "3ª Fase (Contexto Estético)", bgGradient: ["#0e1116", "#020305"], particleType: "WEB", themeId: "DEEPNEST",
                 q: "A Geração de 45 (Terceira Fase Modernista) propôs uma mudança de rumo em relação às fases anteriores, caracterizada principalmente por:",
-                options: ["A um retorno ao nacionalismo ingênuo e ufanista do Romantismo.", "Uma busca pelo rigor formal, maior equilíbrio estético e superação do ímpeto puramente destruidor de 1922.", "A abolição definitiva da prosa, focando apenas no teatro rimado.", "O fim do interesse pelas sondagens psicológicas ou existenciais do ser humano.", "A imitação servil do modelo estético árcade do século XVIII."],
-                correctIndex: 1, explanation: "Cansados do verso livre anárquico de 22, os poetas de 45 buscam resgatar a precisão construtiva e o equilíbrio clássico da palavra."
+                options: ["Um retorno ao nacionalismo ingênuo e ufanista do Romantismo.", "Uma busca pelo rigor formal, maior equilíbrio estético e superação do ímpeto puramente destruidor de 1922.", "A abolição definitiva da prosa, focando apenas no teatro rimado.", "O fim do interesse pelas sondagens psicológicas ou existenciais do ser humano.", "A imitação servil do modelo estético árcade do século XVIII."],
+                correctIndex: 1, explanation: "A Geração de 45 afasta-se do caráter de deboche, anarquia e destruição linguística de 22 para retornar ao cuidado artesanal da palavra, metrificação e busca do universal."
             },
             {
-                category: "Modernismo: 3ª Fase (Rosa)", bgGradient: ["#0e1116", "#020305"], particleType: "WEB", themeId: "DEEPNEST",
+                category: "3ª Fase (Inovação Linguística)", bgGradient: ["#0e1116", "#020305"], particleType: "WEB", themeId: "DEEPNEST",
                 q: "Na obra de João Guimarães Rosa, o sertão mineiro deixa de ser apenas um cenário geográfico e torna-se um espaço universal. Isso se dá através de uma profunda revolução na linguagem, caracterizada pelo uso de:",
                 options: ["Linguagem jornalística, direta, sem figuras de linguagem.", "Dialetos estritamente estrangeiros adaptados à fala dos jagunços.", "Neologismos (criação de novas palavras), arcaísmos resgatados e uma sintaxe altamente poética e inventiva.", "Vocabulário purista de acordo com a Academia das Ciências de Lisboa.", "Supressão total dos verbos nas frases narrativas."],
-                correctIndex: 2, explanation: "Guimarães Rosa recria o português criando palavras inéditas baseadas em raízes latinas e gregas e na intuição melódica dos vaqueiros."
+                correctIndex: 2, explanation: "Guimarães Rosa recria o sertão reinventando a própria língua através de neologismos, fusões de termos arcaicos e uma sintaxe poética inovadora."
             },
             {
-                category: "Modernismo: 3ª Fase (Clarice)", bgGradient: ["#0e1116", "#020305"], particleType: "WEB", themeId: "DEEPNEST",
+                category: "3ª Fase (Introspecção)", bgGradient: ["#0e1116", "#020305"], particleType: "WEB", themeId: "DEEPNEST",
                 q: "A prosa de Clarice Lispector introduz com força na literatura brasileira o fluxo de consciência e o monólogo interior. Suas obras focam principalmente:",
                 options: ["Nas disputas de terras entre coronéis do cacau na Bahia.", "Na descrição minuciosa de fatos históricos da história do Brasil.", "No enredo de ação linear, com começo, meio e fim claros.", "Na epifania (revelação súbita a partir de um fato cotidiano) e no mergulho na interioridade psicológica das personagens.", "Na sátira política das classes operárias industriais."],
-                correctIndex: 3, explanation: "As tramas de Clarice são internas. Fatos bobos, como um ovo que quebra ou um cego mascando chiclete, disparam abalos existenciais imensos."
-            },
-            {
-                category: "Modernismo: 3ª Fase (Cabral)", bgGradient: ["#0e1116", "#020305"], particleType: "WEB", themeId: "DEEPNEST",
-                q: "João Cabral de Melo Neto ficou conhecido como o 'engenheiro da palavra'. Sua obra poética afasta-se do sentimentalismo tradicional e preza por:",
-                options: ["Uma poesia visual baseada no automatismo psíquico surrealista.", "Uma poesia construída com rigor geométrico, substantiva, focada na precisão e na recusa ao lirismo exacerbado.", "Poemas confessionais de forte apelo romântico e melancólico.", "Versos livres focados no humor urbano irreverente de Oswald de Andrade.", "Rimários religiosos medievais adaptados ao catolicismo popular."],
-                correctIndex: 1, explanation: "Cabral detestava o transbordar emocional na poesia. Ele tratava o poema como um objeto mineral a ser esculpido e montado estruturalmente."
-            },
-            {
-                category: "Modernismo: 3ª Fase (Severina)", bgGradient: ["#0e1116", "#020305"], particleType: "WEB", themeId: "DEEPNEST",
-                q: "Em Morte e Vida Severina (1955), João Cabral de Melo Neto utiliza a estrutura do auto de Natal tradicional para narrar:",
-                options: ["A vida de luxo das elites açucareiras do Recife.", "A trajetória de um retirante sertanejo que segue o curso do rio Capibaribe em busca de sobrevivência.", "A biografia de uma santa católica no interior da Paraíba.", "Uma epopeia militar da Força Expedicionária Brasileira.", "O crescimento urbano e a industrialização caótica de São Paulo."],
-                correctIndex: 1, explanation: "O poema dramático acompanha Severino cruzando vilas de morte até encontrar no Recife o nascimento de uma criança que renova a esperança na vida."
-            },
-            {
-                category: "Modernismo: 3ª Fase (Grande Sertão)", bgGradient: ["#0e1116", "#020305"], particleType: "WEB", themeId: "DEEPNEST",
-                q: "O romance Grande Sertão: Veredas (1956), de Guimarães Rosa, é narrado em primeira pessoa por um ex-jagunço que reflete sobre sua vida, seus amores e o pacto com o demônio. O nome desse narrador é:",
-                options: ["Fabiano.", "Bentinho.", "Riobaldo.", "Leonardo.", "Augusto Matraga."],
-                correctIndex: 2, explanation: "Riobaldo conta sua longa jornada ao longo das veredas, sua ambiguidade moral e o amor encoberto por Diadorim."
-            },
-            {
-                category: "Modernismo: 3ª Fase (Contos)", bgGradient: ["#0e1116", "#020305"], particleType: "WEB", themeId: "DEEPNEST",
-                q: "No conto 'Amor', do livro Laços de Família, de Clarice Lispector, a personagem Ana vive uma crise interna devastadora (uma epifania) a partir de um evento banal do cotidiano. Esse evento é:",
-                options: ["A perda de um trem na estação central.", "A visão de um homem cego mascando chicle enquanto ela está no bonde.", "Uma discussão política no jantar de família.", "A leitura de uma carta antiga de amor de sua juventude.", "Um assalto sofrido na porta de sua casa."],
-                correctIndex: 1, explanation: "A quietude doméstica de Ana racha ao meio quando ela vê o cego no bonde, quebrando o automatismo de sua vida de dona de casa."
-            },
-            {
-                category: "Modernismo: 3ª Fase (Métrica)", bgGradient: ["#0e1116", "#020305"], particleType: "WEB", themeId: "DEEPNEST",
-                q: "Os poetas da Geração de 45 que defendiam o retorno às formas clássicas, como o soneto, a rima e a métrica, em oposição direta aos abusos do verso livre de 1922, foram chamados de:",
-                options: ["Antropófagos.", "Neoparnasianos (or formalistas).", "Concretistas de vanguarda.", "Regionalistas engajados.", "Condoreiros modernos."],
-                correctIndex: 1, explanation: "Pelo ímpeto de reatar com o rigor estético, foram tachados pejorativamente pelos remanescentes de 22 como neoparnasianos."
-            },
-            {
-                category: "Modernismo: 3ª Fase (Macabéa)", bgGradient: ["#0e1116", "#020305"], particleType: "WEB", themeId: "DEEPNEST",
-                q: "Macabéa é a protagonista de uma das obras mais célebres da Terceira Fase Modernista, escrita por Clarice Lispector. Essa personagem representa a alienação e a invisibilidade urbana. O livro é:",
-                options: ["Perto do Coração Selvagem.", "A Paixão segundo G.H..", "A Hora da Estrela.", "Água Viva.", "O Lustre."],
-                correctIndex: 2, explanation: "A Hora da Estrela narra a trágica e miúda saga da datilógrafa alagoana Macabéa vivendo sem notar a própria miséria no Rio de Janeiro."
-            },
-            {
-                category: "Modernismo: 3ª Fase (Teatro)", bgGradient: ["#0e1116", "#020305"], particleType: "WEB", themeId: "DEEPNEST",
-                q: "O teatro brasileiro também viveu sua modernização nas franjas da Geração de 45. Ariano Suassuna fundiu elementos do cordel, do barroco e do catolicismo popular em uma das peças mais encenadas do país, chamada:",
-                options: ["Vestido de Noiva.", "O Rei da Vela.", "Auto da Compadecida.", "Eles não usam Black-Tie.", "O Pagador de Promessas."],
-                correctIndex: 2, explanation: "O Auto da Compadecida traz as trapaças picarescas de João Grilo e Chicó no sertão sob o julgamento final da Virgem Maria."
+                correctIndex: 3, explanation: "O foco de Clarice está nas revelações interiores (epifanias) em que incidentes triviais do dia a dia rompem a blindagem social das personagens e expõem o existencial subjacente."
             }
         ];
 
-        function abrirSelecaoTema() {
-            document.getElementById("menu-principal-bloco").classList.add("hidden");
-            document.getElementById("theme-selector-bloco").classList.remove("hidden");
-        }
-
-        function fecharSelecaoTema() {
-            document.getElementById("theme-selector-bloco").classList.add("hidden");
-            document.getElementById("menu-principal-bloco").classList.remove("hidden");
-        }
-
-        function configurarTema(tema) {
-            temaSelecionado = tema;
-            if(tema === "MAGNETISMO") {
-                maxPerguntas = 5;
-                // Configura os Murais da Sala 2 para física
-                theoryBoards = [
-                    { x: 150, y: 110, w: 300, h: 100, title: "📜 LEI DE GAUSS DO MAGNETISMO", text: "As linhas de campo magnético são sempre circuitadas e fechadas. O fluxo através de superfícies tridimensionais fechadas é nulo: ∮ B · dA = 0. Isto atesta a inexistência de monopolos isolados.", example: "Exemplo Prático: Se fraturar um ímã macroscópico, seus dipolos atômicos formam instantaneamente novos polos Norte/Sul." },
-                    { x: 550, y: 110, w: 300, h: 100, title: "🚀 TECNOLOGIA DE CAMPOS DINÂMICOS", text: "Campos magnéticos variantes geram forças motoras e armazenamento de dados por meio da variação espacial ou de correntes indutivas.", example: "Exemplos Reais: Trens Maglev utilizam supercondutores e bobinas para levitação eliminando o atrito mecânico da pista." }
-                ];
-                document.getElementById("projection-title").innerText = "PROJEÇÃO GEOMÉTRICA:";
-            } else {
-                maxPerguntas = 10;
-                // Configura os Murais da Sala 2 para as Características do Modernismo
-                theoryBoards = [
-                    { x: 70, y: 110, w: 260, h: 100, title: "📜 1ª FASE (1922-1930) HEROICA", text: "Fase de destruição e ruptura radical. Combate ao academicismo e parnasianismo. Uso do verso livre, poema-piada, ironia e valorização do português falado.", example: "Principais: Mário de Andrade (Macunaíma), Oswald de Andrade (Manifesto Antropófago) e Manuel Bandeira." },
-                    { x: 360, y: 110, w: 260, h: 100, title: "🌾 2ª FASE (1930-1945) CONSOLIDAÇÃO", text: "Amadurecimento formal. Surgimento do romance regionalista nordestino focado na denúncia social da seca, miséria e do coronelismo. Poesia existencial e política.", example: "Principais: Drummond (A Rosa do Povo), Graciliano Ramos (Vidas Secas), Jorge Amado, Cecília Meireles." },
-                    { x: 650, y: 110, w: 260, h: 100, title: "📐 3ª FASE (1945-1960) GERAÇÃO DE 45", text: "Busca pelo rigor formal, métrica e equilíbrio estético (rejeição dos excessos de 22). Prosa experimental e psicológica profunda, universalizando o regionalismo.", example: "Principais: Guimarães Rosa (Grande Sertão), Clarice Lispector (A Hora da Estrela), João Cabral (O Engenheiro)." }
-                ];
-                document.getElementById("projection-title").innerText = "INSPEÇÃO DE CHANCELAS:";
-            }
-            iniciarJogo();
-        }
-
-        function prepararQuizDePerguntas() {
-            let copiaBanco = temaSelecionado === "MAGNETISMO" ? [...bancoMagnetismo] : [...bancoModernismoCompleto];
-            for (let i = copiaBanco.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [copiaBanco[i], copiaBanco[j]] = [copiaBanco[j], copiaBanco[i]];
-            }
-            perguntasSelecionadas = copiaBanco.slice(0, maxPerguntas);
-            indicePerguntaAtual = 0;
-        }
-
-        function iniciarJogo() {
+        function configurarTema() {
+            maxPerguntas = 10;
             document.getElementById("start-menu").classList.add("hidden");
             document.getElementById("game-hud").classList.remove("hidden");
             document.getElementById("display-panel").classList.remove("hidden");
             document.getElementById("canvas-wrap").classList.remove("hidden");
             document.getElementById("victory-screen").classList.add("hidden");
             
-            prepararQuizDePerguntas();
-            
+            // Embaralhar as 10 questões fornecidas
+            let copiaBanco = [...bancoModernismoCompleto];
+            for (let i = copiaBanco.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [copiaBanco[i], copiaBanco[j]] = [copiaBanco[j], copiaBanco[i]];
+            }
+            perguntasSelecionadas = copiaBanco;
+            indicePerguntaAtual = 0;
+            score = 0;
+            document.getElementById("score-val").innerText = score;
+
             player = new Knight(60, canvas.height - 50);
             player.hp = 3;
             atualizarHpHUD();
             
-            labObjects[0].broken = false;
-            labObjects[1].mode = "REPELLING";
-            labObjects[2].active = false;
-
             currentPhase = "LAB_PRACTICE";
             activeTheme = "LAB";
             gerarParticulas("LAB");
             
-            document.getElementById("ambient-title").innerText = "Sala 1: Laboratório de Experimentos Ativos";
-            document.getElementById("ambient-title").className = "text-xs font-bold tracking-widest text-cyan-400 uppercase bg-slate-950/60 px-4 py-1.5 border border-slate-800 rounded-sm";
-
+            document.getElementById("ambient-title").innerText = "Sala 1: Gabinete de Análise Estilística";
             if(!gameActive) {
                 gameActive = true;
                 gameLoop();
-            } else {
-                gameActive = true;
             }
         }
 
         function transicionarParaTeoria() {
             currentPhase = "THEORY_SANCTUARY";
             player.x = 40; player.y = canvas.height - 50;
-            
-            if(temaSelecionado === "MAGNETISMO") {
-                document.getElementById("ambient-title").innerText = "Sala 2: Santuário de Teoria e Exemplos Reais";
-                document.getElementById("ambient-title").className = "text-xs font-bold tracking-widest text-emerald-400 uppercase bg-slate-950/80 px-4 py-1.5 border border-slate-800 rounded-sm";
-            } else {
-                document.getElementById("ambient-title").innerText = "Sala 2: Arquivo Histórico-Literário do Modernismo";
-                document.getElementById("ambient-title").className = "text-xs font-bold tracking-widest text-amber-400 uppercase bg-slate-950/80 px-4 py-1.5 border border-amber-950 rounded-sm";
-            }
+            document.getElementById("ambient-title").innerText = "Sala 2: Arquivo Histórico-Literário do Modernismo";
+            document.getElementById("ambient-title").className = "text-xs font-bold tracking-widest text-amber-400 uppercase bg-slate-950/80 px-4 py-1.5 border border-amber-950 rounded-sm";
         }
 
         function transicionarParaArena() {
@@ -548,20 +320,19 @@
 
             document.getElementById("quiz-progress-hud").innerText = `PROGRESSO: ${indicePerguntaAtual} / ${maxPerguntas}`;
             perguntaAtual = perguntasSelecionadas[indicePerguntaAtual];
-            activeTheme = perguntaAtual.themeId;
 
             document.body.style.backgroundImage = `radial-gradient(circle at center, ${perguntaAtual.bgGradient[0]} 0%, ${perguntaAtual.bgGradient[1]} 100%)`;
             gerarParticulas(perguntaAtual.particleType);
 
             document.getElementById("ambient-title").innerText = `Sala 3 - Portal ${indicePerguntaAtual + 1}: ${perguntaAtual.category}`;
-            document.getElementById("ambient-title").className = "text-xs font-bold tracking-widest text-pink-400 uppercase bg-slate-950/80 px-4 py-1.5 border border-slate-800 rounded-sm";
+            document.getElementById("ambient-title").className = "text-xs font-bold tracking-widest text-amber-400 uppercase bg-slate-950/80 px-4 py-1.5 border border-amber-900 rounded-sm";
             
-            document.getElementById("category-badge").innerText = `✦ Avaliação Estrutural (${indicePerguntaAtual + 1}/${maxPerguntas}) ✦`;
+            document.getElementById("category-badge").innerText = `✦ Sabatina Crítica (${indicePerguntaAtual + 1}/${maxPerguntas}) ✦`;
             document.getElementById("question-text").innerHTML = perguntaAtual.q;
             
             let optionsGuide = "";
             perguntaAtual.options.forEach((opt, index) => {
-                optionsGuide += `<div><span class="text-cyan-400 font-bold">[Porta ${doorLetters[index]}]</span> ${opt}</div>`;
+                optionsGuide += `<div><span class="text-amber-400 font-bold">[Porta ${doorLetters[index]}]</span> ${opt}</div>`;
             });
             document.getElementById("options-text-guide").innerHTML = optionsGuide;
 
@@ -579,23 +350,19 @@
             document.getElementById("display-panel").classList.add("hidden");
             document.getElementById("game-hud").classList.add("hidden");
             
-            const victoryScreen = document.getElementById("victory-screen");
-            const scoreVal = document.getElementById("final-score-val");
-            const maxScoreHud = document.getElementById("max-score-hud-val");
-            const perfTag = document.getElementById("performance-tag");
-            
-            scoreVal.innerText = score;
-            maxScoreHud.innerText = `/ ${maxPerguntas}`;
-            victoryScreen.classList.remove("hidden");
+            document.getElementById("final-score-val").innerText = score;
+            document.getElementById("max-score-hud-val").innerText = `/ ${maxPerguntas}`;
+            document.getElementById("victory-screen").classList.remove("hidden");
 
+            const perfTag = document.getElementById("performance-tag");
             if (score === maxPerguntas) {
-                perfTag.innerText = "Mestre Supremo Crítico";
-                perfTag.className = "text-xs font-bold tracking-widest uppercase py-1 px-3 inline-block rounded-sm bg-emerald-950 text-emerald-400 border border-emerald-800";
+                perfTag.innerText = "Crítico Literário Supremo";
+                perfTag.className = "text-xs font-bold tracking-widest uppercase py-1 px-3 inline-block rounded-sm bg-amber-950 text-amber-400 border border-amber-800";
             } else if (score >= maxPerguntas * 0.6) {
-                perfTag.innerText = "Pensador Sintonizado";
+                perfTag.innerText = "Leitor Sintonizado";
                 perfTag.className = "text-xs font-bold tracking-widest uppercase py-1 px-3 inline-block rounded-sm bg-cyan-950 text-cyan-400 border border-cyan-800";
             } else {
-                perfTag.innerText = "Intelecto Dissipado";
+                perfTag.innerText = "Mentalidade Clássica Conservadora";
                 perfTag.className = "text-xs font-bold tracking-widest uppercase py-1 px-3 inline-block rounded-sm bg-red-950 text-red-400 border border-red-900";
             }
         }
@@ -609,35 +376,29 @@
             document.getElementById("arena-interface").classList.add("hidden");
             
             document.getElementById("start-menu").classList.remove("hidden");
-            document.getElementById("theme-selector-bloco").classList.add("hidden");
             document.getElementById("menu-principal-bloco").classList.remove("hidden");
             document.getElementById("theory-display").classList.remove("hidden");
             
             score = 0;
             indicePerguntaAtual = 0;
-            activeDialog = false;
             gameActive = false;
-            
             document.body.style.backgroundImage = "radial-gradient(circle at center, #091122 0%, #02040a 100%)";
         }
 
         function banirParaSalaPurificacao(explicacaoText) {
             currentPhase = "PURIFICATION_ROOM";
-            activeTheme = "DEEPNEST";
             justificativaErroAtual = explicacaoText;
             
             document.body.style.backgroundImage = "radial-gradient(circle at center, #2e080a 0%, #050102 100%)";
             gerarParticulas("CRYSTAL");
 
-            document.getElementById("ambient-title").innerText = "SALA DE PURIFICAÇÃO E RECUPERAÇÃO CONCEITUAL";
+            document.getElementById("ambient-title").innerText = "SALA DE PURIFICAÇÃO E REVISÃO LITERÁRIA";
             document.getElementById("ambient-title").className = "text-xs font-bold tracking-widest text-red-400 uppercase bg-slate-950/90 px-4 py-1.5 border border-red-950 rounded-sm";
             
             document.getElementById("arena-interface").classList.add("hidden");
             document.getElementById("theory-display").classList.remove("hidden");
             
-            player.x = canvas.width / 2;
-            player.y = canvas.height - 50;
-            activeDialog = false; 
+            player.x = canvas.width / 2; player.y = canvas.height - 50;
         }
 
         function retornarDaPurificacaoParaProximaPergunta() {
@@ -645,8 +406,7 @@
             document.getElementById("theory-display").classList.add("hidden");
             document.getElementById("arena-interface").classList.remove("hidden");
             currentPhase = "ARENA";
-            player.x = canvas.width / 2;
-            player.y = canvas.height - 50;
+            player.x = canvas.width / 2; player.y = canvas.height - 50;
             carregarPerguntaQuizAtendida();
         }
 
@@ -655,13 +415,11 @@
                 score++;
                 document.getElementById("score-val").innerText = score;
                 indicePerguntaAtual++;
-                player.x = canvas.width / 2;
-                player.y = canvas.height - 50;
+                player.x = canvas.width / 2; player.y = canvas.height - 50;
                 carregarPerguntaQuizAtendida();
             } else {
                 player.hp--;
                 atualizarHpHUD();
-                
                 if (player.hp <= 0) {
                     gameActive = false;
                     document.getElementById("game-over-screen").classList.remove("hidden");
@@ -674,63 +432,46 @@
         let particles = [];
         function gerarParticulas(tipo) {
             particles = [];
-            let count = tipo === "RAIN" ? 55 : 25;
+            let count = tipo === "RAIN" ? 40 : 20;
             for (let i = 0; i < count; i++) {
                 particles.push({
                     x: Math.random() * canvas.width,
                     y: Math.random() * canvas.height,
-                    radius: tipo === "CRYSTAL" ? Math.random() * 3 + 1 : Math.random() * 2 + 0.5,
-                    speedY: tipo === "RAIN" ? (Math.random() * 4 + 4) : -(Math.random() * 0.3 + 0.1),
-                    speedX: tipo === "RAIN" ? 0.3 : (Math.random() * 0.4 - 0.2),
-                    alpha: Math.random() * 0.6 + 0.2,
-                    color: tipo === "CRYSTAL" ? "#f472b6" : (tipo === "RAIN" ? "#38bdf8" : "#64748b")
+                    radius: Math.random() * 2 + 0.5,
+                    speedY: tipo === "RAIN" ? (Math.random() * 3 + 3) : -(Math.random() * 0.3 + 0.1),
+                    speedX: (Math.random() * 0.4 - 0.2),
+                    alpha: Math.random() * 0.5 + 0.2,
+                    color: tipo === "CRYSTAL" ? "#fbbf24" : (tipo === "RAIN" ? "#60a5fa" : "#94a3b8")
                 });
             }
         }
 
-        function desenharCenarioFundo() {
-            ctx.save();
-            if (activeTheme === "LAB") {
-                ctx.strokeStyle = "rgba(51, 77, 110, 0.12)"; ctx.lineWidth = 1;
-                for (let i = 0; i < canvas.width; i += 40) {
-                    ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
-                }
-            } 
-            else if (activeTheme === "CITY") {
-                ctx.fillStyle = "rgba(12, 23, 42, 0.4)";
-                ctx.fillRect(150, 60, 110, 280); ctx.fillRect(700, 40, 120, 300);
-            }
-            ctx.restore();
-        }
-
         class Knight {
             constructor(x, y) {
-                this.x = x; this.y = y; this.radius = 12; this.speed = 4.8;
+                this.x = x; this.y = y; this.radius = 12; this.speed = 5;
                 this.hp = 3; this.attackCooldown = 0;
             }
             draw() {
                 ctx.save();
-                ctx.fillStyle = "rgba(0,0,0,0.5)";
+                ctx.fillStyle = "rgba(0,0,0,0.4)";
                 ctx.beginPath(); ctx.ellipse(this.x, this.y + 12, 14, 5, 0, 0, Math.PI*2); ctx.fill();
-                ctx.fillStyle = (currentPhase === "PURIFICATION_ROOM") ? "#fecaca" : "#e2e8f0"; 
-                ctx.strokeStyle = "#1e293b"; ctx.lineWidth = 2.5;
+                ctx.fillStyle = (currentPhase === "PURIFICATION_ROOM") ? "#fee2e2" : "#f1f5f9"; 
+                ctx.strokeStyle = "#0f172a"; ctx.lineWidth = 2.5;
                 ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2); ctx.fill(); ctx.stroke();
                 
-                ctx.fillStyle = (currentPhase === "PURIFICATION_ROOM") ? "#fecaca" : "#e2e8f0";
                 ctx.beginPath(); ctx.moveTo(this.x - 7, this.y - 10); ctx.quadraticCurveTo(this.x - 10, this.y - 22, this.x - 6, this.y - 24); ctx.quadraticCurveTo(this.x - 3, this.y - 18, this.x - 2, this.y - 10); ctx.fill(); ctx.stroke();
                 ctx.beginPath(); ctx.moveTo(this.x + 7, this.y - 10); ctx.quadraticCurveTo(this.x + 10, this.y - 22, this.x + 6, this.y - 24); ctx.quadraticCurveTo(this.x + 3, this.y - 18, this.x + 2, this.y - 10); ctx.fill(); ctx.stroke();
                 
-                ctx.fillStyle = "#090d16";
+                ctx.fillStyle = "#020617";
                 ctx.beginPath(); ctx.ellipse(this.x - 4, this.y - 1, 2.5, 4.5, 0.1, 0, Math.PI*2); ctx.ellipse(this.x + 4, this.y - 1, 2.5, 4.5, -0.1, 0, Math.PI*2); ctx.fill();
                 
                 if (this.attackCooldown > 10) {
-                    ctx.strokeStyle = "rgba(238, 242, 255, 0.9)"; ctx.lineWidth = 3;
-                    ctx.beginPath(); ctx.arc(this.x, this.y - 18, 24, 0, Math.PI, true); ctx.stroke();
+                    ctx.strokeStyle = "rgba(251, 191, 36, 0.8)"; ctx.lineWidth = 3;
+                    ctx.beginPath(); ctx.arc(this.x, this.y - 18, 22, 0, Math.PI, true); ctx.stroke();
                 }
                 ctx.restore();
             }
             update() {
-                if (activeDialog) return; 
                 if (this.attackCooldown > 0) this.attackCooldown--;
 
                 if (keys['w'] || keys['arrowup']) this.y -= this.speed;
@@ -747,31 +488,24 @@
                     let pertoDeAlgo = false;
                     labObjects.forEach(obj => {
                         let dist = Math.sqrt((this.x - (obj.x + obj.w/2))**2 + (this.y - (obj.y + obj.h/2))**2);
-                        if (dist < 75) {
+                        if (dist < 70) {
                             pertoDeAlgo = true;
-                            if (obj.type === "BREAKABLE_MAGNET") {
-                                document.getElementById("theory-display").innerHTML = obj.broken ? 
-                                    `<span class='text-amber-400 font-bold'>Observação Local:</span> Inseparabilidade Magnética ativa. Não existem monopolos.` :
-                                    `<span class='text-cyan-400 font-bold'>Estação 1: Ímã Maciço.</span> Golpeie o bloco com seu Ferrão para testar o princípio da indivisibilidade magnética.`;
-                            } else if (obj.type === "POLARITY_SWITCH") {
-                                document.getElementById("theory-display").innerHTML = obj.mode === "REPELLING" ?
-                                    `<span class='text-rose-400 font-bold'>Observação Local:</span> Polos homônimos (N ↔ N) repelem-se mutuamente.` :
-                                    `<span class='text-emerald-400 font-bold'>Observação Local:</span> Polos opostos (N → S) atraem-se firmemente.`;
-                            } else if (obj.type === "ELECTROMAGNET") {
-                                document.getElementById("theory-display").innerHTML = obj.active ?
-                                    `<span class='text-orange-400 font-bold'>Observação Local:</span> Cargas elétricas ordenadas geram o vetor de campo magnético induzido B.` :
-                                    `<span class='text-slate-400 font-bold'>Estação 3: Eletroímã.</span> Golpeie o circuito para injetar corrente e criar indução artificial.`;
-                            } else if (obj.type === "COMPASS") {
-                                document.getElementById("theory-display").innerHTML = `<span class='text-purple-400 font-bold'>Observação Local:</span> A agulha alinha-se de forma tangente ao campo magnético externo ambiente.`;
+                            if (obj.type === "VERSO_LIVRE") {
+                                document.getElementById("theory-display").innerHTML = `<span class='text-amber-400 font-bold'>Estação Verso Livre:</span> Rompe com a métrica rígida e rimas ricas do Parnasianismo. Permite a oralidade urbana (Manuel Bandeira em 'Poética').`;
+                            } else if (obj.type === "MANIFESTO_MOCK") {
+                                document.getElementById("theory-display").innerHTML = `<span class='text-red-400 font-bold'>Caldeirão Antropófago:</span> Oswald de Andrade propõe engolir influências estrangeiras e vomitá-las sob a forma de arte nacional crítica e poema-piada.`;
+                            } else if (obj.type === "REGIONAL_DENUNCIA") {
+                                document.getElementById("theory-display").innerHTML = `<span class='text-yellow-500 font-bold'>Prensa Regionalista (Geração de 30):</span> Literatura de denúncia da seca, miséria e coronelismo. Estilo seco de Graciliano e a <b>zoomorfização</b> em Vidas Secas.`;
+                            } else if (obj.type === "PSICO_SONDAGEM") {
+                                document.getElementById("theory-display").innerHTML = `<span class='text-cyan-400 font-bold'>Espelho da Epifania (Clarice):</span> O enredo linear perde espaço para o fluxo de consciência e revelações existenciais geradas por atos banais.`;
+                            } else if (obj.type === "RIGOR_GEOMETRICO") {
+                                document.getElementById("theory-display").innerHTML = `<span class='text-purple-400 font-bold'>Rigor de João Cabral:</span> Rejeição ao sentimentalismo vago. Poesia substantiva, construída com engenharia milimétrica.`;
                             }
                         }
                     });
                     if (!pertoDeAlgo) {
-                        document.getElementById("theory-display").innerHTML = `<p class="text-slate-200 text-lg font-medium hk-font-serif">⚔️ <span class="text-cyan-400 font-bold">Sala 1 (Prática Geral):</span> Golpeie as estruturas mecânicas com seu Ferrão (<span class="bg-slate-800 px-2 py-0.5 rounded text-sm text-cyan-300">ESPAÇO</span>). Siga à direita para acessar o painel de estudos!</p>`;
+                        document.getElementById("theory-display").innerHTML = `<p class="text-slate-200 text-lg font-medium hk-font-serif">⚔️ <span class="text-amber-400 font-bold">Gabinete de Estudo Modernista:</span> Ataque os teares com seu Ferrão (<span class="bg-slate-800 px-2 py-0.5 rounded text-sm text-amber-300">ESPAÇO</span>) para sintonizar os conceitos. Siga à direita!</p>`;
                     }
-
-                    let bússola = labObjects[3];
-                    bússola.angle = Math.atan2(this.y - (bússola.y + bússola.h/2), this.x - (bússola.x + bússola.w/2));
 
                     if (this.x > transitionPortal.x - 5) {
                         transicionarParaTeoria();
@@ -784,20 +518,16 @@
                             lendoQuadro = true;
                             document.getElementById("theory-display").innerHTML = `
                                 <div class='text-left max-w-3xl mx-auto space-y-1'>
-                                    <h4 class='text-xs font-bold text-cyan-400 tracking-wider uppercase'>${board.title}</h4>
+                                    <h4 class='text-xs font-bold text-amber-400 tracking-wider uppercase'>${board.title}</h4>
                                     <p class='text-slate-300 text-xs hk-font-serif'>${board.text}</p>
-                                    <p class='text-emerald-400 text-xs italic font-medium'>${board.example}</p>
+                                    <p class='text-amber-400 text-xs italic font-medium'>${board.example}</p>
                                 </div>
                             `;
                         }
                     });
 
                     if (!lendoQuadro) {
-                        if(temaSelecionado === "MAGNETISMO") {
-                            document.getElementById("theory-display").innerHTML = `<p class="text-slate-200 text-lg font-medium hk-font-serif">📖 <span class="text-emerald-400 font-bold">Sala 2 (Teoria Física):</span> Examine os murais de pedra para consolidar os vetores magnéticos antes do quiz. Avance pela direita!</p>`;
-                        } else {
-                            document.getElementById("theory-display").innerHTML = `<p class="text-slate-200 text-lg font-medium hk-font-serif">📖 <span class="text-amber-400 font-bold">Sala 2 (Características do Modernismo):</span> Caminhe em frente aos 3 murais para estudar os traços das fases antes de abrir os portais à direita!</p>`;
-                        }
+                        document.getElementById("theory-display").innerHTML = `<p class="text-slate-200 text-lg font-medium hk-font-serif">🚪 <span class="text-amber-400 font-bold">Sala das Três Portas Históricas:</span> Posicione-se sob cada fase para extrair os segredos dos livros exigidos nos exames. Avance pela direita!</p>`;
                     }
 
                     if (this.x > transitionPortal.x - 5) {
@@ -810,37 +540,24 @@
                         let centerX = d.x + d.width / 2;
                         if (this.y < d.y + d.height + 40 && Math.abs(this.x - centerX) < d.width / 2) {
                             proximaAMalgumaPorta = true;
-                            if(temaSelecionado === "MAGNETISMO") {
-                                document.getElementById("door-inspector").innerHTML = `
-                                    <div class="flex flex-col items-center">
-                                        <span class="text-slate-400 font-bold mb-1 text-[11px]">Geometria da Porta ${d.letter}:</span>
-                                        ${perguntaAtual.svgs[idx]}
-                                    </div>
-                                `;
-                            } else {
-                                document.getElementById("door-inspector").innerHTML = `
-                                    <div class="flex flex-col items-center text-center p-2">
-                                        <span class="text-amber-400 font-bold mb-1 text-[11px] uppercase">Selo de Autenticação ${d.letter}:</span>
-                                        <p class="text-xs text-slate-400 hk-font-serif">Pronto para romper o lacre desta alternativa? Golpeie a porta para registrar sua resposta.</p>
-                                    </div>
-                                `;
-                            }
+                            document.getElementById("door-inspector").innerHTML = `
+                                <div class="flex flex-col items-center text-center p-2">
+                                    <span class="text-amber-400 font-bold mb-1 text-[11px] uppercase">Selo de Autenticação ${d.letter}:</span>
+                                    <p class="text-xs text-slate-400 hk-font-serif">Golpeie este portal com seu Ferrão para firmar esta alternativa como sua resposta oficial.</p>
+                                </div>
+                            `;
                         }
                     });
                     if (!proximaAMalgumaPorta) {
-                        if(temaSelecionado === "MAGNETISMO") {
-                            document.getElementById("door-inspector").innerHTML = "Aproxime-se de um portal de pedra para projetar suas linhas de campo...";
-                        } else {
-                            document.getElementById("door-inspector").innerHTML = "Aproxime-se de um portal de pedra para inspecionar os registros literários...";
-                        }
+                        document.getElementById("door-inspector").innerHTML = "Aproxime-se de um portal de pedra para inspecionar as chaves de resposta...";
                     }
                 }
                 else if (currentPhase === "PURIFICATION_ROOM") {
                     document.getElementById("theory-display").innerHTML = `
                         <div class="text-center max-w-3xl mx-auto space-y-2">
-                            <span class="text-red-400 font-bold tracking-widest text-xs block">⚠️ RETORNO CONCEITUAL OBRIGATÓRIO</span>
+                            <span class="text-red-400 font-bold tracking-widest text-xs block">⚠️ RETORNO LITERÁRIO OBRIGATÓRIO</span>
                             <p class="text-slate-300 text-sm hk-font-serif leading-relaxed">${justificativaErroAtual}</p>
-                            <p class="text-xs text-slate-500 italic mt-2">Atravesse o Portal Verde à direita para retornar ao Quiz!</p>
+                            <p class="text-xs text-slate-500 italic mt-2">Atravesse o Portal à direita para retornar à sabatina!</p>
                         </div>
                     `;
 
@@ -852,16 +569,14 @@
         }
 
         function handlePlayerAttack() {
-            if (player.attackCooldown > 0 || activeDialog || !gameActive) return;
+            if (player.attackCooldown > 0 || !gameActive) return;
             player.attackCooldown = 20;
 
             if (currentPhase === "LAB_PRACTICE") {
                 labObjects.forEach(obj => {
                     let dist = Math.sqrt((player.x - (obj.x + obj.w/2))**2 + (player.y - (obj.y + obj.h/2))**2);
                     if (dist < 65) {
-                        if (obj.type === "BREAKABLE_MAGNET") obj.broken = !obj.broken;
-                        if (obj.type === "POLARITY_SWITCH") obj.mode = obj.mode === "REPELLING" ? "ATTRACTING" : "REPELLING";
-                        if (obj.type === "ELECTROMAGNET") obj.active = !obj.active;
+                        obj.active = !obj.active;
                     }
                 });
             } else if (currentPhase === "ARENA") {
@@ -884,7 +599,7 @@
 
         window.addEventListener('keydown', e => { 
             keys[e.key.toLowerCase()] = true; 
-            if(e.key === " " || e.key === "Spacebar") handlePlayerAttack();
+            if(e.key === " ") handlePlayerAttack();
         });
         window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
 
@@ -892,9 +607,13 @@
             if (!gameActive) return;
             ctx.fillStyle = "#04060d"; ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            desenharCenarioFundo();
+            // Renderização de Fundo Temático Literário (Linhas de Caderno/Pergaminho Estilizadas)
+            ctx.strokeStyle = "rgba(217, 119, 6, 0.04)"; ctx.lineWidth = 1;
+            for (let i = 0; i < canvas.height; i += 25) {
+                ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(canvas.width, i); ctx.stroke();
+            }
 
-            // Partículas
+            // Partículas de Tinta/Poeira de Arquivo
             particles.forEach(p => {
                 p.y += p.speedY; p.x += p.speedX;
                 if (p.y < 0 || p.y > canvas.height) { p.y = p.speedY > 0 ? 0 : canvas.height; p.x = Math.random() * canvas.width; }
@@ -906,71 +625,48 @@
             if (currentPhase === "LAB_PRACTICE") {
                 labObjects.forEach(obj => {
                     ctx.save();
-                    if (obj.type === "BREAKABLE_MAGNET") {
-                        if (!obj.broken) {
-                            ctx.fillStyle = "#1e293b"; ctx.fillRect(obj.x, obj.y, obj.w/2, obj.h);
-                            ctx.fillStyle = "#334155"; ctx.fillRect(obj.x + obj.w/2, obj.y, obj.w/2, obj.h);
-                            ctx.strokeStyle = "#0ea5e9"; ctx.lineWidth = 2; ctx.strokeRect(obj.x, obj.y, obj.w, obj.h);
-                        } else {
-                            ctx.fillStyle = "#1e293b"; ctx.fillRect(obj.x, obj.y, obj.w/4 - 2, obj.h);
-                            ctx.fillStyle = "#334155"; ctx.fillRect(obj.x + obj.w/4, obj.y, obj.w/4 - 2, obj.h);
-                            ctx.fillStyle = "#1e293b"; ctx.fillRect(obj.x + obj.w/2 + 2, obj.y, obj.w/4 - 2, obj.h);
-                            ctx.fillStyle = "#334155"; ctx.fillRect(obj.x + 3*obj.w/4 + 2, obj.y, obj.w/4 - 2, obj.h);
-                            ctx.strokeStyle = "#f59e0b"; ctx.lineWidth = 1.5;
-                            ctx.strokeRect(obj.x, obj.y, obj.w/2 - 2, obj.h); ctx.strokeRect(obj.x + obj.w/2 + 2, obj.y, obj.w/2 - 2, obj.h);
-                        }
-                    } 
-                    else if (obj.type === "POLARITY_SWITCH") {
-                        ctx.fillStyle = "#1e293b"; ctx.fillRect(obj.x, obj.y, obj.w/3, obj.h);
-                        ctx.fillStyle = (obj.mode === "REPELLING") ? "#1e293b" : "#334155"; ctx.fillRect(obj.x + 2*obj.w/3, obj.y, obj.w/3, obj.h);
-                        ctx.strokeStyle = (obj.mode === "REPELLING") ? "#f43f5e" : "#10b981"; ctx.lineWidth = 2;
-                        ctx.strokeRect(obj.x, obj.y, obj.w/3, obj.h); ctx.strokeRect(obj.x + 2*obj.w/3, obj.y, obj.w/3, obj.h);
-                    } 
-                    else if (obj.type === "ELECTROMAGNET") {
-                        ctx.fillStyle = "#475569"; ctx.fillRect(obj.x + 10, obj.y + 12, obj.w - 20, 16);
-                        ctx.strokeStyle = obj.active ? "#fb923c" : "#1e293b"; ctx.lineWidth = 3;
-                        for(let idx = 20; idx < obj.w - 20; idx += 14) {
-                            ctx.beginPath(); ctx.moveTo(obj.x + idx, obj.y + 5); ctx.lineTo(obj.x + idx + 6, obj.y + 35); ctx.stroke();
-                        }
-                    } 
-                    else if (obj.type === "COMPASS") {
-                        let cx = obj.x + obj.w/2; let cy = obj.y + obj.h/2;
-                        ctx.strokeStyle = "#a855f7"; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, 18, 0, Math.PI*2); ctx.stroke();
-                        ctx.save(); ctx.translate(cx, cy); ctx.rotate(obj.angle);
-                        ctx.fillStyle = "#ef4444"; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(12, -3); ctx.lineTo(12, 3); ctx.fill();
-                        ctx.fillStyle = "#64748b"; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(-12, -3); ctx.lineTo(-12, 3); ctx.fill();
-                        ctx.restore();
-                    }
-                    ctx.fillStyle = "#64748b"; ctx.font = "9px Cinzel"; ctx.textAlign = "center";
-                    ctx.fillText(obj.label, obj.x + obj.w/2, obj.y - 12);
+                    ctx.fillStyle = obj.active ? "rgba(217, 119, 6, 0.15)" : "rgba(30, 41, 59, 0.6)";
+                    ctx.strokeStyle = obj.active ? "#f59e0b" : "#475569";
+                    ctx.lineWidth = 2;
+                    ctx.fillRect(obj.x, obj.y, obj.w, obj.h);
+                    ctx.strokeRect(obj.x, obj.y, obj.w, obj.h);
+
+                    // Detalhe interno simulando linhas de texto nos blocos
+                    ctx.strokeStyle = obj.active ? "rgba(245, 158, 11, 0.3)" : "rgba(71, 85, 105, 0.3)";
+                    ctx.beginPath(); ctx.moveTo(obj.x + 15, obj.y + 15); ctx.lineTo(obj.x + obj.w - 15, obj.y + 15);
+                    ctx.moveTo(obj.x + 15, obj.y + 25); ctx.lineTo(obj.x + obj.w - 35, obj.y + 25);
+                    ctx.stroke();
+
+                    ctx.fillStyle = "#94a3b8"; ctx.font = "9px Cinzel"; ctx.textAlign = "center";
+                    ctx.fillText(obj.label, obj.x + obj.w/2, obj.y - 10);
                     ctx.restore();
                 });
 
-                ctx.fillStyle = "rgba(16, 185, 129, 0.15)"; ctx.strokeStyle = "#10b981"; ctx.lineWidth = 3;
+                ctx.fillStyle = "rgba(245, 158, 11, 0.15)"; ctx.strokeStyle = "#f59e0b"; ctx.lineWidth = 3;
                 ctx.fillRect(transitionPortal.x, transitionPortal.y, transitionPortal.width, transitionPortal.height);
                 ctx.strokeRect(transitionPortal.x, transitionPortal.y, transitionPortal.width, transitionPortal.height);
             } 
             else if (currentPhase === "THEORY_SANCTUARY") {
                 theoryBoards.forEach(board => {
                     ctx.save();
-                    ctx.fillStyle = "rgba(15, 23, 42, 0.85)"; ctx.strokeStyle = "#475569"; ctx.lineWidth = 2;
+                    ctx.fillStyle = "rgba(15, 23, 42, 0.9)"; ctx.strokeStyle = "#b45309"; ctx.lineWidth = 2;
                     ctx.fillRect(board.x, board.y, board.w, board.h); ctx.strokeRect(board.x, board.y, board.w, board.h);
-                    ctx.fillStyle = "#334155"; ctx.fillRect(board.x + 10, board.y + 10, 4, board.h - 20);
-                    ctx.fillStyle = "#94a3b8"; ctx.font = "bold 9px Cinzel"; ctx.textAlign = "left";
-                    ctx.fillText(board.title, board.x + 20, board.y + 28);
-                    ctx.font = "italic 10px Georgia"; ctx.fillStyle = "#cbd5e1";
-                    ctx.fillText("Aproxime-se para ler as inscrições...", board.x + 20, board.y + 55);
+                    ctx.fillStyle = "#d97706"; ctx.fillRect(board.x + 8, board.y + 10, 3, board.h - 20);
+                    ctx.fillStyle = "#f59e0b"; ctx.font = "bold 9px Cinzel"; ctx.textAlign = "left";
+                    ctx.fillText(board.title, board.x + 18, board.y + 24);
+                    ctx.font = "italic 10px Georgia"; ctx.fillStyle = "#94a3b8";
+                    ctx.fillText("Aproxime-se para colher chaves dos livros...", board.x + 18, board.y + 55);
                     ctx.restore();
                 });
 
-                ctx.fillStyle = "rgba(6, 182, 212, 0.15)"; ctx.strokeStyle = "#22d3ee"; ctx.lineWidth = 3;
+                ctx.fillStyle = "rgba(245, 158, 11, 0.2)"; ctx.strokeStyle = "#f59e0b"; ctx.lineWidth = 3;
                 ctx.fillRect(transitionPortal.x, transitionPortal.y, transitionPortal.width, transitionPortal.height);
                 ctx.strokeRect(transitionPortal.x, transitionPortal.y, transitionPortal.width, transitionPortal.height);
             } 
             else if (currentPhase === "ARENA") {
                 doors.forEach(d => {
                     ctx.save();
-                    ctx.fillStyle = "rgba(12, 19, 34, 0.88)"; ctx.strokeStyle = "#334d6e"; ctx.lineWidth = 2.5;
+                    ctx.fillStyle = "rgba(12, 19, 34, 0.9)"; ctx.strokeStyle = "#b45309"; ctx.lineWidth = 2.5;
                     ctx.fillRect(d.x, d.y, d.width, d.height); ctx.strokeRect(d.x, d.y, d.width, d.height);
                     ctx.fillStyle = "#e2e8f0"; ctx.font = "600 12px Cinzel"; ctx.textAlign = "center";
                     ctx.fillText(`PORTAL ${d.letter}`, d.x + d.width/2, d.y + 26);
@@ -982,8 +678,6 @@
                 ctx.fillStyle = "rgba(34, 197, 94, 0.2)"; ctx.strokeStyle = "#22c55e"; ctx.lineWidth = 3;
                 ctx.fillRect(transitionPortal.x, transitionPortal.y, transitionPortal.width, transitionPortal.height);
                 ctx.strokeRect(transitionPortal.x, transitionPortal.y, transitionPortal.width, transitionPortal.height);
-                ctx.fillStyle = "#22c55e"; ctx.font = "bold 9px Cinzel"; ctx.textAlign = "center";
-                ctx.fillText("RETORNAR", transitionPortal.x + 20, transitionPortal.y + 65);
                 ctx.restore();
             }
 
