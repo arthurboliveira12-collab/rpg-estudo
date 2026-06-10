@@ -7,17 +7,27 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts para garantir fontes estilo Trajan (Cinzel) se o sistema local não tiver -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&display=swap" rel="family">
     
     <style>
-        /* Aplicação da família Perpetua / Georgia para máxima elegância e leitura expandida */
+        /* Tipografia de Identidade (Estilo Trajan Monumental) */
+        .trajan-title {
+            font-family: 'Trajan Pro', 'Trajan', 'Cinzel', 'Times New Roman', serif;
+            letter-spacing: 0.15em;
+        }
+
+        /* Corpo de texto otimizado para leitura estendida e confortável */
         body {
             background-color: #03050a;
             color: #e2e8f0;
-            font-family: 'Perpetua', 'Georgia', 'Times New Roman', serif;
+            font-family: 'Perpetua', 'Georgia', serif;
             user-select: none;
             overflow: hidden;
             transition: background 1s ease;
-            font-size: 19px; /* Tamanho base de leitura aumentado */
+            font-size: 19px;
         }
 
         .hk-border {
@@ -25,26 +35,13 @@
             outline: 1px solid #02040a;
             outline-offset: -2px;
             box-sizing: border-box;
-            background: rgba(6, 11, 22, 0.96);
-        }
-
-        .text-xl-custom {
-            font-size: 24px;
-        }
-        .text-lg-custom {
-            font-size: 21px;
-        }
-        .text-md-custom {
-            font-size: 18px;
-        }
-        .text-sm-custom {
-            font-size: 16px;
+            background: rgba(6, 11, 22, 0.98);
         }
 
         .vignette {
             position: absolute;
             inset: 0;
-            box-shadow: inset 0 0 140px rgba(0,0,0,0.95);
+            box-shadow: inset 0 0 160px rgba(0,0,0,0.96);
             pointer-events: none;
             z-index: 10;
         }
@@ -66,82 +63,102 @@
             height: 22px;
             border-radius: 50%;
         }
+
+        /* Barra de rolagem estilizada para textos longos de estudo */
+        .scroll-estudo::-webkit-scrollbar {
+            width: 6px;
+        }
+        .scroll-estudo::-webkit-scrollbar-track {
+            background: rgba(2, 6, 23, 0.4);
+        }
+        .scroll-estudo::-webkit-scrollbar-thumb {
+            background: #334d6e;
+            border-radius: 3px;
+        }
+        .scroll-estudo::-webkit-scrollbar-thumb:hover {
+            background: #f59e0b;
+        }
     </style>
 </head>
-<body class="h-screen w-screen flex flex-col items-center justify-center p-3 relative">
+<body class="h-screen w-screen flex flex-col items-center justify-start p-4 relative overflow-y-auto">
     
     <div class="vignette"></div>
 
     <!-- TELA INICIAL (MENU) -->
     <div id="start-menu" class="absolute inset-0 bg-slate-950/98 z-50 flex flex-col items-center justify-center p-6 text-center">
-        <div id="menu-principal-bloco" class="hk-border p-12 max-w-2xl flex flex-col items-center">
-            <h1 class="text-4xl md:text-5xl font-bold tracking-widest text-slate-200 mb-2">HOLLOW KNIGHT</h1>
-            <h2 class="text-lg-custom text-amber-400 font-light mb-8 tracking-widest uppercase">Santuário Arquivístico do Modernismo v7.0</h2>
-            <p class="text-lg-custom text-slate-400 italic mb-8 max-w-xl leading-relaxed">
-                "Cruze as quatro portas das paredes para entrar em cada ala de estudo. Retorne pela porta central para desafiar o exame dos portais."
+        <div id="menu-principal-bloco" class="hk-border p-12 max-w-3xl flex flex-col items-center">
+            <h1 class="text-4xl md:text-6xl font-bold text-slate-200 mb-2 trajan-title">HOLLOW KNIGHT</h1>
+            <h2 class="text-lg text-amber-400 font-light mb-8 uppercase tracking-widest trajan-title">Santuário do Modernismo Brasileiro v8.0</h2>
+            <p class="text-xl text-slate-400 italic mb-8 max-w-2xl leading-relaxed">
+                "Uma imersão profunda através de manuscritos, contextos socioeconômicos e poemas de quebra. Explore as paredes para abrir os grandes arquivos acadêmicos."
             </p>
-            <button onclick="configurarTema()" class="px-10 py-4 bg-slate-900 border border-slate-700 hover:border-amber-500 text-slate-200 text-md-custom tracking-widest transition-all transform hover:scale-105 font-bold">
-                INICIAR JORNADA LITERÁRIA
+            <button onclick="configurarTema()" class="px-10 py-4 bg-slate-900 border border-slate-700 hover:border-amber-500 text-slate-200 text-lg tracking-widest transition-all transform hover:scale-105 font-bold trajan-title">
+                INICIAR ARQUIVO DE ESTUDOS
             </button>
         </div>
     </div>
 
     <!-- HUD GERAL -->
-    <div id="game-hud" class="w-full max-w-5xl justify-between items-center mb-3 px-4 hidden flex">
+    <div id="game-hud" class="w-full max-w-6xl justify-between items-center mb-2 px-4 hidden flex shrink-0">
         <div class="flex flex-col">
-            <span class="text-sm-custom tracking-widest text-slate-500 mb-1 font-bold">MÁSCARAS DE VIDA</span>
+            <span class="text-xs tracking-widest text-slate-500 mb-1 font-bold trajan-title">MÁSCARAS DE VIDA</span>
             <div id="hp-container" class="flex gap-2"></div>
         </div>
         <div class="text-center">
-            <span id="ambient-title" class="text-md-custom font-bold tracking-widest text-amber-400 uppercase bg-slate-950/60 px-5 py-2 border border-slate-800 rounded-sm">
-                Sala 1: Gabinete de Análise Estilística
+            <span id="ambient-title" class="text-lg font-bold text-amber-400 uppercase bg-slate-950/80 px-6 py-2 border border-slate-800 rounded-sm trajan-title">
+                SALA 1: GABINETE DE ANÁLISE ESTILÍSTICA
             </span>
         </div>
         <div class="text-right">
-            <span id="quiz-progress-hud" class="text-sm-custom tracking-widest text-slate-500 block mb-0.5 font-bold">PROGRESSO: 0 / 10</span>
-            <span class="text-sm-custom text-amber-500 block font-bold">SINTONIAS: <span id="score-val">0</span></span>
+            <span id="quiz-progress-hud" class="text-xs tracking-widest text-slate-500 block mb-0.5 font-bold trajan-title">PROGRESSO: 0 / 10</span>
+            <span class="text-sm text-amber-500 block font-bold trajan-title">SINTONIAS: <span id="score-val">0</span></span>
         </div>
     </div>
 
-    <!-- PAINEL DE COMUNICADOS E EXPOSIÇÃO TEÓRICA -->
-    <div id="display-panel" class="w-full max-w-5xl hk-border p-6 mb-3 hidden min-h-[230px] flex flex-col justify-center">
-        <div id="theory-display" class="w-full text-center text-lg-custom leading-relaxed px-4"></div>
+    <!-- CENTRAL ESPACIALIZADA DE EXPOSIÇÃO TEÓRICA E DOUTROW (PAINEL AMPLO) -->
+    <div id="display-panel" class="w-full max-w-6xl hk-border p-6 mb-3 hidden h-[380px] flex flex-col justify-start overflow-hidden shrink-0">
+        <div id="theory-display" class="w-full h-full overflow-y-auto scroll-estudo text-left text-lg leading-relaxed px-4"></div>
         
         <!-- Painel de Arena de Enigmas -->
-        <div id="arena-interface" class="hidden grid grid-cols-1 md:grid-cols-12 gap-4 w-full">
-            <div class="md:col-span-8 border-r border-slate-900 pr-4 flex flex-col justify-between">
+        <div id="arena-interface" class="hidden grid grid-cols-1 md:grid-cols-12 gap-6 w-full h-full overflow-hidden">
+            <div class="md:col-span-8 border-r border-slate-900 pr-4 flex flex-col justify-between h-full overflow-y-auto scroll-estudo">
                 <div>
-                    <div id="category-badge" class="text-md-custom font-bold text-amber-400 mb-2 uppercase tracking-widest"></div>
-                    <p id="question-text" class="text-xl-custom text-slate-200 font-medium leading-relaxed"></p>
+                    <div id="category-badge" class="text-md font-bold text-amber-400 mb-2 uppercase tracking-widest trajan-title"></div>
+                    <p id="question-text" class="text-2xl text-slate-200 font-medium leading-relaxed mb-4"></p>
                 </div>
-                <div id="options-text-guide" class="text-lg-custom text-slate-400 mt-4 grid grid-cols-1 gap-3 leading-relaxed"></div>
+                <div id="options-text-guide" class="text-lg text-slate-400 grid grid-cols-1 gap-3 leading-relaxed pb-2"></div>
             </div>
-            <div class="md:col-span-4 flex flex-col justify-center items-center bg-slate-950/40 p-4 border border-slate-900 rounded-sm">
-                <span id="projection-title" class="text-sm-custom font-bold text-slate-500 tracking-widest mb-2 w-full text-left uppercase">CHANCELAS DO PORTAL:</span>
-                <div id="door-inspector" class="text-md-custom text-slate-400 italic text-center w-full flex items-center justify-center min-h-[140px] leading-relaxed">
+            <div class="md:col-span-4 flex flex-col justify-center items-center bg-slate-950/60 p-4 border border-slate-900 rounded-sm h-full">
+                <span id="projection-title" class="text-xs font-bold text-slate-500 tracking-widest mb-2 w-full text-left uppercase trajan-title">CHANCELAS DO PORTAL:</span>
+                <div id="door-inspector" class="text-md text-slate-400 italic text-center w-full flex items-center justify-center h-full leading-relaxed">
                     Aproxime-se de uma das portas superiores para assinalar sua resposta...
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- CANVAS DO JOGO (INTEGRADO LOGO ABAIXO DA LEITURA) -->
+    <div class="hk-border rounded-sm overflow-hidden hidden shadow-2xl shrink-0" id="canvas-wrap">
+        <canvas id="gameCanvas" width="1110" height="260"></canvas>
+    </div>
+
     <!-- TELA DE RESULTADOS FINAIS -->
     <div id="victory-screen" class="absolute inset-0 bg-slate-950/98 z-50 flex flex-col items-center justify-center p-6 text-center hidden">
         <div class="hk-border p-12 max-w-2xl flex flex-col items-center">
-            <h2 class="text-4xl font-bold tracking-widest text-amber-400 mb-2">ARQUIVO FINALIZADO</h2>
-            <div class="text-sm-custom text-slate-500 tracking-widest mb-6 uppercase font-bold">Resultados do Teste Literário</div>
+            <h2 class="text-4xl font-bold text-amber-400 mb-2 trajan-title">ARQUIVO FINALIZADO</h2>
+            <div class="text-xs text-slate-500 tracking-widest mb-6 uppercase font-bold trajan-title">Resultados do Teste Literário</div>
             
             <div class="bg-slate-900/60 border border-slate-800 p-6 rounded-sm w-full mb-6">
-                <div class="text-md-custom text-slate-400 uppercase tracking-widest mb-1">Sintonias Obtidas</div>
+                <div class="text-md text-slate-400 uppercase tracking-widest mb-1 trajan-title">Sintonias Obtidas</div>
                 <div class="text-5xl font-bold text-slate-100 mb-3"><span id="final-score-val">0</span> <span id="max-score-hud-val" class="text-2xl text-slate-500">/ 10</span></div>
-                <div id="performance-tag" class="text-sm-custom font-bold tracking-widest uppercase py-1.5 px-4 inline-block rounded-sm"></div>
+                <div id="performance-tag" class="text-xs font-bold tracking-widest uppercase py-1.5 px-4 inline-block rounded-sm trajan-title"></div>
             </div>
 
-            <p class="text-lg-custom text-slate-400 italic mb-8 max-w-md">
-                "Os registros estéticos foram consolidados. Sua mente captou perfeitamente os movimentos de ruptura, consolidação social e introspecção."
+            <p class="text-lg text-slate-400 italic mb-8 max-w-md">
+                "Os registros estéticos foram consolidados. Sua mente assimilou as correntes de ruptura, consolidação social e introspecção das três gerações."
             </p>
 
-            <button onclick="retornarAoMenu()" class="px-8 py-3 bg-slate-900 border border-slate-700 hover:border-amber-400 text-slate-200 text-sm-custom tracking-widest transition-all transform hover:scale-105 font-bold">
+            <button onclick="retornarAoMenu()" class="px-8 py-3 bg-slate-900 border border-slate-700 hover:border-amber-400 text-slate-200 text-xs tracking-widest transition-all transform hover:scale-105 font-bold trajan-title">
                 VOLTAR AO MENU INICIAL
             </button>
         </div>
@@ -150,24 +167,18 @@
     <!-- GAME OVER -->
     <div id="game-over-screen" class="absolute inset-0 bg-slate-950/95 z-50 flex flex-col items-center justify-center p-6 text-center hidden">
         <div class="max-w-md space-y-4">
-            <h2 class="text-4xl font-bold tracking-widest text-red-500">O RECIPIENTE QUEBROU</h2>
-            <p class="text-lg-custom text-slate-500 italic">Sua energia dissipou-se antes de decifrar as correntes modernistas brasileiras...</p>
-            <button onclick="retornarAoMenu()" class="px-6 py-3 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 text-sm-custom font-bold tracking-widest uppercase">
+            <h2 class="text-4xl font-bold text-red-500 trajan-title">O RECIPIENTE QUEBROU</h2>
+            <p class="text-lg text-slate-500 italic">Sua energia dissipou-se antes de decifrar as correntes modernistas brasileiras...</p>
+            <button onclick="retornarAoMenu()" class="px-6 py-3 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-bold tracking-widest uppercase trajan-title">
                 RETORNAR AO MENU
             </button>
         </div>
-    </div>
-
-    <!-- CANVAS DO JOGO -->
-    <div class="hk-border rounded-sm overflow-hidden hidden shadow-2xl" id="canvas-wrap">
-        <canvas id="gameCanvas" width="1000" height="340"></canvas>
     </div>
 
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        // VARIÁVEIS DE ESTADO DO SISTEMA
         let currentPhase = "LAB_PRACTICE"; 
         let gameActive = false;
         let score = 0;
@@ -178,46 +189,60 @@
         let perguntasSelecionadas = [];
         let indicePerguntaAtual = 0;
         let justificativaErroAtual = "";
-        let activeAlaId = null; // Rastreia em qual ala o jogador entrou
+        let activeAlaId = null;
 
-        // SALA 1 - Laboratório de Estudos Estilísticos
+        // SALA 1 - Objetos de Estudo Rápido
         const labObjects = [
-            { x: 50, y: 150, w: 140, h: 40, type: "VERSO_LIVRE", active: false, label: "📝 Tear do Verso Livre" },
-            { x: 230, y: 150, w: 140, h: 40, type: "MANIFESTO_MOCK", active: false, label: "🔥 Caldeirão Antropófago" },
-            { x: 410, y: 150, w: 140, h: 40, type: "REGIONAL_DENUNCIA", active: false, label: "🌾 Prensa Regionalista" },
-            { x: 590, y: 150, w: 140, h: 40, type: "PSICO_SONDAGEM", active: false, label: "🧠 Espelho da Epifania" },
-            { x: 770, y: 150, w: 140, h: 40, type: "RIGOR_GEOMETRICO", active: false, label: "📐 Compasso da Palavra" }
+            { x: 50, y: 110, w: 160, h: 40, type: "VERSO_LIVRE", active: false, label: "📝 Tear do Verso Livre" },
+            { x: 260, y: 110, w: 160, h: 40, type: "MANIFESTO_MOCK", active: false, label: "🔥 Caldeirão Antropófago" },
+            { x: 470, y: 110, w: 160, h: 40, type: "REGIONAL_DENUNCIA", active: false, label: "🌾 Prensa Regionalista" },
+            { x: 680, y: 110, w: 160, h: 40, type: "PSICO_SONDAGEM", active: false, label: "🧠 Espelho da Epifania" },
+            { x: 890, y: 110, w: 160, h: 40, type: "RIGOR_GEOMETRICO", active: false, label: "📐 Compasso da Palavra" }
         ];
 
-        // SALA 2 - Portas reais cravadas nas paredes externas (Pontos Cardeais)
+        // SALA 2 - Dossiês de Estudo Densos e Avançados para as Alas
         const wallDoors = [
             { 
-                x: 450, y: 0, w: 100, h: 25, id: "PORTA_NORTE", title: "🚪 PAREDE NORTE: ANTECEDENTES E SEMANA DE 22",
-                text: "<b>Dossiê de Exame:</b> O marco zero da ruptura cultural. <br>• <b>Contexto Histórico:</b> O Brasil celebrava o centenário da Independência Política (1922), mas sua arte era totalmente escrava do academicismo europeu e do rigor parnasiano.<br>• <b>Proposta Central:</b> Chocar a burguesia e conquistar a independência cultural. Abolição da rima obrigatória, adoção do 'falar brasileiro' cotidiano e introdução do ritmo acelerado das indústrias e bondes urbanos.<br>• <b>Figuras de Proa:</b> Mário de Andrade, Oswald de Andrade e as artes plásticas de Anita Malfatti no Teatro Municipal de SP.",
-                example: "💡 Chave de Resposta: Ruptura antiparnasiana, liberdade linguística e nacionalismo de renovação radical."
+                x: 500, y: 0, w: 110, h: 25, id: "PORTA_NORTE", title: "🚪 ARQUIVO NORTE: ANTECEDENTES E A RUPTURA DE 1922",
+                text: `<div class="space-y-4 text-slate-300">
+                        <p><b>1. O Cenário da Estagnação (Belle Époque e Parnasianismo):</b> No início do século XX, enquanto o mundo passava pelas transformações da Primeira Guerra Mundial e da industrialização acelerada, a literatura oficial brasileira permanecia congelada no <i>Parnasianismo</i>. Valorizava-se a "arte pela arte", as rimas ricas (entre classes gramaticais diferentes), e uma linguagem hermética totalmente distante da realidade social das ruas. Escrever bem era imitar os clássicos portugueses e franceses.</p>
+                        <p><b>2. As Vanguardas Europeias como Combustível:</b> Jovens intelectuais paulistas começaram a ter contato com os manifestos de ruptura da Europa: o <b>Futurismo</b> (exaltação da máquina, velocidade e destruição da sintaxe tradicional), o <b>Cubismo</b> (fragmentação geométrica e colagem), o <b>Dadaísmo</b> (o illogical radical e o deboche) e o <b>Surrealismo</b> (fluxo do inconsciente e dos sonhos). Eles perceberam que o academicismo brasileiro era anacrônico.</p>
+                        <p><b>3. A Semana de Arte Moderna (17 a 19 de fevereiro de 1922):</b> Realizada no Teatro Municipal de São Paulo, não foi um evento pacífico; foi um escândalo planejado. Vaias, gritos e latidos imitando animais ecoavam do público burguês horrorizado enquanto Manuel Bandeira tinha seu poema <i>'Os Sapos'</i> lido (uma sátira feroz aos parnasianos). A proposta central era proclamar a <b>independência cultural</b> do país, defendendo o verso livre, o direito ao erro gramatical proposital e a valorização do cotidiano.</p>
+                       </div>`,
+                example: "🎯 Chave Metódica: Quebra de regras parnasianas, choque contra o tradicionalismo acadêmico burguês e assimilação das vanguardas europeias para fundar uma expressão nacional autônoma."
             },
             { 
-                x: 975, y: 120, w: 25, h: 100, id: "PORTA_LESTE", title: "🚪 PAREDE LESTE: 1ª FASE - HEROICA (1922-1930)",
-                text: "<b>Dossiê de Exame:</b> Destruir para construir uma nova identidade.<br>• <b>Nacionalismo Crítico / Antropofagia (Oswald):</b> Não rejeita o exterior; engole a técnica estrangeira para assimilá-la e vomitá-la sob forma de arte nacional crítica. Expressado visualmente no <i>Abaporu</i> de Tarsila.<br>• <b>Obras Mandatórias:</b> <i>Macunaíma</i> (Mário de Andrade), a rapsódia do 'herói sem nenhum caráter' fundindo lendas, folclores e dialetos de todo o mapa sem linearidade cronológica.<br>• <b>Estilo:</b> Poema-piada, humor cáustico, versos livres e brancos.",
-                example: "💡 Chave de Resposta: Fusão mitológica nacional, antropofagia e ironia linguística desmitificadora."
+                x: 1085, y: 90, w: 25, h: 90, id: "PORTA_LESTE", title: "🚪 ARQUIVO LESTE: 1ª FASE MODERNISTA - A GERAÇÃO HEROICA (1922-1930)",
+                text: `<div class="space-y-4 text-slate-300">
+                        <p><b>1. Fase de Destruição e Fundação:</b> O objetivo primordial da Geração de 22 era demolir o passado para limpar o terreno da cultura nacional. Havia uma necessidade urgente de responder à pergunta: <i>O que é o Brasil real?</i> A resposta veio em tom de deboche, sátira, e poesia de flashes (poema-piada).</p>
+                        <p><b>2. Oswald de Andrade e a Antropofagia:</b> Oswald percebeu que o nacionalismo ufanista ingênuo (como o do movimento verde-amarelo) era perigoso. Ele lança o <b>Movimento Antropófago</b>, inspirado no quadro <i>Abaporu</i> de Tarsila do Amaral. A tese central: não devemos recusar a cultura europeia, mas sim agir como os índios canibais — engolir a técnica estrangeira, digeri-la, extrair o que é bom e vomitá-la sob a forma de uma arte genuinamente brasileira e revolucionária. <i>'Tupi or not tupi, that is the question'</i>.</p>
+                        <p><b>3. Mário de Andrade e Macunaíma (1928):</b> Mário publica a obra máxima da fase, uma rapsódia que desafia qualquer classificação de gênero literário. Macunaíma é o 'herói sem nenhum caráter' (não no sentido de mau-caráter, mas de falta de traço definitivo). O livro funde lendas amazônicas, sotaques paulistas, cultos afro-brasileiros e cronologias impossíveis para espelhar a natureza miscigenada, caótica e multifacetada da identidade do Brasil.</p>
+                       </div>`,
+                example: "🎯 Chave Metódica: Nacionalismo crítico, irreverência estética, poemas-piada, valorização da fala cotidiana e a teoria da antropofagia cultural."
             },
             { 
-                x: 450, y: 315, w: 100, h: 25, id: "PORTA_SUL", title: "🚪 PAREDE SUL: 2ª FASE - CONSOLIDAÇÃO (1930-1945)",
-                text: "<b>Dossiê de Exame:</b> Maturidade formal, engajamento social e denúncia crua.<br>• <b>A Prosa de 30 (Regionalismo do Nordeste):</b> Foco documental e combativo contra a seca, a miséria e a opressão dos coronéis.<br>• <b>Obras Críticas:</b> <i>Vidas Secas</i> (Graciliano Ramos) consagrando a <b>zoomorfização</b> (bichos humanizados e humanos animalizados pela seca); <i>O Quinze</i> (Rachel de Queiroz) e <i>Capitães da Areia</i> (Jorge Amado).<br>• <b>A Poesia Universal:</b> Afasta-se do deboche e mergulha nas tensões políticas mundiais (2ª Guerra, Estado Novo) com o olhar social de Drummond (<i>A Rosa do Povo</i>) e os sonetos amorosos de Vinicius.",
-                example: "💡 Chave de Resposta: Literatura engajada de denúncia social, estilo seco e existencialismo realista."
+                x: 500, y: 235, w: 110, h: 25, id: "PORTA_SUL", title: "🚪 ARQUIVO SUL: 2ª FASE MODERNISTA - CONSOLIDAÇÃO E ROMANCE DE 30 (1930-1945)",
+                text: `<div class="space-y-4 text-slate-300">
+                        <p><b>1. O Contexto de Crise e Amadurecimento:</b> O clima de deboche de 22 já não cabia no mundo pós-Crise de 1929 e sob a ascensão do Nazifascismo e da Era Vargas no Brasil. A literatura abandona a destruição estética pura e assume uma postura de **engajamento político, social e existencial**. A linguagem se estabiliza, tornando-se uma ferramenta de denúncia crua.</p>
+                        <p><b>2. O Romance Regionalista de 30 (A Prosa do Nordeste):</b> Escritores monumentalizaram o sofrimento do homem do campo contra as secas cíclicas, a opressão dos latifundiários (coronéis) e o abandono estatal. Em <b>Vidas Secas</b> (Graciliano Ramos), a escrita é seca e árida como o próprio sertão, demonstrando a **zoomorfização** das personagens: os humanos perdem a capacidade de falar e expressar sentimentos complexos devido à miséria extrema, enquanto a cadela Baleia age com traços de sensibilidade quase humana.</p>
+                        <p><b>3. A Poesia Universal e Existencial:</b> Paralelamente à prosa combativa, a poesia ganha profundidade metafísica e social. **Carlos Drummond de Andrade** desponta como o poeta do 'gauche', o homem desajustado diante das engrenagens do mundo. Em <i>A Rosa do Povo</i> (1945), Drummond se engaja diretamente na crítica social, unindo o indivíduo ao sofrimento coletivo da guerra e da ditadura.</p>
+                       </div>`,
+                example: "🎯 Chave Metódica: Literatura engajada e documental, denúncia social da miséria sertaneja, desumanização (zoomorfização) e poesia de reflexão política/existencial."
             },
             { 
-                x: 0, y: 120, w: 25, h: 100, id: "PORTA_OESTE", title: "🚪 PAREDE OESTE: 3ª FASE - PÓS-MODERNA (1945-1960)",
-                text: "<b>Dossiê de Exame:</b> Altíssimo rigor formal, engenharia da palavra e universalismo.<br>• <b>A Prosa Intimista (Clarice Lispector):</b> Abandona o foco sociológico. Mergulha no fluxo de consciência e na <b>epifania</b> (revelações transcendentais disparadas por fatos banais do dia a dia, como ver um cego ou um ovo).<br>• <b>O Sertão Universal (Guimarães Rosa):</b> <i>Grande Sertão: Veredas</i> transfigura o espaço geográfico mineiro em arena existencial por meio de intensos <b>neologismos</b> e sintaxe poética profunda.<br>• <b>Poesia Substantiva:</b> O rigor geométrico e concreto de João Cabral de Melo Neto contra o sentimentalismo vago.",
-                example: "💡 Chave de Resposta: Sondagem psicológica profunda, epifanias cotidianas, neologismos e rigor estético."
+                x: 0, y: 90, w: 25, h: 90, id: "PORTA_OESTE", title: "🚪 ARQUIVO OESTE: 3ª FASE MODERNISTA - A GERAÇÃO DE 45 E O UNIVERSALISMO (1945-1960)",
+                text: `<div class="space-y-4 text-slate-300">
+                        <p><b>1. O Retorno ao Rigor Estético:</b> Após décadas de experimentações livres e denúncias sociais diretas, a Geração de 45 operou uma virada drástica. Rejeitou-se o descuido formal e os poemas-piada da primeira fase. Buscou-se um retorno ao cuidado artesanal com a palavra, à pesquisa linguística e ao universalismo temático.</p>
+                        <p><b>2. Clarice Lispector e a Prosa Intimista:</b> Clarice revoluciona a literatura ao esvaziar a importância do enredo externo tradicional. Seus livros focam no mergulho interior e psicológico através do <i>fluxo de consciência</i>. A marca registrada de sua obra é a <b>epifania</b>: momentos banais do cotidiano (como olhar para um cego mascando chiclete, ver um ovo ou colher uma rosa) disparam rachaduras na rotina social das personagens, revelando crises existenciais assustadoras e profundas sobre a essência da vida.</p>
+                        <p><b>3. Guimarães Rosa e o Sertão Metafísico:</b> Em <i>Grande Sertão: Veredas</i>, o sertão mineiro não é o cenário documental de denúncia da geração de 30; ele é o universo inteiro. Rosa recria a língua portuguesa criando centenas de **neologismos** (novas palavras baseadas em latim, alemão, fala popular e lógica poética) para discutir temas universais como a existência de Deus, o pacto com o Diabo e a natureza do amor e do medo através do jagunço Riobaldo.</p>
+                        <p><b>4. João Cabral de Melo Neto:</b> O 'engenheiro da palavra'. Sua poesia é o oposto do sentimentalismo romântico: é concreta, cortante, pautada no uso de substantivos concretos (pedra, osso, faca) e arquitetada geometricamente para evitar qualquer efusão emocional vaga.</p>
+                       </div>`,
+                example: "🎯 Chave Metódica: Fluxo de consciência, epifanias existenciais a partir do cotidiano, neologismo experimental, rigor estético e a transfiguração do regional em universal."
             }
         ];
 
-        // Única Porta de Retorno da Ala para a Sala Principal (Fica na parede oposta, centro inferior)
-        const returnPortal = { x: 450, y: 315, w: 100, h: 25 }; 
-        
-        // Portais para ir para o Exame Final (Sala 3) - Fica no canto direito da Sala Principal
-        const examPortalTrigger = { x: 975, y: 20, w: 25, h: 60 };
+        const returnPortal = { x: 500, y: 235, w: 110, h: 25 }; 
+        const examPortalTrigger = { x: 1085, y: 15, w: 25, h: 60 };
 
         const doorLetters = ["A", "B", "C", "D", "E"];
         const doorColors = ["#cbd5e1", "#577399", "#495867", "#fe5f55", "#bdd6d2"];
@@ -229,61 +254,61 @@
                 category: "1ª Fase (Contexto)", bgGradient: ["#1e1b4b", "#090514"], particleType: "CRYSTAL",
                 q: "A Semana de Arte Moderna de 1922 foi o marco inicial da primeira fase do Modernismo brasileiro. Entre seus objetivos principais, destacava-se:",
                 options: ["A consolidação do rigor formal herdado dos poetas parnasianos.", "A busca por uma identidade artística nacional aliada à renovação estética das vanguardas europeias.", "O resgate dos valores e temas da literatura jesuítica colonial.", "O isolamento da cultura brasileira frente às influências estéticas estrangeiras.", "A defesa da rima rica e da metrificação rígida como pilares da poesia."],
-                correctIndex: 1, explanation: "A Primeira Geração pretendia romper as amarras do conservadorismo acadêmico, aplicando as inovações das vanguardas europeias na construção de uma arte genuinamente nacional."
+                correctIndex: 1, explanation: "A Geração de 22 pretendia quebrar as amarras do conservadorismo parnasiano e da mentalidade colonizada. Eles queriam deglutir as técnicas de vanguarda da Europa para aplicá-las na criação de uma linguagem verdadeiramente livre, experimental e voltada à realidade da cultura brasileira."
             },
             {
                 category: "1ª Fase (Estilo)", bgGradient: ["#1e1b4b", "#090514"], particleType: "CRYSTAL",
-                q: "Leia o poema 'Poética', de Manuel Bandeira: <br><span class='text-slate-400 italic text-md-custom'>'Estou farto do lirismo comedido / Do lirismo bem-comportado / Do lirismo funcionário público...'</span><br>O trecho exemplifica uma postura típica da Primeira Geração Modernista, que é:",
+                q: "Leia o poema 'Poética', de Manuel Bandeira: <br><span class='text-slate-400 italic text-md'>'Estou farto do lirismo comedido / Do lirismo bem-comportado / Do lirismo funcionário público...'</span><br>O trecho exemplifica uma postura típica da Geração Heroica, que é:",
                 options: ["O apego ao sentimentalismo romântico tradicional.", "A defesa da burocratização da linguagem poética.", "A rejeição ao academicismo e às normas estéticas engessadas do passado.", "O retorno ao bucolismo e ao pastoralismo árcade.", "A exaltação da figura do funcionário público como herói nacional."],
-                correctIndex: 2, explanation: "Bandeira faz um manifesto contra a poesia engessada, artificial e submissa às regras rígidas da tradição parnasiana."
+                correctIndex: 2, explanation: "Manuel Bandeira assina um manifesto anti-acadêmico. Ele ataca diretamente a poesia engessada dos parnasianos, que encaravam a produção poética como um ofício técnico, burocrático, frio e cego às realidades dinâmicas do cotidiano humano."
             },
             {
                 category: "1ª Fase (Movimentos)", bgGradient: ["#1e1b4b", "#090514"], particleType: "CRYSTAL",
                 q: "O Manifesto Antropófago (1928), liderado por Oswald de Andrade, propunha como estratégia cultural:",
-                options: ["A rejection absoluta de qualquer elemento vindo da cultura europeia.", "A cópia fiel dos modelos artísticos franceses e italianos.", "A 'deglutição' da cultura estrangeira para assimilá-la e transformá-la em uma arte genuinamente brasileira.", "O isolamento do Brasil no cenário cultural da América Latina.", "O foco exclusivo na literatura regionalista do interior do país."],
-                correctIndex: 2, explanation: "A antropofagia prega absorver criticamente a técnica estrangeira, assimilando-a e deglutindo-a para produzir uma cultura forte e autenticamente nacional."
+                options: ["A rejeição absoluta de qualquer elemento vindo da cultura europeia.", "A cópia fiel dos modelos artísticos franceses e italianos.", "A 'deglutição' da cultura estrangeira para assimilá-la e transformá-la em uma arte genuinamente brasileira.", "O isolamento do Brasil no cenário cultural da América Latina.", "O foco exclusivo na literatura regionalista do interior do país."],
+                correctIndex: 2, explanation: "A Antropofagia recusa o isolamento ufanista primitivo e a cópia cega. A estratégia é a metáfora do canibalismo: engolir o instrumental técnico europeu avançado, digeri-lo criticamente no filtro do solo nacional e expelir uma arte autônoma e com traços brasileiros autênticos."
             },
             {
                 category: "1ª Fase (Análise de Obra)", bgGradient: ["#1e1b4b", "#090514"], particleType: "CRYSTAL",
                 q: "O livro Macunaíma (1928), de Mário de Andrade, é considerado uma rapsódia porque:",
                 options: ["Segue uma ordem cronológica rígida e realista do desenvolvimento do herói.", "Reúne e funde mitos, lendas, folclore e dialetos de diferentes regiões do Brasil em uma narrativa fragmentada.", "Concentra-se na biografia psicológica de um único homem paulistano.", "É escrito inteiramente em versos alexandrinos rimados.", "Isola a cultura indígena das influências da modernidade urbana."],
-                correctIndex: 1, explanation: "Como rapsódia, Mário de Andrade costura e justapõe de forma livre e sem linearidade cronológica os mitos, dialetos e folclores de toda a extensão do território brasileiro."
+                correctIndex: 1, explanation: "Como rapsódia, Mário de Andrade costura de forma colada e sem linearidade cronológica os mitos amazônicos, as expressões gaúchas, os cultos religiosos afro e o asfalto paulistano, espelhando o caráter híbrido e multifacetado da cultura do Brasil."
             },
             {
                 category: "2ª Fase (Contexto)", bgGradient: ["#0a182c", "#020612"], particleType: "RAIN",
-                q: "A prosa da Segunda Geração Modernista (Geração de 30) notabilizou-se pelo desenvolvimento do chamado 'Romance Regionalista'. O principal motor temático dessas obras era:",
+                q: "A prosa da Geração de 30 notabilizou-se pelo desenvolvimento do 'Romance Regionalista'. O principal motor temático dessas obras era:",
                 options: ["A idealização da vida bucólica e das festas aristocráticas do interior.", "A denúncia das secas, da miséria, do coronelismo e das injustiças sociais, especialmente no Nordeste.", "A exploração da ficção científica e do futurismo nas pequenas cidades brasileiras.", "O foco nas inovações tecnológicas e na industrialização da capital paulista.", "A busca por relatar misticismos medievais adaptados ao solo brasileiro."],
-                correctIndex: 1, explanation: "A Geração de 30 focou em uma literatura engajada de forte teor documental e crítico, retratando os flagelos sociais e a exploração política no Nordeste."
+                correctIndex: 1, explanation: "A Geração de 30 substitui a anarquia estética por uma literatura altamente engajada, documental e militante. O objetivo era expor o sofrimento do sertanejo diante do flagelo climático da seca e da opressão cruel dos senhores feudais do algodão e do cacau."
             },
             {
                 category: "2ª Fase (Análise de Personagem)", bgGradient: ["#0a182c", "#020612"], particleType: "RAIN",
                 q: "Em Vidas Secas (1938), de Graciliano Ramos, a desumanização das personagens provocada pela miséria extrema e pela opressão social é conhecida pela crítica literária como:",
                 options: ["Antropofagia cultural.", "Zoomorfização (ou animalização) do ser humano.", "Idealização romântica do sertanejo.", "Esteticismo parnasiano.", "Psicologismo urbano de vanguarda."],
-                correctIndex: 1, explanation: "A zoomorfização expõe o homem reduzido aos seus instintos mais brutos de sobrevivência por falta de assistência social, enquanto os animais ganham traços quase humanos."
+                correctIndex: 1, explanation: "A zoomorfização descreve o processo em que a extrema miséria e a falta de recursos básicos reduzem Fabiano e sua família aos instintos primitivos de sobrevivência, silenciando sua capacidade de fala articulada, enquanto a cadela Baleia ganha pensamentos e sensibilidades quase humanos."
             },
             {
                 category: "2ª Fase (Poesia)", bgGradient: ["#0a182c", "#020612"], particleType: "RAIN",
                 q: "Carlos Drummond de Andrade é um dos maiores nomes da poesia da Segunda Fase. No livro A Rosa do Povo (1945), sua poesia assume um caráter fortemente:",
                 options: ["Alienado e puramente focado na beleza formal.", "Religioso e místico, voltado para a transcendência espiritual.", "Social, político e participante, refletindo as angústias da Segunda Guerra Mundial e da ditadura do Estado Novo.", "Indianista, resgatando as lendas da primeira fase.", "Romântico e egocêntrico, focado no sofrimento por amor."],
-                correctIndex: 2, explanation: "A Rosa do Povo representa o auge da poesia coletiva, social e politicamente engajada de Drummond, sintonizada com os conflitos de seu tempo histórico."
+                correctIndex: 2, explanation: "A Rosa do Povo é o ápice do engajamento drummondiano. O eu lírico abandona o isolamento do 'gauche' individualista e se funde ao sofrimento das massas proletárias e das tensões políticas globais causadas pela Segunda Guerra Mundial e pela opressão interna da ditadura varguista."
             },
             {
                 category: "3ª Fase (Contexto Estético)", bgGradient: ["#0e1116", "#020305"], particleType: "WEB",
                 q: "A Geração de 45 (Terceira Fase Modernista) propôs uma mudança de rumo em relação às fases anteriores, caracterizada principalmente por:",
-                options: ["A retorno ao nacionalismo ingênuo e ufanista do Romantismo.", "Uma busca pelo rigor formal, maior equilíbrio estético e superação do ímpeto puramente destruidor de 1922.", "A abolição definitiva da prosa, focando apenas no teatro rimado.", "O fim do interesse pelas sondagens psicológicas ou existenciais do ser humano.", "A imitação servil do modelo estético árcade do século XVIII."],
-                correctIndex: 1, explanation: "A Geração de 45 afasta-se do caráter de deboche, anarquia e destruição linguística de 22 para retornar ao cuidado artesanal da palavra, metrificação e busca do universal."
+                options: ["O retorno ao nacionalismo ingênuo e ufanista do Romantismo.", "Uma busca pelo rigor formal, maior equilíbrio estético e superação do ímpeto puramente destruidor de 1922.", "A abolição definitiva da prosa, focando apenas no teatro rimado.", "O fim do interesse pelas sondagens psicológicas ou existenciais do ser humano.", "A imitação servil do modelo estético árcade do século XVIII."],
+                correctIndex: 1, explanation: "A Geração de 45 considerou que os experimentos radicais da primeira fase e o foco puramente sociológico da segunda haviam esgotado seu ciclo. Eles reintroduziram a arquitetura poética precisa, a valorização técnica da palavra e o mergulho em dilemas universais da alma humana."
             },
             {
                 category: "3ª Fase (Inovação Linguística)", bgGradient: ["#0e1116", "#020305"], particleType: "WEB",
                 q: "Na obra de João Guimarães Rosa, o sertão mineiro deixa de ser apenas um cenário geográfico e torna-se um espaço universal. Isso se dá através de uma profunda revolução na linguagem, caracterizada pelo uso de:",
                 options: ["Linguagem jornalística, direta, sem figuras de linguagem.", "Dialetos estritamente estrangeiros adaptados à fala dos jagunços.", "Neologismos (criação de novas palavras), arcaísmos resgatados e uma sintaxe altamente poética e inventiva.", "Vocabulário purista de acordo com a Academia das Ciências de Lisboa.", "Supressão total dos verbos nas frases narrativas."],
-                correctIndex: 2, explanation: "Guimarães Rosa recria o sertão reinventando a própria língua através de neologismos, fusões de termos arcaicos e uma sintaxe poética inovadora."
+                correctIndex: 2, explanation: "Guimarães Rosa universalizou o sertão recriando o próprio idioma. Ele combinou a oralidade dos vaqueiros com erudição clássica, gerando neologismos fantásticos e inversões sintáticas poéticas para transformar as lutas entre jagunços em um espelho dos dilemas do bem e do mal do homem universal."
             },
             {
                 category: "3ª Fase (Introspecção)", bgGradient: ["#0e1116", "#020305"], particleType: "WEB",
                 q: "A prosa de Clarice Lispector introduz com força na literatura brasileira o fluxo de consciência e o monólogo interior. Suas obras focam principalmente:",
                 options: ["Nas disputas de terras entre coronéis do cacau na Bahia.", "Na descrição minuciosa de fatos históricos da história do Brasil.", "No enredo de ação linear, com começo, meio e fim claros.", "Na epifania (revelação súbita a partir de um fato cotidiano) e no mergulho na interioridade psicológica das personagens.", "Na sátira política das classes operárias industriais."],
-                correctIndex: 3, explanation: "O foco de Clarice está nas revelações interiores (epifanias) em que incidentes triviais do dia a dia rompem a blindagem social das personagens e expõem o existencial subjacente."
+                correctIndex: 3, explanation: "O foco de Clarice Lispector é a jornada interior. Suas tramas quase não possuem eventos externos: o motor dramático é a epifania, na qual incidentes aparentemente insignificantes abrem rachaduras profundas na casca social cotidiana da personagem e a forçam a encarar sua existência nua."
             }
         ];
 
@@ -305,14 +330,14 @@
             score = 0;
             document.getElementById("score-val").innerText = score;
 
-            player = new Knight(60, canvas.height - 50);
+            player = new Knight(60, canvas.height - 40);
             player.hp = 3;
             atualizarHpHUD();
             
             currentPhase = "LAB_PRACTICE";
             gerarParticulas("LAB");
             
-            document.getElementById("ambient-title").innerText = "Sala 1: Gabinete de Análise Estilística";
+            document.getElementById("ambient-title").innerText = "SALA 1: GABINETE DE ANÁLISE ESTILÍSTICA";
             if(!gameActive) {
                 gameActive = true;
                 gameLoop();
@@ -323,30 +348,31 @@
             currentPhase = "THEORY_SANCTUARY";
             activeAlaId = null;
             player.x = canvas.width / 2; player.y = canvas.height / 2;
-            document.getElementById("ambient-title").innerText = "Sala 2: Salão Central de Estudos Modernistas";
-            document.getElementById("ambient-title").className = "text-md-custom font-bold tracking-widest text-amber-400 uppercase bg-slate-950/80 px-5 py-2 border border-amber-950 rounded-sm";
+            document.getElementById("ambient-title").innerText = "SALA 2: SALÃO CENTRAL DE ESTUDOS MODERNISTAS";
         }
 
         function entrarNaAlaDeEstudo(doorObj) {
             currentPhase = "ALA_STUDY_ROOM";
             activeAlaId = doorObj.id;
-            player.x = canvas.width / 2; player.y = canvas.height / 2 - 30; // Posiciona o jogador no centro da ala
+            player.x = canvas.width / 2; player.y = canvas.height / 2 - 30;
             
             document.getElementById("ambient-title").innerText = `${doorObj.title.replace('🚪 ', '')}`;
             document.getElementById("theory-display").innerHTML = `
-                <div class='text-left max-w-4xl mx-auto space-y-3 px-2'>
-                    <h4 class='text-xl-custom font-bold text-amber-400 tracking-wider uppercase border-b border-amber-900 pb-1'>${doorObj.title}</h4>
-                    <p class='text-slate-200 text-md-custom leading-relaxed'>${doorObj.text}</p>
-                    <p class='text-amber-400 text-md-custom italic font-medium pt-1'>${doorObj.example}</p>
+                <div class='text-left max-w-5xl mx-auto space-y-4 px-2 py-1'>
+                    <h4 class='text-2xl font-bold text-amber-400 border-b border-amber-950 pb-2 trajan-title'>${doorObj.title}</h4>
+                    <div class='text-slate-200 text-lg leading-relaxed bg-slate-950/40 p-4 border border-slate-900 rounded-sm'>${doorObj.text}</div>
+                    <div class='text-amber-400 font-medium bg-amber-950/20 p-3 border border-amber-900/30 rounded-sm italic'>${doorObj.example}</div>
                 </div>
             `;
+            // Força a rolagem da área de estudos para o topo automaticamente
+            document.getElementById("theory-display").scrollTop = 0;
         }
 
         function transicionarParaArena() {
             currentPhase = "ARENA";
             document.getElementById("theory-display").classList.add("hidden");
             document.getElementById("arena-interface").classList.remove("hidden");
-            player.x = canvas.width / 2; player.y = canvas.height - 50;
+            player.x = canvas.width / 2; player.y = canvas.height - 40;
             carregarPerguntaQuizAtendida();
         }
 
@@ -362,19 +388,20 @@
             document.body.style.backgroundImage = `radial-gradient(circle at center, ${perguntaAtual.bgGradient[0]} 0%, ${perguntaAtual.bgGradient[1]} 100%)`;
             gerarParticulas(perguntaAtual.particleType);
 
-            document.getElementById("ambient-title").innerText = `Sala 3 - Portal ${indicePerguntaAtual + 1}: ${perguntaAtual.category}`;
+            document.getElementById("ambient-title").innerText = `PORTAL DE EXAME ${indicePerguntaAtual + 1}: ${perguntaAtual.category}`;
             
             document.getElementById("category-badge").innerText = `✦ Sabatina Crítica (${indicePerguntaAtual + 1}/${maxPerguntas}) ✦`;
             document.getElementById("question-text").innerHTML = perguntaAtual.q;
             
             let optionsGuide = "";
             perguntaAtual.options.forEach((opt, index) => {
-                optionsGuide += `<div><span class="text-amber-400 font-bold">[Portal ${doorLetters[index]}]</span> ${opt}</div>`;
+                optionsGuide += `<div class="bg-slate-950/30 p-2 border border-slate-900 rounded-sm"><span class="text-amber-400 font-bold trajan-title">[Portal ${doorLetters[index]}]</span> ${opt}</div>`;
             });
             document.getElementById("options-text-guide").innerHTML = optionsGuide;
+            document.getElementById("arena-interface").scrollTop = 0;
 
             doors = [];
-            let w = 140; let h = 42;
+            let w = 150; let h = 42;
             let spacing = (canvas.width - (w * 5)) / 6;
             for(let i=0; i<5; i++) {
                 doors.push({ x: spacing + i * (w + spacing), y: 15, width: w, height: h, letter: doorLetters[i], color: doorColors[i] });
@@ -394,13 +421,13 @@
             const perfTag = document.getElementById("performance-tag");
             if (score === maxPerguntas) {
                 perfTag.innerText = "Crítico Literário Supremo";
-                perfTag.className = "text-sm-custom font-bold tracking-widest uppercase py-1.5 px-4 inline-block rounded-sm bg-amber-950 text-amber-400 border border-amber-800";
+                perfTag.className = "text-xs font-bold tracking-widest uppercase py-1.5 px-4 inline-block rounded-sm bg-amber-950 text-amber-400 border border-amber-800 trajan-title";
             } else if (score >= maxPerguntas * 0.6) {
                 perfTag.innerText = "Leitor Sintonizado";
-                perfTag.className = "text-sm-custom font-bold tracking-widest uppercase py-1.5 px-4 inline-block rounded-sm bg-cyan-950 text-cyan-400 border border-cyan-800";
+                perfTag.className = "text-xs font-bold tracking-widest uppercase py-1.5 px-4 inline-block rounded-sm bg-cyan-950 text-cyan-400 border border-cyan-800 trajan-title";
             } else {
                 perfTag.innerText = "Mentalidade Clássica Conservadora";
-                perfTag.className = "text-sm-custom font-bold tracking-widest uppercase py-1.5 px-4 inline-block rounded-sm bg-red-950 text-red-400 border border-red-900";
+                perfTag.className = "text-xs font-bold tracking-widest uppercase py-1.5 px-4 inline-block rounded-sm bg-red-950 text-red-400 border border-red-900 trajan-title";
             }
         }
 
@@ -430,12 +457,11 @@
             gerarParticulas("CRYSTAL");
 
             document.getElementById("ambient-title").innerText = "SALA DE PURIFICAÇÃO E REVISÃO LITERÁRIA";
-            document.getElementById("ambient-title").className = "text-md-custom font-bold tracking-widest text-red-400 uppercase bg-slate-950/90 px-5 py-2 border border-red-950 rounded-sm";
             
             document.getElementById("arena-interface").classList.add("hidden");
             document.getElementById("theory-display").classList.remove("hidden");
             
-            player.x = canvas.width / 2; player.y = canvas.height - 50;
+            player.x = canvas.width / 2; player.y = canvas.height - 40;
         }
 
         function retornarDaPurificacaoParaProximaPergunta() {
@@ -443,7 +469,7 @@
             document.getElementById("theory-display").classList.add("hidden");
             document.getElementById("arena-interface").classList.remove("hidden");
             currentPhase = "ARENA";
-            player.x = canvas.width / 2; player.y = canvas.height - 50;
+            player.x = canvas.width / 2; player.y = canvas.height - 40;
             carregarPerguntaQuizAtendida();
         }
 
@@ -452,7 +478,7 @@
                 score++;
                 document.getElementById("score-val").innerText = score;
                 indicePerguntaAtual++;
-                player.x = canvas.width / 2; player.y = canvas.height - 50;
+                player.x = canvas.width / 2; player.y = canvas.height - 40;
                 carregarPerguntaQuizAtendida();
             } else {
                 player.hp--;
@@ -469,15 +495,15 @@
         let particles = [];
         function gerarParticulas(tipo) {
             particles = [];
-            let count = tipo === "RAIN" ? 40 : 20;
+            let count = tipo === "RAIN" ? 35 : 20;
             for (let i = 0; i < count; i++) {
                 particles.push({
                     x: Math.random() * canvas.width,
                     y: Math.random() * canvas.height,
                     radius: Math.random() * 2 + 0.5,
-                    speedY: tipo === "RAIN" ? (Math.random() * 3 + 3) : -(Math.random() * 0.3 + 0.1),
+                    speedY: tipo === "RAIN" ? (Math.random() * 2.5 + 2.5) : -(Math.random() * 0.25 + 0.1),
                     speedX: (Math.random() * 0.4 - 0.2),
-                    alpha: Math.random() * 0.5 + 0.2,
+                    alpha: Math.random() * 0.4 + 0.2,
                     color: tipo === "CRYSTAL" ? "#fbbf24" : (tipo === "RAIN" ? "#60a5fa" : "#94a3b8")
                 });
             }
@@ -525,47 +551,45 @@
                     let pertoDeAlgo = false;
                     labObjects.forEach(obj => {
                         let dist = Math.sqrt((this.x - (obj.x + obj.w/2))**2 + (this.y - (obj.y + obj.h/2))**2);
-                        if (dist < 70) {
+                        if (dist < 75) {
                             pertoDeAlgo = true;
                             if (obj.type === "VERSO_LIVRE") {
-                                document.getElementById("theory-display").innerHTML = `<span class='text-amber-400 font-bold text-xl-custom'>Estação do Verso Livre:</span><br>Rompe radicalmente com as amarras da rima rica e da metrificação parnasiana. Abre espaço para a oralidade urbana e coloquialidade (como Bandeira em 'Poética').`;
+                                document.getElementById("theory-display").innerHTML = `<div class='space-y-2'><span class='text-amber-400 font-bold text-xl trajan-title'>Estação do Verso Livre:</span><p>O verso livre abandona as contagens silábicas rígidas (como os decassílabos e alexandrinos) para focar na musicalidade natural e no ritmo do pensamento. No Modernismo, ele se une à <b>linguagem coloquial</b>, permitindo o uso legítimo de gírias, expressões cotidianas e erros intencionais de regência para retratar o linguajar real do brasileiro.</p></div>`;
                             } else if (obj.type === "MANIFESTO_MOCK") {
-                                document.getElementById("theory-display").innerHTML = `<span class='text-red-400 font-bold text-xl-custom'>Caldeirão Antropófago:</span><br>Oswald de Andrade propõe engolir as influências técnicas e estéticas externas para digeri-las e degluti-las sob a forma de uma arte nacional crítica, irônica e libertadora.`;
+                                document.getElementById("theory-display").innerHTML = `<div class='space-y-2'><span class='text-red-400 font-bold text-xl trajan-title'>Caldeirão Antropófago:</span><p>Conceito central de Oswald de Andrade. Em vez de imitar servilmente a Europa ou fechar as fronteiras em um patriotismo cego, a Antropofagia prega a deglutição cultural: absorve-se a técnica das vanguardas externas, digere-as no estômago nacional e expele-se uma obra puramente independente e crítica.</p></div>`;
                             } else if (obj.type === "REGIONAL_DENUNCIA") {
-                                document.getElementById("theory-display").innerHTML = `<span class='text-yellow-500 font-bold text-xl-custom'>Prensa Regionalista (Geração de 30):</span><br>Literatura focada na denúncia crua da seca, da exploração do coronelismo e da miséria. Destaca-se o estilo seco e o processo de <b>zoomorfização</b> em Vidas Secas.`;
+                                document.getElementById("theory-display").innerHTML = `<div class='space-y-2'><span class='text-yellow-500 font-bold text-xl trajan-title'>Prensa Regionalista (Geração de 30):</span><p>Instrumento de denúncia de Graciliano Ramos, Jorge Amado e Rachel de Queiroz. Centra-se na exposição realista da miséria, fome, seca e opressão política no Nordeste. Associa-se ao conceito crítico de <b>zoomorfização</b>, em que as pessoas são tratadas e passam a agir como bichos pelas amarras da fome extrema.</p></div>`;
                             } else if (obj.type === "PSICO_SONDAGEM") {
-                                document.getElementById("theory-display").innerHTML = `<span class='text-cyan-400 font-bold text-xl-custom'>Espelho da Epifania (Clarice Lispector):</span><br>A linearidade cede lugar ao fluxo de consciência. Foco nas **epifanias** (revelações existenciais profundas que rompem a casca social a partir de eventos banais).`;
+                                document.getElementById("theory-display").innerHTML = `<div class='space-y-2'><span class='text-cyan-400 font-bold text-xl trajan-title'>Espelho da Epifania (Clarice Lispector):</span><p>Sondagem da mente por meio do fluxo de consciência. Abandona os acontecimentos externos para focar em **epifanias**: momentos de revelação avassaladora desencadeados por gatilhos simples do cotidiano. A rotina automática desmorona e o indivíduo encara a fragilidade de seu próprio ser.</p></div>`;
                             } else if (obj.type === "RIGOR_GEOMETRICO") {
-                                document.getElementById("theory-display").innerHTML = `<span class='text-purple-400 font-bold text-xl-custom'>Rigor de João Cabral:</span><br>Rejeição terminante ao sentimentalismo vago e confessional. Poesia construída de forma milimétrica, pautada no substantivo puro e na arquitetura verbal.`;
+                                document.getElementById("theory-display").innerHTML = `<div class='space-y-2'><span class='text-purple-400 font-bold text-xl trajan-title'>Rigor de João Cabral:</span><p>Contraponto ao sentimentalismo vago. João Cabral de Melo Neto constrói sua poesia como um engenheiro ergue um prédio: prioriza o uso de substantivos concretos e táteis (pedra, metal, deserto) e elimina os excessos subjetivos emocionais para alcançar o rigor verbal absoluto.</p></div>`;
                             }
                         }
                     });
                     if (!pertoDeAlgo) {
-                        document.getElementById("theory-display").innerHTML = `<p class="text-slate-200 text-xl-custom font-medium">⚔️ <span class="text-amber-400 font-bold">Gabinete de Estudo Modernista:</span> Golpeie os teares conceituais com seu Ferrão (<span class="bg-slate-800 px-2 py-0.5 rounded text-md-custom text-amber-300">ESPAÇO</span>) para sintonizar os eixos temáticos. Siga à direita para a Sala de Portas!</p>`;
+                        document.getElementById("theory-display").innerHTML = `<div class='flex flex-col items-center justify-center text-center h-full'><p class="text-slate-300 text-xl font-medium">⚔️ <span class="text-amber-400 font-bold trajan-title">Gabinete de Estudo Modernista</span><br>Golpeie as estações de ensaio com seu Ferrão (<span class="bg-slate-800 px-2 py-0.5 rounded text-sm text-amber-300 font-mono">ESPAÇO</span>) para sintonizar as correntes estéticas base.<br><br><span class="text-slate-500 text-md">Caminhe em direção ao portal luminoso à extrema direita para prosseguir ao Salão Central de Portas.</span></p></div>`;
                     }
 
-                    // Transiciona para a sala 2 ao passar pelo portal direito da sala 1
-                    if (this.x > 970) {
+                    if (this.x > 1080) {
                         transicionarParaTeoria();
                     }
                 } 
                 else if (currentPhase === "THEORY_SANCTUARY") {
-                    document.getElementById("theory-display").innerHTML = `<p class="text-slate-200 text-xl-custom font-medium">🏛️ <span class="text-amber-400 font-bold">Salão Central de Estudos:</span> Atravesse fisicamente uma das quatro portas embutidas nas paredes (Norte, Leste, Sul ou Oeste) para entrar isoladamente em sua ala de dossiê completo. Entre no Portal do Exame no canto superior direito para testar o conhecimento!</p>`;
+                    document.getElementById("theory-display").innerHTML = `<div class='flex flex-col items-center justify-center text-center h-full p-4'><p class="text-slate-300 text-xl leading-relaxed">🏛️ <span class="text-amber-400 font-bold trajan-title">Salão Central de Estudos</span><br>As paredes deste salão abrigam quatro grandes arquivos embutidos de conhecimento denso. Atravesse fisicamente uma das quatro portas das extremidades cardeais para isolar e estudar detalhadamente cada período do Modernismo.<br><br><span class="text-red-400 font-bold">Quando estiver pronto:</span> Cruze o portão vermelho de <span class="text-red-400 font-bold trajan-title">EXAME</span> localizado no canto superior direito para testar seu domínio intelectual.</p></div>`;
 
-                    // Detecção de colisão com as portas das paredes externas
                     wallDoors.forEach(door => {
                         if (this.x > door.x && this.x < door.x + door.w && this.y > door.y && this.y < door.y + door.h) {
                             entrarNaAlaDeEstudo(door);
                         }
                     });
 
-                    // Colisão com o portal do exame (canto superior direito da tela)
                     if (this.x > examPortalTrigger.x && this.y > examPortalTrigger.y && this.y < examPortalTrigger.y + examPortalTrigger.h) {
                         transicionarParaArena();
                     }
                 }
                 else if (currentPhase === "ALA_STUDY_ROOM") {
-                    // Na Ala de Estudo, as outras portas sumiram. Existe apenas a porta de retorno única na parede oposta (sul)
+                    // O cenário está travado para a leitura acadêmica na div superior.
+                    // Para retornar ao mapa dinâmico central, basta andar até a porta de retorno única.
                     if (this.x > returnPortal.x && this.x < returnPortal.x + returnPortal.w && this.y > returnPortal.y && this.y < returnPortal.y + returnPortal.h) {
                         transicionarParaTeoria();
                     }
@@ -577,27 +601,27 @@
                         if (this.y < d.y + d.height + 40 && Math.abs(this.x - centerX) < d.width / 2) {
                             proximaAMalgumaPorta = true;
                             document.getElementById("door-inspector").innerHTML = `
-                                <div class="flex flex-col items-center text-center p-2">
-                                    <span class="text-amber-400 font-bold mb-1 text-sm-custom uppercase">Selo do Portal ${d.letter}:</span>
-                                    <p class="text-md-custom text-slate-300">Golpeie este portal superior com o seu Ferrão para firmar esta alternativa como sua resposta oficial.</p>
+                                <div class="flex flex-col items-center text-center p-1 w-full">
+                                    <span class="text-amber-400 font-bold mb-1 text-sm uppercase trajan-title">Selo do Portal ${d.letter}:</span>
+                                    <p class="text-md text-slate-300 leading-normal">Desferir um golpe de Ferrão para cima irá consolidar este portal como sua resposta final.</p>
                                 </div>
                             `;
                         }
                     });
                     if (!proximaAMalgumaPorta) {
-                        document.getElementById("door-inspector").innerHTML = "Aproxime-se de um portal de pedra superior para inspecionar as chaves de resposta...";
+                        document.getElementById("door-inspector").innerHTML = "Aproxime-se de um portal de pedra superior para inspecionar os canais de chancelas...";
                     }
                 }
                 else if (currentPhase === "PURIFICATION_ROOM") {
                     document.getElementById("theory-display").innerHTML = `
-                        <div class="text-center max-w-4xl mx-auto space-y-3">
-                            <span class="text-red-400 font-bold tracking-widest text-sm-custom block uppercase">⚠️ RETORNO LITERÁRIO OBRIGATÓRIO (REVISÃO)</span>
-                            <p class="text-slate-200 text-lg-custom leading-relaxed">${justificativaErroAtual}</p>
-                            <p class="text-md-custom text-slate-500 italic mt-2 font-bold">Atravesse o Portal Verde à direita para retornar à sabatina da arena!</p>
+                        <div class="text-left max-w-4xl mx-auto space-y-3 py-2">
+                            <span class="text-red-400 font-bold tracking-widest text-md block uppercase trajan-title">⚠️ REVISÃO DE RETORNO COMPREENSÍVEL (PUNIÇÃO DO ARQUIVO)</span>
+                            <div class="bg-red-950/20 border border-red-900/40 p-4 rounded-sm text-slate-200 text-lg leading-relaxed">${justificativaErroAtual}</div>
+                            <p class="text-md text-green-400 italic text-center font-bold pt-2">Siga com o Cavaleiro até o Portal Verde na extrema direita para retornar à arena.</p>
                         </div>
                     `;
 
-                    if (this.x > 970) {
+                    if (this.x > 1080) {
                         retornarDaPurificacaoParaProximaPergunta();
                     }
                 }
@@ -611,7 +635,7 @@
             if (currentPhase === "LAB_PRACTICE") {
                 labObjects.forEach(obj => {
                     let dist = Math.sqrt((player.x - (obj.x + obj.w/2))**2 + (player.y - (obj.y + obj.h/2))**2);
-                    if (dist < 65) {
+                    if (dist < 70) {
                         obj.active = !obj.active;
                     }
                 });
@@ -643,13 +667,11 @@
             if (!gameActive) return;
             ctx.fillStyle = "#04060d"; ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // Grid de fundo sutil
-            ctx.strokeStyle = "rgba(217, 119, 6, 0.03)"; ctx.lineWidth = 1;
+            ctx.strokeStyle = "rgba(217, 119, 6, 0.02)"; ctx.lineWidth = 1;
             for (let i = 0; i < canvas.height; i += 25) {
                 ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(canvas.width, i); ctx.stroke();
             }
 
-            // Partículas
             particles.forEach(p => {
                 p.y += p.speedY; p.x += p.speedX;
                 if (p.y < 0 || p.y > canvas.height) { p.y = p.speedY > 0 ? 0 : canvas.height; p.x = Math.random() * canvas.width; }
@@ -661,60 +683,54 @@
             if (currentPhase === "LAB_PRACTICE") {
                 labObjects.forEach(obj => {
                     ctx.save();
-                    ctx.fillStyle = obj.active ? "rgba(217, 119, 6, 0.15)" : "rgba(30, 41, 59, 0.6)";
+                    ctx.fillStyle = obj.active ? "rgba(217, 119, 6, 0.15)" : "rgba(30, 41, 59, 0.5)";
                     ctx.strokeStyle = obj.active ? "#f59e0b" : "#475569";
                     ctx.lineWidth = 2;
                     ctx.fillRect(obj.x, obj.y, obj.w, obj.h);
                     ctx.strokeRect(obj.x, obj.y, obj.w, obj.h);
-                    ctx.fillStyle = "#94a3b8"; ctx.font = "bold 11px Georgia"; ctx.textAlign = "center";
+                    ctx.fillStyle = "#94a3b8"; ctx.font = "bold 12px 'Cinzel', serif"; ctx.textAlign = "center";
                     ctx.fillText(obj.label, obj.x + obj.w/2, obj.y - 10);
                     ctx.restore();
                 });
 
-                // Portal de saída à direita
                 ctx.fillStyle = "rgba(245, 158, 11, 0.15)"; ctx.strokeStyle = "#f59e0b"; ctx.lineWidth = 3;
-                ctx.fillRect(980, 110, 20, 120); ctx.strokeRect(980, 110, 20, 120);
+                ctx.fillRect(1090, 70, 20, 120); ctx.strokeRect(1090, 70, 20, 120);
             } 
             else if (currentPhase === "THEORY_SANCTUARY") {
-                // Desenha as 4 portas embutidas nas paredes das extremidades
                 wallDoors.forEach(door => {
                     ctx.save();
                     ctx.fillStyle = "#1e293b"; ctx.strokeStyle = "#b45309"; ctx.lineWidth = 3;
                     ctx.fillRect(door.x, door.y, door.w, door.h);
                     ctx.strokeRect(door.x, door.y, door.w, door.h);
-                    
-                    // Detalhe de luz da porta
-                    ctx.fillStyle = "rgba(245, 158, 11, 0.3)";
+                    ctx.fillStyle = "rgba(245, 158, 11, 0.35)";
                     ctx.fillRect(door.x + 2, door.y + 2, door.w - 4, door.h - 4);
                     ctx.restore();
                 });
 
-                // Portal do Exame (Canto Superior Direito)
                 ctx.save();
                 ctx.fillStyle = "rgba(239, 68, 68, 0.2)"; ctx.strokeStyle = "#ef4444"; ctx.lineWidth = 2;
                 ctx.fillRect(examPortalTrigger.x, examPortalTrigger.y, examPortalTrigger.w, examPortalTrigger.h);
                 ctx.strokeRect(examPortalTrigger.x, examPortalTrigger.y, examPortalTrigger.w, examPortalTrigger.h);
-                ctx.fillStyle = "#ef4444"; ctx.font = "bold 9px Georgia";
-                ctx.fillText("EXAME", examPortalTrigger.x - 45, examPortalTrigger.y + 35);
+                ctx.fillStyle = "#ef4444"; ctx.font = "bold 10px 'Cinzel', serif";
+                ctx.fillText("EXAME", examPortalTrigger.x - 55, examPortalTrigger.y + 35);
                 ctx.restore();
             } 
             else if (currentPhase === "ALA_STUDY_ROOM") {
-                // Todas as portas sumiram. Desenha apenas a porta única de retorno à Sala Principal na parede inferior (sul)
                 ctx.save();
                 ctx.fillStyle = "#1e293b"; ctx.strokeStyle = "#22c55e"; ctx.lineWidth = 3;
                 ctx.fillRect(returnPortal.x, returnPortal.y, returnPortal.w, returnPortal.h);
                 ctx.strokeRect(returnPortal.x, returnPortal.y, returnPortal.w, returnPortal.h);
                 
-                ctx.fillStyle = "#22c55e"; ctx.font = "bold 11px Georgia"; ctx.textAlign = "center";
-                ctx.fillText("VOLTAR AO SALÃO CENTRAL", returnPortal.x + returnPortal.w/2, returnPortal.y - 10);
+                ctx.fillStyle = "#22c55e"; ctx.font = "bold 12px 'Cinzel', serif"; ctx.textAlign = "center";
+                ctx.fillText("RETORNAR AO SALÃO CENTRAL", returnPortal.x + returnPortal.w/2, returnPortal.y - 12);
                 ctx.restore();
             }
             else if (currentPhase === "ARENA") {
                 doors.forEach(d => {
                     ctx.save();
-                    ctx.fillStyle = "rgba(12, 19, 34, 0.9)"; ctx.strokeStyle = "#b45309"; ctx.lineWidth = 2.5;
+                    ctx.fillStyle = "rgba(12, 19, 34, 0.95)"; ctx.strokeStyle = "#b45309"; ctx.lineWidth = 2.5;
                     ctx.fillRect(d.x, d.y, d.width, d.height); ctx.strokeRect(d.x, d.y, d.width, d.height);
-                    ctx.fillStyle = "#e2e8f0"; ctx.font = "bold 12px Georgia"; ctx.textAlign = "center";
+                    ctx.fillStyle = "#e2e8f0"; ctx.font = "bold 12px 'Cinzel', serif"; ctx.textAlign = "center";
                     ctx.fillText(`PORTAL ${d.letter}`, d.x + d.width/2, d.y + 26);
                     ctx.restore();
                 });
@@ -722,7 +738,7 @@
             else if (currentPhase === "PURIFICATION_ROOM") {
                 ctx.save();
                 ctx.fillStyle = "rgba(34, 197, 94, 0.2)"; ctx.strokeStyle = "#22c55e"; ctx.lineWidth = 3;
-                ctx.fillRect(980, 110, 20, 120); ctx.strokeRect(980, 110, 20, 120);
+                ctx.fillRect(1090, 70, 20, 120); ctx.strokeRect(1090, 70, 20, 120);
                 ctx.restore();
             }
 
