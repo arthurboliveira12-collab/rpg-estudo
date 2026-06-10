@@ -76,9 +76,9 @@
     <div id="start-menu" class="absolute inset-0 bg-slate-950/98 z-50 flex flex-col items-center justify-center p-6 text-center">
         <div id="menu-principal-bloco" class="hk-border p-12 max-w-2xl flex flex-col items-center">
             <h1 class="text-4xl md:text-5xl font-bold tracking-widest text-slate-200 mb-2">HOLLOW KNIGHT</h1>
-            <h2 class="text-lg-custom text-amber-400 font-light mb-8 tracking-widest uppercase">Santuário Arquivístico do Modernismo v6.0</h2>
+            <h2 class="text-lg-custom text-amber-400 font-light mb-8 tracking-widest uppercase">Santuário Arquivístico do Modernismo v7.0</h2>
             <p class="text-lg-custom text-slate-400 italic mb-8 max-w-xl leading-relaxed">
-                "Cruze as quatro portas cardeais para absorver as diretrizes estruturais da literatura modernista antes de desafiar o exame dos portais."
+                "Cruze as quatro portas das paredes para entrar em cada ala de estudo. Retorne pela porta central para desafiar o exame dos portais."
             </p>
             <button onclick="configurarTema()" class="px-10 py-4 bg-slate-900 border border-slate-700 hover:border-amber-500 text-slate-200 text-md-custom tracking-widest transition-all transform hover:scale-105 font-bold">
                 INICIAR JORNADA LITERÁRIA
@@ -104,7 +104,7 @@
     </div>
 
     <!-- PAINEL DE COMUNICADOS E EXPOSIÇÃO TEÓRICA -->
-    <div id="display-panel" class="w-full max-w-5xl hk-border p-6 mb-3 hidden min-h-[210px] flex flex-col justify-center">
+    <div id="display-panel" class="w-full max-w-5xl hk-border p-6 mb-3 hidden min-h-[230px] flex flex-col justify-center">
         <div id="theory-display" class="w-full text-center text-lg-custom leading-relaxed px-4"></div>
         
         <!-- Painel de Arena de Enigmas -->
@@ -178,6 +178,7 @@
         let perguntasSelecionadas = [];
         let indicePerguntaAtual = 0;
         let justificativaErroAtual = "";
+        let activeAlaId = null; // Rastreia em qual ala o jogador entrou
 
         // SALA 1 - Laboratório de Estudos Estilísticos
         const labObjects = [
@@ -188,41 +189,41 @@
             { x: 770, y: 150, w: 140, h: 40, type: "RIGOR_GEOMETRICO", active: false, label: "📐 Compasso da Palavra" }
         ];
 
-        // SALA 2 - Configuração Física das Quatro Portas nos Cantos (Pontos Cardeais)
-        const spatialRooms = [
+        // SALA 2 - Portas reais cravadas nas paredes externas (Pontos Cardeais)
+        const wallDoors = [
             { 
-                x: 30, y: 50, w: 180, h: 80, id: "PORTA_NORTE",
-                title: "🚪 PORTA NORTE: ANTECEDENTES E SEMANA DE 22", 
+                x: 450, y: 0, w: 100, h: 25, id: "PORTA_NORTE", title: "🚪 PAREDE NORTE: ANTECEDENTES E SEMANA DE 22",
                 text: "<b>Dossiê de Exame:</b> O marco zero da ruptura cultural. <br>• <b>Contexto Histórico:</b> O Brasil celebrava o centenário da Independência Política (1922), mas sua arte era totalmente escrava do academicismo europeu e do rigor parnasiano.<br>• <b>Proposta Central:</b> Chocar a burguesia e conquistar a independência cultural. Abolição da rima obrigatória, adoção do 'falar brasileiro' cotidiano e introdução do ritmo acelerado das indústrias e bondes urbanos.<br>• <b>Figuras de Proa:</b> Mário de Andrade, Oswald de Andrade e as artes plásticas de Anita Malfatti no Teatro Municipal de SP.",
                 example: "💡 Chave de Resposta: Ruptura antiparnasiana, liberdade linguística e nacionalismo de renovação radical."
             },
             { 
-                x: 790, y: 50, w: 180, h: 80, id: "PORTA_LESTE",
-                title: "🚪 PORTA LESTE: 1ª FASE - HEROICA (1922-1930)", 
+                x: 975, y: 120, w: 25, h: 100, id: "PORTA_LESTE", title: "🚪 PAREDE LESTE: 1ª FASE - HEROICA (1922-1930)",
                 text: "<b>Dossiê de Exame:</b> Destruir para construir uma nova identidade.<br>• <b>Nacionalismo Crítico / Antropofagia (Oswald):</b> Não rejeita o exterior; engole a técnica estrangeira para assimilá-la e vomitá-la sob forma de arte nacional crítica. Expressado visualmente no <i>Abaporu</i> de Tarsila.<br>• <b>Obras Mandatórias:</b> <i>Macunaíma</i> (Mário de Andrade), a rapsódia do 'herói sem nenhum caráter' fundindo lendas, folclores e dialetos de todo o mapa sem linearidade cronológica.<br>• <b>Estilo:</b> Poema-piada, humor cáustico, versos livres e brancos.",
                 example: "💡 Chave de Resposta: Fusão mitológica nacional, antropofagia e ironia linguística desmitificadora."
             },
             { 
-                x: 30, y: 230, w: 180, h: 80, id: "PORTA_SUL",
-                title: "🚪 PORTA SUL: 2ª FASE - CONSOLIDAÇÃO (1930-1945)", 
+                x: 450, y: 315, w: 100, h: 25, id: "PORTA_SUL", title: "🚪 PAREDE SUL: 2ª FASE - CONSOLIDAÇÃO (1930-1945)",
                 text: "<b>Dossiê de Exame:</b> Maturidade formal, engajamento social e denúncia crua.<br>• <b>A Prosa de 30 (Regionalismo do Nordeste):</b> Foco documental e combativo contra a seca, a miséria e a opressão dos coronéis.<br>• <b>Obras Críticas:</b> <i>Vidas Secas</i> (Graciliano Ramos) consagrando a <b>zoomorfização</b> (bichos humanizados e humanos animalizados pela seca); <i>O Quinze</i> (Rachel de Queiroz) e <i>Capitães da Areia</i> (Jorge Amado).<br>• <b>A Poesia Universal:</b> Afasta-se do deboche e mergulha nas tensões políticas mundiais (2ª Guerra, Estado Novo) com o olhar social de Drummond (<i>A Rosa do Povo</i>) e os sonetos amorosos de Vinicius.",
                 example: "💡 Chave de Resposta: Literatura engajada de denúncia social, estilo seco e existencialismo realista."
             },
             { 
-                x: 790, y: 230, w: 180, h: 80, id: "PORTA_OESTE",
-                title: "🚪 PORTA OESTE: 3ª FASE - PÓS-MODERNA (1945-1960)", 
+                x: 0, y: 120, w: 25, h: 100, id: "PORTA_OESTE", title: "🚪 PAREDE OESTE: 3ª FASE - PÓS-MODERNA (1945-1960)",
                 text: "<b>Dossiê de Exame:</b> Altíssimo rigor formal, engenharia da palavra e universalismo.<br>• <b>A Prosa Intimista (Clarice Lispector):</b> Abandona o foco sociológico. Mergulha no fluxo de consciência e na <b>epifania</b> (revelações transcendentais disparadas por fatos banais do dia a dia, como ver um cego ou um ovo).<br>• <b>O Sertão Universal (Guimarães Rosa):</b> <i>Grande Sertão: Veredas</i> transfigura o espaço geográfico mineiro em arena existencial por meio de intensos <b>neologismos</b> e sintaxe poética profunda.<br>• <b>Poesia Substantiva:</b> O rigor geométrico e concreto de João Cabral de Melo Neto contra o sentimentalismo vago.",
                 example: "💡 Chave de Resposta: Sondagem psicológica profunda, epifanias cotidianas, neologismos e rigor estético."
             }
         ];
 
-        // Portas Superiores da Sala 3 (Arena de Enigmas)
-        const transitionPortal = { x: 960, y: 110, width: 30, height: 120 };
+        // Única Porta de Retorno da Ala para a Sala Principal (Fica na parede oposta, centro inferior)
+        const returnPortal = { x: 450, y: 315, w: 100, h: 25 }; 
+        
+        // Portais para ir para o Exame Final (Sala 3) - Fica no canto direito da Sala Principal
+        const examPortalTrigger = { x: 975, y: 20, w: 25, h: 60 };
+
         const doorLetters = ["A", "B", "C", "D", "E"];
         const doorColors = ["#cbd5e1", "#577399", "#495867", "#fe5f55", "#bdd6d2"];
         let doors = [];
 
-        // BANCO DE DADOS INTEGRADO DE MODERNISMO (10 QUESTÕES EXIGENTES)
+        // BANCO DE DADOS INTEGRADO DE MODERNISMO
         const bancoModernismoCompleto = [
             {
                 category: "1ª Fase (Contexto)", bgGradient: ["#1e1b4b", "#090514"], particleType: "CRYSTAL",
@@ -239,7 +240,7 @@
             {
                 category: "1ª Fase (Movimentos)", bgGradient: ["#1e1b4b", "#090514"], particleType: "CRYSTAL",
                 q: "O Manifesto Antropófago (1928), liderado por Oswald de Andrade, propunha como estratégia cultural:",
-                options: ["A rejeição absoluta de qualquer elemento vindo da cultura europeia.", "A cópia fiel dos modelos artísticos franceses e italianos.", "A 'deglutição' da cultura estrangeira para assimilá-la e transformá-la em uma arte genuinamente brasileira.", "O isolamento do Brasil no cenário cultural da América Latina.", "O foco exclusivo na literatura regionalista do interior do país."],
+                options: ["A rejection absoluta de qualquer elemento vindo da cultura europeia.", "A cópia fiel dos modelos artísticos franceses e italianos.", "A 'deglutição' da cultura estrangeira para assimilá-la e transformá-la em uma arte genuinamente brasileira.", "O isolamento do Brasil no cenário cultural da América Latina.", "O foco exclusivo na literatura regionalista do interior do país."],
                 correctIndex: 2, explanation: "A antropofagia prega absorver criticamente a técnica estrangeira, assimilando-a e deglutindo-a para produzir uma cultura forte e autenticamente nacional."
             },
             {
@@ -258,7 +259,7 @@
                 category: "2ª Fase (Análise de Personagem)", bgGradient: ["#0a182c", "#020612"], particleType: "RAIN",
                 q: "Em Vidas Secas (1938), de Graciliano Ramos, a desumanização das personagens provocada pela miséria extrema e pela opressão social é conhecida pela crítica literária como:",
                 options: ["Antropofagia cultural.", "Zoomorfização (ou animalização) do ser humano.", "Idealização romântica do sertanejo.", "Esteticismo parnasiano.", "Psicologismo urbano de vanguarda."],
-                correctIndex: 1, explanation: "A zoomorfização expõe o homem reduzido aos seus instintos mais brutos de sobrevivência por falta de assistência social, enquanto os animais ganham traços quase humanos (como a cachorra Baleia)."
+                correctIndex: 1, explanation: "A zoomorfização expõe o homem reduzido aos seus instintos mais brutos de sobrevivência por falta de assistência social, enquanto os animais ganham traços quase humanos."
             },
             {
                 category: "2ª Fase (Poesia)", bgGradient: ["#0a182c", "#020612"], particleType: "RAIN",
@@ -269,7 +270,7 @@
             {
                 category: "3ª Fase (Contexto Estético)", bgGradient: ["#0e1116", "#020305"], particleType: "WEB",
                 q: "A Geração de 45 (Terceira Fase Modernista) propôs uma mudança de rumo em relação às fases anteriores, caracterizada principalmente por:",
-                options: ["Um retorno ao nacionalismo ingênuo e ufanista do Romantismo.", "Uma busca pelo rigor formal, maior equilíbrio estético e superação do ímpeto puramente destruidor de 1922.", "A abolição definitiva da prosa, focando apenas no teatro rimado.", "O fim do interesse pelas sondagens psicológicas ou existenciais do ser humano.", "A imitação servil do modelo estético árcade do século XVIII."],
+                options: ["A retorno ao nacionalismo ingênuo e ufanista do Romantismo.", "Uma busca pelo rigor formal, maior equilíbrio estético e superação do ímpeto puramente destruidor de 1922.", "A abolição definitiva da prosa, focando apenas no teatro rimado.", "O fim do interesse pelas sondagens psicológicas ou existenciais do ser humano.", "A imitação servil do modelo estético árcade do século XVIII."],
                 correctIndex: 1, explanation: "A Geração de 45 afasta-se do caráter de deboche, anarquia e destruição linguística de 22 para retornar ao cuidado artesanal da palavra, metrificação e busca do universal."
             },
             {
@@ -320,9 +321,25 @@
 
         function transicionarParaTeoria() {
             currentPhase = "THEORY_SANCTUARY";
+            activeAlaId = null;
             player.x = canvas.width / 2; player.y = canvas.height / 2;
-            document.getElementById("ambient-title").innerText = "Sala 2: Salão Central das Letras (Quatro Portas)";
+            document.getElementById("ambient-title").innerText = "Sala 2: Salão Central de Estudos Modernistas";
             document.getElementById("ambient-title").className = "text-md-custom font-bold tracking-widest text-amber-400 uppercase bg-slate-950/80 px-5 py-2 border border-amber-950 rounded-sm";
+        }
+
+        function entrarNaAlaDeEstudo(doorObj) {
+            currentPhase = "ALA_STUDY_ROOM";
+            activeAlaId = doorObj.id;
+            player.x = canvas.width / 2; player.y = canvas.height / 2 - 30; // Posiciona o jogador no centro da ala
+            
+            document.getElementById("ambient-title").innerText = `${doorObj.title.replace('🚪 ', '')}`;
+            document.getElementById("theory-display").innerHTML = `
+                <div class='text-left max-w-4xl mx-auto space-y-3 px-2'>
+                    <h4 class='text-xl-custom font-bold text-amber-400 tracking-wider uppercase border-b border-amber-900 pb-1'>${doorObj.title}</h4>
+                    <p class='text-slate-200 text-md-custom leading-relaxed'>${doorObj.text}</p>
+                    <p class='text-amber-400 text-md-custom italic font-medium pt-1'>${doorObj.example}</p>
+                </div>
+            `;
         }
 
         function transicionarParaArena() {
@@ -501,7 +518,7 @@
 
                 if (this.x < this.radius) this.x = this.radius;
                 if (this.x > canvas.width - this.radius) this.x = canvas.width - this.radius;
-                if (this.y < 40) this.y = 40;
+                if (this.y < 15) this.y = 15;
                 if (this.y > canvas.height - this.radius) this.y = canvas.height - this.radius;
 
                 if (currentPhase === "LAB_PRACTICE") {
@@ -524,35 +541,33 @@
                         }
                     });
                     if (!pertoDeAlgo) {
-                        document.getElementById("theory-display").innerHTML = `<p class="text-slate-200 text-xl-custom font-medium">⚔️ <span class="text-amber-400 font-bold">Gabinete de Estudo Modernista:</span> Golpeie os teares conceituais com seu Ferrão (<span class="bg-slate-800 px-2 py-0.5 rounded text-md-custom text-amber-300">ESPAÇO</span>) para sintonizar os eixos temáticos. Siga à direita!</p>`;
+                        document.getElementById("theory-display").innerHTML = `<p class="text-slate-200 text-xl-custom font-medium">⚔️ <span class="text-amber-400 font-bold">Gabinete de Estudo Modernista:</span> Golpeie os teares conceituais com seu Ferrão (<span class="bg-slate-800 px-2 py-0.5 rounded text-md-custom text-amber-300">ESPAÇO</span>) para sintonizar os eixos temáticos. Siga à direita para a Sala de Portas!</p>`;
                     }
 
-                    if (this.x > transitionPortal.x - 5) {
+                    // Transiciona para a sala 2 ao passar pelo portal direito da sala 1
+                    if (this.x > 970) {
                         transicionarParaTeoria();
                     }
                 } 
                 else if (currentPhase === "THEORY_SANCTUARY") {
-                    let lendoQuadro = false;
-                    spatialRooms.forEach(board => {
-                        if (this.x > board.x && this.x < board.x + board.w && this.y > board.y && this.y < board.y + board.h) {
-                            lendoQuadro = true;
-                            document.getElementById("theory-display").innerHTML = `
-                                <div class='text-left max-w-4xl mx-auto space-y-2 px-2'>
-                                    <h4 class='text-xl-custom font-bold text-amber-400 tracking-wider uppercase border-b border-amber-900 pb-1'>${board.title}</h4>
-                                    <p class='text-slate-200 text-md-custom leading-relaxed'>${board.text}</p>
-                                    <p class='text-amber-400 text-md-custom italic font-medium pt-1'>${board.example}</p>
-                                </div>
-                            `;
+                    document.getElementById("theory-display").innerHTML = `<p class="text-slate-200 text-xl-custom font-medium">🏛️ <span class="text-amber-400 font-bold">Salão Central de Estudos:</span> Atravesse fisicamente uma das quatro portas embutidas nas paredes (Norte, Leste, Sul ou Oeste) para entrar isoladamente em sua ala de dossiê completo. Entre no Portal do Exame no canto superior direito para testar o conhecimento!</p>`;
+
+                    // Detecção de colisão com as portas das paredes externas
+                    wallDoors.forEach(door => {
+                        if (this.x > door.x && this.x < door.x + door.w && this.y > door.y && this.y < door.y + door.h) {
+                            entrarNaAlaDeEstudo(door);
                         }
                     });
 
-                    if (!lendoQuadro) {
-                        document.getElementById("theory-display").innerHTML = `<p class="text-slate-200 text-xl-custom font-medium">🏛️ <span class="text-amber-400 font-bold">Salão Central das Quatro Portas Históricas:</span> Mova-se física e livremente em direção aos cantos (Portas Norte, Leste, Sul e Oeste) para extrair os dossiês detalhados dos livros. Para testar seus conhecimentos e iniciar o exame final, posicione-se no centro e pressione o portal da direita!</p>`;
-                    }
-
-                    // Ponto central da sala serve de trampolim para a Arena se caminhar totalmente para a direita
-                    if (this.x > transitionPortal.x - 5 && this.y > 100 && this.y < 240) {
+                    // Colisão com o portal do exame (canto superior direito da tela)
+                    if (this.x > examPortalTrigger.x && this.y > examPortalTrigger.y && this.y < examPortalTrigger.y + examPortalTrigger.h) {
                         transicionarParaArena();
+                    }
+                }
+                else if (currentPhase === "ALA_STUDY_ROOM") {
+                    // Na Ala de Estudo, as outras portas sumiram. Existe apenas a porta de retorno única na parede oposta (sul)
+                    if (this.x > returnPortal.x && this.x < returnPortal.x + returnPortal.w && this.y > returnPortal.y && this.y < returnPortal.y + returnPortal.h) {
+                        transicionarParaTeoria();
                     }
                 }
                 else if (currentPhase === "ARENA") {
@@ -582,7 +597,7 @@
                         </div>
                     `;
 
-                    if (this.x > transitionPortal.x - 5) {
+                    if (this.x > 970) {
                         retornarDaPurificacaoParaProximaPergunta();
                     }
                 }
@@ -628,13 +643,13 @@
             if (!gameActive) return;
             ctx.fillStyle = "#04060d"; ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // Renderização de Fundo Temático Literário (Linhas de Pergaminho/Caderno)
-            ctx.strokeStyle = "rgba(217, 119, 6, 0.04)"; ctx.lineWidth = 1;
+            // Grid de fundo sutil
+            ctx.strokeStyle = "rgba(217, 119, 6, 0.03)"; ctx.lineWidth = 1;
             for (let i = 0; i < canvas.height; i += 25) {
                 ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(canvas.width, i); ctx.stroke();
             }
 
-            // Partículas de Tinta de Arquivo
+            // Partículas
             particles.forEach(p => {
                 p.y += p.speedY; p.x += p.speedX;
                 if (p.y < 0 || p.y > canvas.height) { p.y = p.speedY > 0 ? 0 : canvas.height; p.x = Math.random() * canvas.width; }
@@ -651,42 +666,49 @@
                     ctx.lineWidth = 2;
                     ctx.fillRect(obj.x, obj.y, obj.w, obj.h);
                     ctx.strokeRect(obj.x, obj.y, obj.w, obj.h);
-
                     ctx.fillStyle = "#94a3b8"; ctx.font = "bold 11px Georgia"; ctx.textAlign = "center";
                     ctx.fillText(obj.label, obj.x + obj.w/2, obj.y - 10);
                     ctx.restore();
                 });
 
+                // Portal de saída à direita
                 ctx.fillStyle = "rgba(245, 158, 11, 0.15)"; ctx.strokeStyle = "#f59e0b"; ctx.lineWidth = 3;
-                ctx.fillRect(transitionPortal.x, transitionPortal.y, transitionPortal.width, transitionPortal.height);
-                ctx.strokeRect(transitionPortal.x, transitionPortal.y, transitionPortal.width, transitionPortal.height);
+                ctx.fillRect(980, 110, 20, 120); ctx.strokeRect(980, 110, 20, 120);
             } 
             else if (currentPhase === "THEORY_SANCTUARY") {
-                // Desenhar as 4 portas físicas reais nos cantos da sala
-                spatialRooms.forEach(board => {
+                // Desenha as 4 portas embutidas nas paredes das extremidades
+                wallDoors.forEach(door => {
                     ctx.save();
-                    ctx.fillStyle = "rgba(15, 23, 42, 0.95)"; 
-                    ctx.strokeStyle = "#b45309"; 
-                    ctx.lineWidth = 3;
+                    ctx.fillStyle = "#1e293b"; ctx.strokeStyle = "#b45309"; ctx.lineWidth = 3;
+                    ctx.fillRect(door.x, door.y, door.w, door.h);
+                    ctx.strokeRect(door.x, door.y, door.w, door.h);
                     
-                    // Renderização de cada porta como portal físico estruturado nos cantos
-                    ctx.fillRect(board.x, board.y, board.w, board.h); 
-                    ctx.strokeRect(board.x, board.y, board.w, board.h);
-                    
-                    // Design interno da porta de pedra medieval
-                    ctx.fillStyle = "rgba(180, 83, 9, 0.2)";
-                    ctx.fillRect(board.x + 10, board.y + 10, board.w - 20, board.h - 20);
-                    
-                    ctx.fillStyle = "#f59e0b"; ctx.font = "bold 11px Georgia"; ctx.textAlign = "center";
-                    ctx.fillText(board.id.replace("_", " "), board.x + board.w/2, board.y + board.h/2 + 4);
+                    // Detalhe de luz da porta
+                    ctx.fillStyle = "rgba(245, 158, 11, 0.3)";
+                    ctx.fillRect(door.x + 2, door.y + 2, door.w - 4, door.h - 4);
                     ctx.restore();
                 });
 
-                // Portal central da direita para prosseguir para a arena
-                ctx.fillStyle = "rgba(245, 158, 11, 0.2)"; ctx.strokeStyle = "#f59e0b"; ctx.lineWidth = 3;
-                ctx.fillRect(transitionPortal.x, transitionPortal.y, transitionPortal.width, transitionPortal.height);
-                ctx.strokeRect(transitionPortal.x, transitionPortal.y, transitionPortal.width, transitionPortal.height);
+                // Portal do Exame (Canto Superior Direito)
+                ctx.save();
+                ctx.fillStyle = "rgba(239, 68, 68, 0.2)"; ctx.strokeStyle = "#ef4444"; ctx.lineWidth = 2;
+                ctx.fillRect(examPortalTrigger.x, examPortalTrigger.y, examPortalTrigger.w, examPortalTrigger.h);
+                ctx.strokeRect(examPortalTrigger.x, examPortalTrigger.y, examPortalTrigger.w, examPortalTrigger.h);
+                ctx.fillStyle = "#ef4444"; ctx.font = "bold 9px Georgia";
+                ctx.fillText("EXAME", examPortalTrigger.x - 45, examPortalTrigger.y + 35);
+                ctx.restore();
             } 
+            else if (currentPhase === "ALA_STUDY_ROOM") {
+                // Todas as portas sumiram. Desenha apenas a porta única de retorno à Sala Principal na parede inferior (sul)
+                ctx.save();
+                ctx.fillStyle = "#1e293b"; ctx.strokeStyle = "#22c55e"; ctx.lineWidth = 3;
+                ctx.fillRect(returnPortal.x, returnPortal.y, returnPortal.w, returnPortal.h);
+                ctx.strokeRect(returnPortal.x, returnPortal.y, returnPortal.w, returnPortal.h);
+                
+                ctx.fillStyle = "#22c55e"; ctx.font = "bold 11px Georgia"; ctx.textAlign = "center";
+                ctx.fillText("VOLTAR AO SALÃO CENTRAL", returnPortal.x + returnPortal.w/2, returnPortal.y - 10);
+                ctx.restore();
+            }
             else if (currentPhase === "ARENA") {
                 doors.forEach(d => {
                     ctx.save();
@@ -700,8 +722,7 @@
             else if (currentPhase === "PURIFICATION_ROOM") {
                 ctx.save();
                 ctx.fillStyle = "rgba(34, 197, 94, 0.2)"; ctx.strokeStyle = "#22c55e"; ctx.lineWidth = 3;
-                ctx.fillRect(transitionPortal.x, transitionPortal.y, transitionPortal.width, transitionPortal.height);
-                ctx.strokeRect(transitionPortal.x, transitionPortal.y, transitionPortal.width, transitionPortal.height);
+                ctx.fillRect(980, 110, 20, 120); ctx.strokeRect(980, 110, 20, 120);
                 ctx.restore();
             }
 
